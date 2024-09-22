@@ -106,6 +106,11 @@ class _HomePageState extends State<HomePage> {
             ),
             const SectionHeader(title: 'Best Seller', actionLabel: 'See More'),
             const ProductList(),
+            const SizedBox(height: 24.0),
+            const SectionHeader(
+                title: 'Shop By Vendor', actionLabel: 'See More'),
+            const ProductList(),
+            const SizedBox(height: 24.0),
           ],
         ),
       ),
