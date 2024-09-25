@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   another_carousel_pro: ^1.0.2
   http: ^1.2.2
+  image_picker: ^0.8.4+8
 
 dev_dependencies:
   flutter_test:
