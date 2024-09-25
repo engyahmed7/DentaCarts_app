@@ -21,17 +21,18 @@ class _ProductListState extends State<ProductList> {
 
   Future<void> fetchProducts() async {
     try {
-      final response = await http.get(Uri.parse('https://dummyjson.com/products'));
+      final response =
+          await http.get(Uri.parse('https://dummyjson.com/products'));
       if (response.statusCode == 200) {
         setState(() {
           products = json.decode(response.body)['products'];
         });
-        // debugPrint("Products fetched: $products"); 
+        // debugPrint("Products fetched: $products");
       } else {
         throw Exception('Failed to load products');
       }
     } catch (e) {
-      debugPrint("Error fetching products: $e"); 
+      debugPrint("Error fetching products: $e");
     }
   }
 
@@ -44,7 +45,7 @@ class _ProductListState extends State<ProductList> {
     }
 
     return SizedBox(
-      height: 200, 
+      height: 230,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: products.length,
