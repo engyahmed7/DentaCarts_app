@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/modules/HomePage/homepage.dart';
-import 'package:flutter_application_1/modules/admin/product-page.dart';
+import 'package:flutter_application_1/modules/admin/admin_login.dart';
 
 class LayoutScreen extends StatelessWidget {
   const LayoutScreen({super.key});
@@ -10,7 +10,7 @@ class LayoutScreen extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth > 1200) {
-          return ProductAdminPanel();
+          return const AdminAuthApp();
         } else if (constraints.maxWidth > 800 && constraints.maxWidth < 1200) {
           return const HomePage();
         } else {

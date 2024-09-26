@@ -4,10 +4,12 @@ import 'dart:convert';
 import 'dart:html' as html;
 
 void main() {
-  runApp(ProductAdminPanel());
+  runApp(const ProductAdminPanel());
 }
 
 class ProductAdminPanel extends StatelessWidget {
+  const ProductAdminPanel({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,6 +24,21 @@ class ProductAdminPanel extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
+            elevation: 5,
+          ),
+        ),
+        inputDecorationTheme: const InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.tealAccent, width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.teal, width: 2),
           ),
         ),
       ),
@@ -30,14 +47,17 @@ class ProductAdminPanel extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Product Admin Panel'),
           centerTitle: true,
+          elevation: 0,
         ),
-        body: ProductForm(),
+        body: const ProductForm(),
       ),
     );
   }
 }
 
 class ProductForm extends StatefulWidget {
+  const ProductForm({super.key});
+
   @override
   _ProductFormState createState() => _ProductFormState();
 }
@@ -122,7 +142,8 @@ class _ProductFormState extends State<ProductForm> {
               controller: _titleController,
               decoration: const InputDecoration(
                 labelText: 'Product Title',
-                border: OutlineInputBorder(),
+                filled: true,
+                prefixIcon: Icon(Icons.title, color: Colors.teal),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -137,7 +158,8 @@ class _ProductFormState extends State<ProductForm> {
               maxLines: 4,
               decoration: const InputDecoration(
                 labelText: 'Product Description',
-                border: OutlineInputBorder(),
+                filled: true,
+                prefixIcon: Icon(Icons.description, color: Colors.teal),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -151,7 +173,8 @@ class _ProductFormState extends State<ProductForm> {
               controller: _priceController,
               decoration: const InputDecoration(
                 labelText: 'Price',
-                border: OutlineInputBorder(),
+                filled: true,
+                prefixIcon: Icon(Icons.attach_money, color: Colors.teal),
               ),
               keyboardType: TextInputType.number,
               validator: (value) {
@@ -167,11 +190,16 @@ class _ProductFormState extends State<ProductForm> {
             const SizedBox(height: 20),
             if (imageUrl != null)
               Center(
-                child: Image.network(
-                  imageUrl!,
+                child: Container(
                   height: 150,
                   width: 150,
-                  fit: BoxFit.cover,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(
+                      image: NetworkImage(imageUrl!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               )
             else
@@ -193,9 +221,13 @@ class _ProductFormState extends State<ProductForm> {
                 icon: const Icon(Icons.camera_alt),
                 label: const Text('Pick Image'),
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
                   padding: const EdgeInsets.symmetric(
                     vertical: 10,
                     horizontal: 20,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
@@ -204,6 +236,16 @@ class _ProductFormState extends State<ProductForm> {
             Center(
               child: ElevatedButton(
                 onPressed: _submitProduct,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 15,
+                    horizontal: 30,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  textStyle: const TextStyle(fontSize: 18),
+                ),
                 child: const Text('Submit Product'),
               ),
             ),
