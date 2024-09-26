@@ -7,8 +7,21 @@ void main() {
   runApp(const ProductAdminPanel());
 }
 
-class ProductAdminPanel extends StatelessWidget {
+class ProductAdminPanel extends StatefulWidget {
   const ProductAdminPanel({super.key});
+
+  @override
+  _ProductAdminPanelState createState() => _ProductAdminPanelState();
+}
+
+class _ProductAdminPanelState extends State<ProductAdminPanel> {
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    const ProductForm(),
+    const ManageProductsPage(),
+    const ProductStatisticsPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +62,32 @@ class ProductAdminPanel extends StatelessWidget {
           centerTitle: true,
           elevation: 0,
         ),
-        body: const ProductForm(),
+        body: _pages[_currentIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (int index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add),
+              label: 'Add Product',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.list),
+              label: 'Manage Products',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart),
+              label: 'Statistics',
+            ),
+          ],
+          selectedItemColor: Colors.teal,
+          unselectedItemColor: Colors.grey,
+          showUnselectedLabels: true,
+        ),
       ),
     );
   }
@@ -220,38 +258,40 @@ class _ProductFormState extends State<ProductForm> {
                 onPressed: _pickImage,
                 icon: const Icon(Icons.camera_alt),
                 label: const Text('Pick Image'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 20,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
               ),
             ),
             const SizedBox(height: 30),
             Center(
               child: ElevatedButton(
                 onPressed: _submitProduct,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 15,
-                    horizontal: 30,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  textStyle: const TextStyle(fontSize: 18),
-                ),
                 child: const Text('Submit Product'),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class ManageProductsPage extends StatelessWidget {
+  const ManageProductsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Manage Products Page'),
+    );
+  }
+}
+
+class ProductStatisticsPage extends StatelessWidget {
+  const ProductStatisticsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Product Statistics Page'),
     );
   }
 }
