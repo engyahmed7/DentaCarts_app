@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:html' as html;
+import 'package:fl_chart/fl_chart.dart';
 
 void main() {
   runApp(const ProductAdminPanel());
@@ -452,13 +455,164 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
   }
 }
 
-class ProductStatisticsPage extends StatelessWidget {
-  const ProductStatisticsPage({super.key});
+class ProductStatisticsPage extends StatefulWidget {
+  const ProductStatisticsPage({Key? key}) : super(key: key);
+
+  @override
+  _ProductStatisticsPageState createState() => _ProductStatisticsPageState();
+}
+
+class _ProductStatisticsPageState extends State<ProductStatisticsPage> {
+  List<ProductSales> productSales = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProductSales();
+  }
+
+  Future<void> fetchProductSales() async {
+    try {
+      final response =
+          await http.get(Uri.parse('https://dummyjson.com/products'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          productSales = (data['products'] as List)
+              .map((item) => ProductSales.fromJson(item))
+              .toList();
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to load product sales');
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching data: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Product Statistics Page'),
+    return Scaffold(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Product Stock Statistics',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: Colors.teal,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: BarChart(
+                      BarChartData(
+                        alignment: BarChartAlignment.spaceAround,
+                        maxY: productSales
+                            .map((e) => e.stock)
+                            .reduce((a, b) => a > b ? a : b)
+                            .toDouble(),
+                        barTouchData: BarTouchData(
+                          touchTooltipData: BarTouchTooltipData(
+                            tooltipBgColor: Colors.blueGrey,
+                            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                              return BarTooltipItem(
+                                '${productSales[group.x].productName}\n${rod.toY.round()} stock',
+                                const TextStyle(color: Colors.white),
+                              );
+                            },
+                          ),
+                        ),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                if (value.toInt() >= 0 &&
+                                    value.toInt() < productSales.length) {
+                                  return Container(
+                                    width: 50,
+                                    child: Text(
+                                      productSales[value.toInt()].productName,
+                                      style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.visible,
+                                      maxLines: 2,
+                                    ),
+                                  );
+                                }
+                                return const Text('');
+                              },
+                            ),
+                          ),
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 30,
+                              getTitlesWidget: (value, meta) {
+                                return Text(
+                                  value.toInt().toString(),
+                                  style: const TextStyle(fontSize: 10),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        gridData: const FlGridData(show: false),
+                        borderData: FlBorderData(show: false),
+                        barGroups: productSales
+                            .asMap()
+                            .entries
+                            .map(
+                              (entry) => BarChartGroupData(
+                                x: entry.key,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: entry.value.stock.toDouble(),
+                                    color: Colors.teal,
+                                    width: 16,
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(4),
+                                      topRight: Radius.circular(4),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+}
+
+class ProductSales {
+  final String productName;
+  final int stock;
+
+  ProductSales({required this.productName, required this.stock});
+
+  factory ProductSales.fromJson(Map<String, dynamic> json) {
+    return ProductSales(
+      productName: json['title'],
+      stock: json['stock'],
     );
   }
 }
