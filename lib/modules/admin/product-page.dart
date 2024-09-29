@@ -290,13 +290,164 @@ class _ProductFormState extends State<ProductForm> {
   }
 }
 
-class ManageProductsPage extends StatelessWidget {
+class ManageProductsPage extends StatefulWidget {
   const ManageProductsPage({super.key});
 
   @override
+  _ManageProductsPageState createState() => _ManageProductsPageState();
+}
+
+class _ManageProductsPageState extends State<ManageProductsPage> {
+  List<Map<String, dynamic>> products = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProducts();
+  }
+
+  Future<void> fetchProducts() async {
+    try {
+      final response =
+          await http.get(Uri.parse('https://dummyjson.com/products'));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          products = List<Map<String, dynamic>>.from(data['products']);
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to load products');
+      }
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
+    }
+  }
+
+  void _editProduct(int index) {
+    final product = products[index];
+    TextEditingController titleController =
+        TextEditingController(text: product['title']);
+    TextEditingController priceController =
+        TextEditingController(text: product['price'].toString());
+    TextEditingController thumbnailController =
+        TextEditingController(text: product['thumbnail']);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Product'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 20),
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(labelText: 'Title'),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: priceController,
+                decoration: const InputDecoration(labelText: 'Price'),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: thumbnailController,
+                decoration: const InputDecoration(labelText: 'Thumbnail URL'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text('Pick Thumbnail Image'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  products[index]['title'] = titleController.text;
+                  products[index]['price'] = double.parse(priceController.text);
+                  products[index]['thumbnail'] = thumbnailController.text;
+                });
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Product updated successfully!')),
+                );
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteProduct(int index) {
+    setState(() {
+      products.removeAt(index);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Product deleted successfully!')),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Manage Products Page'),
+    return Scaffold(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index];
+                return ListTile(
+                  leading: Image.network(
+                    product['thumbnail'],
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  ),
+                  title: Text(product['title']),
+                  subtitle: Text(
+                    'Price: \$${product['price'].toStringAsFixed(2)}',
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.teal),
+                        onPressed: () {
+                          _editProduct(index);
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          _deleteProduct(index);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
 }
