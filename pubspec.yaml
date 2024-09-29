@@ -37,6 +37,7 @@ dependencies:
   another_carousel_pro: ^1.0.2
   http: ^1.2.2
   image_picker: ^0.8.4+8
+  shared_preferences: ^2.0.13
 
 dev_dependencies:
   flutter_test:

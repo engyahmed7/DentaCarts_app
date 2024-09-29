@@ -26,6 +26,7 @@ class _ProductAdminPanelState extends State<ProductAdminPanel> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.teal,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -55,7 +56,6 @@ class _ProductAdminPanelState extends State<ProductAdminPanel> {
           ),
         ),
       ),
-      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Product Admin Panel'),
@@ -106,6 +106,7 @@ class _ProductFormState extends State<ProductForm> {
   final _descController = TextEditingController();
   final _priceController = TextEditingController();
   String? imageUrl;
+  bool _isLoading = false;
 
   void _pickImage() async {
     final input = html.FileUploadInputElement()..accept = 'image/*';
@@ -127,19 +128,28 @@ class _ProductFormState extends State<ProductForm> {
   }
 
   Future<void> _submitProduct() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     if (_formKey.currentState!.validate()) {
       final productData = {
         'title': _titleController.text,
         'description': _descController.text,
         'price': _priceController.text,
         'image': imageUrl,
+        'userId': '1',
       };
 
       final response = await http.post(
-        Uri.parse('http://localhost:4000/products/create'),
+        Uri.parse('https://dummyjson.com/posts/add'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(productData),
       );
+
+      setState(() {
+        _isLoading = false;
+      });
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -260,13 +270,19 @@ class _ProductFormState extends State<ProductForm> {
                 label: const Text('Pick Image'),
               ),
             ),
-            const SizedBox(height: 30),
-            Center(
-              child: ElevatedButton(
-                onPressed: _submitProduct,
-                child: const Text('Submit Product'),
+            const SizedBox(height: 50),
+            if (_isLoading)
+              const Center(child: CircularProgressIndicator())
+            else
+              Center(
+                child: ElevatedButton(
+                  onPressed: _submitProduct,
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(300, 50),
+                  ),
+                  child: const Text('Submit Product'),
+                ),
               ),
-            ),
           ],
         ),
       ),
