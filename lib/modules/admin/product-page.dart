@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -416,7 +415,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
     return Scaffold(
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
+          : ListView.separated(
               itemCount: products.length,
               itemBuilder: (context, index) {
                 final product = products[index];
@@ -450,13 +449,20 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                   ),
                 );
               },
+              separatorBuilder: (context, index) {
+                return const Divider(
+                  thickness: 1.0,
+                  height: 10.0,
+                  color: Colors.grey,
+                );
+              },
             ),
     );
   }
 }
 
 class ProductStatisticsPage extends StatefulWidget {
-  const ProductStatisticsPage({Key? key}) : super(key: key);
+  const ProductStatisticsPage({super.key});
 
   @override
   _ProductStatisticsPageState createState() => _ProductStatisticsPageState();
@@ -542,7 +548,7 @@ class _ProductStatisticsPageState extends State<ProductStatisticsPage> {
                               getTitlesWidget: (value, meta) {
                                 if (value.toInt() >= 0 &&
                                     value.toInt() < productSales.length) {
-                                  return Container(
+                                  return SizedBox(
                                     width: 50,
                                     child: Text(
                                       productSales[value.toInt()].productName,
