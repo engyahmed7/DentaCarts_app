@@ -36,22 +36,27 @@ class _ProductCardState extends State<ProductCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                width: 150,
+                height: 125,
+                child: Image.network(
+                  widget.imageUrl,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.error),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Image.network(
-                    widget.imageUrl,
-                    height: 100,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.error),
-                  ),
-                  const SizedBox(height: 8),
                   Text(
                     widget.name,
                     style: const TextStyle(
@@ -60,7 +65,6 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -71,65 +75,31 @@ class _ProductCardState extends State<ProductCard> {
                           color: Colors.teal,
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isAddedToCart = !isAddedToCart;
-                          });
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            snackBarAnimationStyle: AnimationStyle(
-                                duration: const Duration(seconds: 1)),
-                            SnackBar(
-                              behavior: SnackBarBehavior.floating,
-                              duration: const Duration(milliseconds: 500),
-                              content: Text(isAddedToCart
-                                  ? "Done Add To Cart"
-                                  : "Removed To Cart"),
-                            ),
-                          );
-                        },
-                        icon: Icon(isAddedToCart
-                            ? Icons.check_circle_rounded
-                            : Icons.add_shopping_cart),
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          border: Border.all(color: Colors.black),
+                        ),
+                        child: IconButton(
+                          onPressed: () {},
+                          icon:
+                          const Icon(Icons.favorite_border),
+                        ),
                       ),
+
                     ],
                   ),
+                  ElevatedButton.icon(
+                    label: const Text("Remove Form Cart"),
+                    onPressed: () {},
+                    icon: Icon(Icons.remove_circle),
+                  ),
+
                 ],
               ),
-            ),
-            Positioned(
-              top: 8,
-              left: 8,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  border: Border.all(color: Colors.black),
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isFavorite = !isFavorite;
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      snackBarAnimationStyle:
-                          AnimationStyle(duration: const Duration(seconds: 1)),
-                      SnackBar(
-                        behavior: SnackBarBehavior.floating,
-                        duration: const Duration(milliseconds: 500),
-                        content: Text(isFavorite
-                            ? "Add To Favorite"
-                            : "Remove From Favorite"),
-                      ),
-                    );
-                  },
-                  icon:
-                      Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
 
