@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   final String name;
   final String price;
   final String imageUrl;
@@ -11,6 +11,14 @@ class ProductCard extends StatelessWidget {
     required this.imageUrl,
     super.key,
   });
+
+  @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  bool isAddedToCart = false;
+  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +37,7 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.network(
-                    imageUrl,
+                    widget.imageUrl,
                     height: 100,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -38,7 +46,7 @@ class ProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    name,
+                    widget.name,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -50,17 +58,34 @@ class ProductCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '\$$price',
+                        '\$${widget.price}',
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.teal,
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.add_shopping_cart),
-                        padding: const EdgeInsets.all(0),
-                        constraints: const BoxConstraints(),
+                        onPressed: () {
+                          setState(() {
+                            isAddedToCart = !isAddedToCart;
+                          });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            snackBarAnimationStyle: AnimationStyle(
+                              duration: const Duration(seconds: 1)
+                            ),
+                            SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(milliseconds: 500),
+                              content: Text(isAddedToCart
+                                  ? "Done Add To Cart"
+                                  : "Removed To Cart"),
+                            ),
+                          );
+                        },
+                        icon: Icon(isAddedToCart
+                            ? Icons.check_circle_rounded
+                            : Icons.add_shopping_cart),
                       ),
                     ],
                   ),
@@ -77,10 +102,26 @@ class ProductCard extends StatelessWidget {
                   border: Border.all(color: Colors.black),
                 ),
                 child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.favorite_border_rounded),
-                  padding: const EdgeInsets.all(5.0),
-                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    setState(() {
+                      isFavorite = !isFavorite;
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      snackBarAnimationStyle: AnimationStyle(
+                          duration: const Duration(seconds: 1)
+                      ),
+                      SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        duration: const Duration(milliseconds: 500),
+                        content: Text(isFavorite
+                            ? "Add To Favorite"
+                            : "Remove From Favorite"),
+                      ),
+                    );
+                  },
+                  icon: Icon(isFavorite
+                      ? Icons.favorite
+                      : Icons.favorite_border),
                 ),
               ),
             ),

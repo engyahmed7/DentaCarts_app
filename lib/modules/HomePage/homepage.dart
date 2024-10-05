@@ -32,7 +32,9 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(Icons.person),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+
+            },
             icon: const Icon(Icons.shopping_cart),
           ),
         ],
