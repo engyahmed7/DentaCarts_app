@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'product_card.dart';
+import '../../../core/widgets/product_card.dart';
 
 class ProductList extends StatefulWidget {
   const ProductList({super.key});
@@ -53,6 +53,7 @@ class _ProductListState extends State<ProductList> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: ProductCard(
+              cartDesign: false,
               name: products[index]['title'],
               price: products[index]['price'].toString(),
               imageUrl: products[index]['thumbnail'],
