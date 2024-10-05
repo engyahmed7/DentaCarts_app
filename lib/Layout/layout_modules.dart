@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/modules/CartPage/Screens/cart_screen.dart';
+import 'package:flutter_application_1/modules/HomePage/home_screen.dart';
 import 'package:flutter_application_1/modules/HomePage/widgets/carousel_slider.dart';
 import 'package:flutter_application_1/modules/HomePage/widgets/category_list.dart';
 import 'package:flutter_application_1/modules/HomePage/widgets/product_list.dart';
-import 'widgets/section_header.dart';
-import 'widgets/search_bar.dart';
+import 'package:flutter_application_1/modules/ProfilePage/screens/profile_screen.dart';
+import '../modules/HomePage/widgets/section_header.dart';
+import '../modules/HomePage/widgets/search_bar.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class LayoutModules extends StatefulWidget {
+  const LayoutModules({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<LayoutModules> createState() => _LayoutModulesState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _LayoutModulesState extends State<LayoutModules> {
+  int currentIndex = 0;
+  List<Widget> screens = [
+    HomeScreen(),
+    CartScreen(),
+    ProfileScreen(),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,6 +85,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -90,32 +100,16 @@ class _HomePageState extends State<HomePage> {
             label: 'Profile',
           ),
         ],
-        currentIndex: 0,
+        currentIndex: currentIndex,
         selectedItemColor: Colors.teal,
-        onTap: (index) {},
+        onTap: (index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SearchBarr(),
-            const CarouselSliderWidget(),
-            const CategoryList(),
-            const SectionHeader(title: 'On Sale', actionLabel: 'See More'),
-            const ProductList(),
-            Container(
-              margin: const EdgeInsets.all(24.0),
-              child: Image.asset('visa.png'),
-            ),
-            const SectionHeader(title: 'Best Seller', actionLabel: 'See More'),
-            const ProductList(),
-            const SizedBox(height: 24.0),
-            const SectionHeader(
-                title: 'Shop By Vendor', actionLabel: 'See More'),
-            const ProductList(),
-            const SizedBox(height: 24.0),
-          ],
-        ),
-      ),
+      body: screens[currentIndex],
     );
   }
 }
+
