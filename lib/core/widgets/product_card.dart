@@ -30,78 +30,79 @@ class _ProductCardState extends State<ProductCard> {
       return buildHomePageCartDesign(context);
     }
   }
-
   Widget buildCartDesignIsAdded() => Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                width: 150,
-                height: 125,
-                child: Image.network(
-                  widget.imageUrl,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.error),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '\$${widget.price}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.teal,
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          border: Border.all(color: Colors.black),
-                        ),
-                        child: IconButton(
-                          onPressed: () {},
-                          icon:
-                          const Icon(Icons.favorite_border),
-                        ),
-                      ),
-
-                    ],
-                  ),
-                  ElevatedButton.icon(
-                    label: const Text("Remove Form Cart"),
-                    onPressed: () {},
-                    icon: Icon(Icons.remove_circle),
-                  ),
-
-                ],
-              ),
-            ],
+    elevation: 2,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            width: 150,
+            height: 125,
+            child: Image.network(
+              widget.imageUrl,
+              errorBuilder: (context, error, stackTrace) =>
+              const Icon(Icons.error),
+            ),
           ),
-        ),
-      );
+          const SizedBox(width: 10),
+          Expanded( // Use Expanded to take available space
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.favorite_border),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '\$${widget.price}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.teal,
+                      ),
+                    ),
+                    // The favorite button is now at the end of the name
+                  ],
+                ),
+                ElevatedButton.icon(
+                  label: const Text("Remove From Cart"),
+                  onPressed: () {},
+                  icon: const Icon(Icons.remove_circle),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+  
 
   SizedBox buildHomePageCartDesign(BuildContext context) => SizedBox(
         width: 160,
