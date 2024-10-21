@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/modules/layout_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'DentaCarts',
       theme: ThemeData(
         primarySwatch: Colors.teal,
+        textTheme: GoogleFonts.poppinsTextTheme(),
       ),
       home: const LayoutScreen(),
     );

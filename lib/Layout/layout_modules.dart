@@ -5,8 +5,6 @@ import 'package:flutter_application_1/modules/HomePage/widgets/carousel_slider.d
 import 'package:flutter_application_1/modules/HomePage/widgets/category_list.dart';
 import 'package:flutter_application_1/modules/HomePage/widgets/product_list.dart';
 import 'package:flutter_application_1/modules/ProfilePage/screens/profile_screen.dart';
-import '../modules/HomePage/widgets/section_header.dart';
-import '../modules/HomePage/widgets/search_bar.dart';
 
 class LayoutModules extends StatefulWidget {
   const LayoutModules({super.key});
