@@ -7,7 +7,7 @@ class PaymentGetawayScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Center(
+      body: const Center(
         child: FlutterLogo(size: 100),
       ),
     );

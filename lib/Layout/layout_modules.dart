@@ -16,9 +16,9 @@ class LayoutModules extends StatefulWidget {
 class _LayoutModulesState extends State<LayoutModules> {
   int currentIndex = 0;
   List<Widget> screens = [
-    HomeScreen(),
-    CartScreen(),
-    ProfileScreen(),
+    const HomeScreen(),
+    const CartScreen(),
+    const ProfileScreen(),
   ];
   @override
   Widget build(BuildContext context) {

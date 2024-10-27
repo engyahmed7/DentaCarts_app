@@ -53,7 +53,7 @@ class _ProductCardState extends State<ProductCard> {
             ),
           ),
           const SizedBox(width: 10),
-          Expanded( // Use Expanded to take available space
+          Expanded( 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -87,7 +87,6 @@ class _ProductCardState extends State<ProductCard> {
                         color: Colors.teal,
                       ),
                     ),
-                    // The favorite button is now at the end of the name
                   ],
                 ),
                 ElevatedButton.icon(
