@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/modules/CartPage/Screens/cart_screen.dart';
 import 'package:flutter_application_1/modules/HomePage/home_screen.dart';
-import 'package:flutter_application_1/modules/HomePage/widgets/carousel_slider.dart';
-import 'package:flutter_application_1/modules/HomePage/widgets/category_list.dart';
-import 'package:flutter_application_1/modules/HomePage/widgets/product_list.dart';
 import 'package:flutter_application_1/modules/ProfilePage/screens/profile_screen.dart';
 
 class LayoutModules extends StatefulWidget {

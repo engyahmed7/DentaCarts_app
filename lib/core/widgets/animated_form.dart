@@ -108,6 +108,10 @@ class _AnimatedFormState extends State<AnimatedForm> {
       );
 
       if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print("Token: ${responseData['token']}");
+
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -119,7 +123,7 @@ class _AnimatedFormState extends State<AnimatedForm> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LayoutModules()),
+          MaterialPageRoute(builder: (context) => const LayoutModules()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
