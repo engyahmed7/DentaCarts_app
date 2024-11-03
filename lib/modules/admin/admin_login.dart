@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/modules/admin/admin_register.dart';
-import 'package:flutter_application_1/modules/admin/product-page.dart';
+import 'package:DentaCarts/modules/admin/admin_register.dart';
+import 'package:DentaCarts/modules/admin/product-page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

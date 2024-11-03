@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/modules/HomePage/widgets/carousel_slider.dart';
-import 'package:flutter_application_1/modules/HomePage/widgets/category_list.dart';
-import 'package:flutter_application_1/modules/HomePage/widgets/product_list.dart';
-import 'package:flutter_application_1/modules/HomePage/widgets/search_bar.dart';
-import 'package:flutter_application_1/modules/HomePage/widgets/section_header.dart';
+import 'package:DentaCarts/modules/HomePage/widgets/carousel_slider.dart';
+import 'package:DentaCarts/modules/HomePage/widgets/category_list.dart';
+import 'package:DentaCarts/modules/HomePage/widgets/product_list.dart';
+import 'package:DentaCarts/modules/HomePage/widgets/search_bar.dart';
+import 'package:DentaCarts/modules/HomePage/widgets/section_header.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({

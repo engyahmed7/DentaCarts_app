@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Layout/layout_modules.dart';
-import 'package:flutter_application_1/modules/Login/Screens/login_screen.dart';
-import 'package:flutter_application_1/modules/admin/admin_login.dart';
+import 'package:DentaCarts/Layout/layout_modules.dart';
+import 'package:DentaCarts/modules/Login/Screens/login_screen.dart';
+import 'package:DentaCarts/modules/admin/admin_login.dart';
 
 class LayoutScreen extends StatelessWidget {
   const LayoutScreen({super.key});

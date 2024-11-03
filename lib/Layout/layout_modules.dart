@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/modules/CartPage/Screens/cart_screen.dart';
-import 'package:flutter_application_1/modules/HomePage/home_screen.dart';
-import 'package:flutter_application_1/modules/ProfilePage/screens/profile_screen.dart';
+import 'package:DentaCarts/modules/CartPage/Screens/cart_screen.dart';
+import 'package:DentaCarts/modules/HomePage/home_screen.dart';
+import 'package:DentaCarts/modules/ProfilePage/screens/profile_screen.dart';
 
 class LayoutModules extends StatefulWidget {
   const LayoutModules({super.key});

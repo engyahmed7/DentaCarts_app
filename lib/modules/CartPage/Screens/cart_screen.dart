@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/core/widgets/product_card.dart';
-import 'package:flutter_application_1/modules/PaymentGetway/payment_getway_screen.dart';
+import 'package:DentaCarts/core/widgets/product_card.dart';
+import 'package:DentaCarts/modules/PaymentGetway/payment_getway_screen.dart';
 import 'package:http/http.dart' as http;
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});

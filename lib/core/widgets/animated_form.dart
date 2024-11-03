@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Layout/layout_modules.dart';
+import 'package:DentaCarts/Layout/layout_modules.dart';
+import 'package:DentaCarts/controller/Auth/auth_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'login_button.dart';
@@ -34,121 +36,123 @@ class _AnimatedFormState extends State<AnimatedForm> {
   bool showRegisterPassword = false;
   bool showConfirmPassword = false;
 
-  Future<void> registerUser() async {
-    if (registerPasswordController.text != confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Passwords do not match")),
-      );
-      return;
-    }
+  // Future<void> registerUser() async {
+  //   if (registerPasswordController.text != confirmPasswordController.text) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Passwords do not match")),
+  //     );
+  //     return;
+  //   }
+  //
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse('http://localhost:3000/signup'),
+  //       headers: {"Content-Type": "application/json"},
+  //       body: jsonEncode({
+  //         "username": registerNameController.text,
+  //         "email": registerEmailController.text,
+  //         "password": registerPasswordController.text,
+  //         "gender": "male",
+  //       }),
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text(
+  //             "Registered Successfully. Please login.",
+  //             style: TextStyle(color: Colors.green),
+  //           ),
+  //         ),
+  //       );
+  //       setState(() {
+  //         widget.isExistingUser = true;
+  //       });
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text("Registration Failed: ${response.body}"),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text("An error occurred: $e"),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //   } finally {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
+  //
+  // Future<void> loginUser() async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse('http://localhost:3000/login'),
+  //       headers: {"Content-Type": "application/json"},
+  //       body: jsonEncode({
+  //         "email": loginEmailController.text,
+  //         "password": loginPasswordController.text,
+  //       }),
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       final responseData = jsonDecode(response.body);
+  //       print("Token: ${responseData['token']}");
+  //
+  //
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text(
+  //             "Logged in Successfully",
+  //             style: TextStyle(color: Colors.white),
+  //           ),
+  //           backgroundColor: Colors.green,
+  //         ),
+  //       );
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => const LayoutModules()),
+  //       );
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text("Login Failed: ${response.body}"),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text("An error occurred: $e"),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //   } finally {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
 
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      final response = await http.post(
-        Uri.parse('http://localhost:3000/signup'),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "username": registerNameController.text,
-          "email": registerEmailController.text,
-          "password": registerPasswordController.text,
-          "gender": "male",
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "Registered Successfully. Please login.",
-              style: TextStyle(color: Colors.green),
-            ),
-          ),
-        );
-        setState(() {
-          widget.isExistingUser = true;
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Registration Failed: ${response.body}"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("An error occurred: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  Future<void> loginUser() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      final response = await http.post(
-        Uri.parse('http://localhost:3000/login'),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "email": loginEmailController.text,
-          "password": loginPasswordController.text,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        print("Token: ${responseData['token']}");
-
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "Logged in Successfully",
-              style: TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LayoutModules()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Login Failed: ${response.body}"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("An error occurred: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    AuthCubit authCubit = BlocProvider.of<AuthCubit>(context);
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       transitionBuilder: (Widget child, Animation<double> animation) {
@@ -165,15 +169,15 @@ class _AnimatedFormState extends State<AnimatedForm> {
           ),
           child: Column(
             children: widget.isExistingUser
-                ? _buildLoginForm()
-                : _buildRegisterForm(),
+                ? _buildLoginForm(authCubit)
+                : _buildRegisterForm(authCubit),
           ),
         ),
       ),
     );
   }
 
-  List<Widget> _buildLoginForm() {
+  List<Widget> _buildLoginForm(authCubit) {
     return [
       const SizedBox(height: 30),
       CustomTextField("Email Address", Icons.email, false,
@@ -197,13 +201,13 @@ class _AnimatedFormState extends State<AnimatedForm> {
       const SizedBox(height: 20),
       LoginButton(
         text: "LOGIN",
-        onPressed: isLoading ? () {} : loginUser,
+        onPressed: isLoading ? () {} : authCubit.loginUser,
         child: isLoading ? const CircularProgressIndicator() : null,
       ),
     ];
   }
 
-  List<Widget> _buildRegisterForm() {
+  List<Widget> _buildRegisterForm(authCubit) {
     return [
       const SizedBox(height: 30),
       CustomTextField("Full Name", Icons.person, false,
@@ -246,7 +250,7 @@ class _AnimatedFormState extends State<AnimatedForm> {
       const SizedBox(height: 20),
       LoginButton(
         text: "REGISTER",
-        onPressed: isLoading ? null : registerUser,
+        onPressed: isLoading ? null : authCubit.registerUser,
         child: isLoading ? const CircularProgressIndicator() : null,
       ),
     ];

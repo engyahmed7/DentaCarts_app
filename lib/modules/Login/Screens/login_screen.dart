@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/core/widgets/animated_form.dart';
-import 'package:flutter_application_1/core/widgets/illustration.dart';
-import 'package:flutter_application_1/core/widgets/tab_selector.dart';
+import 'package:DentaCarts/core/widgets/animated_form.dart';
+import 'package:DentaCarts/core/widgets/illustration.dart';
+import 'package:DentaCarts/core/widgets/tab_selector.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
