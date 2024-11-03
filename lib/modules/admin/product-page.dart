@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:html' as html;
+// import 'dart:html' as html;
 import 'package:fl_chart/fl_chart.dart';
 
 void main() {
@@ -109,24 +109,24 @@ class _ProductFormState extends State<ProductForm> {
   String? imageUrl;
   bool _isLoading = false;
 
-  void _pickImage() async {
-    final input = html.FileUploadInputElement()..accept = 'image/*';
-    input.click();
-
-    input.onChange.listen((event) {
-      final file = input.files?.first;
-      if (file != null) {
-        final reader = html.FileReader();
-        reader.readAsDataUrl(file);
-
-        reader.onLoadEnd.listen((event) {
-          setState(() {
-            imageUrl = reader.result as String;
-          });
-        });
-      }
-    });
-  }
+  // void _pickImage() async {
+  //   final input = html.FileUploadInputElement()..accept = 'image/*';
+  //   input.click();
+  //
+  //   input.onChange.listen((event) {
+  //     final file = input.files?.first;
+  //     if (file != null) {
+  //       final reader = html.FileReader();
+  //       reader.readAsDataUrl(file);
+  //
+  //       reader.onLoadEnd.listen((event) {
+  //         setState(() {
+  //           imageUrl = reader.result as String;
+  //         });
+  //       });
+  //     }
+  //   });
+  // }
 
   Future<void> _submitProduct() async {
     setState(() {
@@ -266,7 +266,7 @@ class _ProductFormState extends State<ProductForm> {
             const SizedBox(height: 10),
             Center(
               child: ElevatedButton.icon(
-                onPressed: _pickImage,
+                onPressed: (){},//_pickImage,
                 icon: const Icon(Icons.camera_alt),
                 label: const Text('Pick Image'),
               ),
