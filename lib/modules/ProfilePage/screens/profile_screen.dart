@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:DentaCarts/modules/Login/Screens/login_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/userModel.dart';
 import '../../../services/api_service.dart';
+import '../../../controller/Auth/auth_cubit.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -24,9 +25,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> loadUserProfile() async {
-    String token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFkOTUyOTcyMGNlZTM5OTQ5NWY0ZiIsImVtYWlsIjoiZW5nZ3k0QGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwidXNlcm5hbWUiOiJlbmd5eTMiLCJ2ZXJpZmllZCI6dHJ1ZSwiaWF0IjoxNzMwMjgyMDA3LCJleHAiOjE3MzAzNjg0MDd9.J_2ksmDqYfBS15f055twUJt78Afvp0NlTofJs_NjU2U';
-    userProfile = apiService.getUserProfile(token);
+    final authCubit = BlocProvider.of<AuthCubit>(context);
+    userProfile = apiService.getUserProfile(authCubit.token);
   }
 
   void _showUpdateProfileDialog(User user) {
@@ -37,36 +37,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Update Profile'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
+        title: const Text('Update Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: usernameController,
+              decoration: const InputDecoration(
+                labelText: 'Username',
+                border: OutlineInputBorder(),
+                icon: Icon(Icons.person),
               ),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+                icon: Icon(Icons.email),
               ),
-              TextField(
-                controller: imageController,
-                decoration: const InputDecoration(labelText: 'Image URL'),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: imageController,
+              decoration: const InputDecoration(
+                labelText: 'Image URL',
+                border: OutlineInputBorder(),
+                icon: Icon(Icons.image),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           ElevatedButton(
-            onPressed: () {
-              updateProfile();
+            onPressed: () async {
+              await updateProfile();
               Navigator.pop(context);
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueAccent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
             child: const Text('Update'),
           ),
         ],
@@ -75,10 +88,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> updateProfile() async {
+    final authCubit = BlocProvider.of<AuthCubit>(context);
     try {
-      String token =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFkOTUyOTcyMGNlZTM5OTQ5NWY0ZiIsImVtYWlsIjoiZW5nZ3k0QGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwidXNlcm5hbWUiOiJlbmd5eTMiLCJ2ZXJpZmllZCI6dHJ1ZSwiaWF0IjoxNzMwMjgyMDA3LCJleHAiOjE3MzAzNjg0MDd9.J_2ksmDqYfBS15f055twUJt78Afvp0NlTofJs_NjU2U';
-      bool success = await apiService.updateUserProfile(token, {
+      bool success = await apiService.updateUserProfile(authCubit.token, {
         'username': usernameController.text,
         'email': emailController.text,
         'image': imageController.text,
@@ -99,17 +111,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _handleLogout() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-      (route) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: FutureBuilder<User?>(
         future: userProfile,
         builder: (context, snapshot) {
@@ -132,50 +137,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               children: [
                 CircleAvatar(
-                  radius: 60,
+                  radius: 80,
                   backgroundImage: NetworkImage(user.image),
+                  backgroundColor: Colors.grey.shade200,
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  user.username,
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
-                ),
+                Text(user.username, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.teal)),
                 const SizedBox(height: 8),
-                Text(
-                  user.email,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                Text(user.email, style: const TextStyle(fontSize: 18, color: Colors.grey)),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => _showUpdateProfileDialog(user),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                    textStyle: const TextStyle(fontSize: 18),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                    child: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
                 ),
-                const SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => _showUpdateProfileDialog(user),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 30),
-                        backgroundColor: Colors.pink,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: const Text("Update Profile"),
-                    ),
-                    const SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: _handleLogout,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 30),
-                        backgroundColor: Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: const Text("Logout"),
-                    ),
-                  ],
+                const SizedBox(height: 24),
+                Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: ListTile(
+                    leading: const Icon(Icons.shopping_cart, color: Colors.teal),
+                    title: const Text('Order History', style: TextStyle(fontSize: 18)),
+                    subtitle: const Text('View your previous orders'),
+                    onTap: () {
+                    },
+                  ),
+                ),
+                Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: ListTile(
+                    leading: const Icon(Icons.favorite, color: Colors.red),
+                    title: const Text('Favorites', style: TextStyle(fontSize: 18)),
+                    subtitle: const Text('View your favorite dental products'),
+                    onTap: () {
+                    },
+                  ),
+                ),
+                Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: ListTile(
+                    leading: const Icon(Icons.account_balance_wallet, color: Colors.teal),
+                    title: const Text('Wallet', style: TextStyle(fontSize: 18)),
+                    subtitle: const Text('Manage your payment methods'),
+                    onTap: () {
+                    },
+                  ),
                 ),
               ],
             ),
@@ -183,13 +196,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    usernameController.dispose();
-    emailController.dispose();
-    imageController.dispose();
-    super.dispose();
   }
 }

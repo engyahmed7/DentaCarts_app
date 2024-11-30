@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:DentaCarts/Layout/layout_modules.dart';
@@ -9,10 +8,9 @@ part 'auth_state.dart';
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial());
 
-
   String token = "";
 
-  Future<void> loginUser(loginEmailController,loginPasswordController,context) async {
+  Future<void> loginUser(loginEmailController, loginPasswordController, context) async {
     emit(AuthLoginLoadingState());
     try {
       final response = await http.post(
@@ -26,39 +24,22 @@ class AuthCubit extends Cubit<AuthState> {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        debugPrint("Token: ${responseData['token']}");
-
+        token = responseData['token'];
+        debugPrint(token);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "Logged in Successfully",
-              style: TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.green,
-          ),
+          const SnackBar(content: Text("Logged in Successfully"), backgroundColor: Colors.green),
         );
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const LayoutModules()),
         );
         emit(AuthLoginSuccessState());
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Login Failed: ${response.body}"),
-            backgroundColor: Colors.red,
-          ),
-        );
         emit(AuthLoginErrorState(error: response.body));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("An error occurred: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
       emit(AuthLoginErrorState(error: e.toString()));
     }
   }

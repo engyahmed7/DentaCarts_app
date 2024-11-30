@@ -36,32 +36,34 @@ class _LoginScreenState extends State<LoginScreen>
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: SingleChildScrollView(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              children: [
-                const Spacer(flex: 1),
-                const Illustration(),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 50,
-                  child: TabSelector(
-                    isExistingUser: isExistingUser,
-                    onToggle: toggleForm,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                AnimatedForm(
-                  isExistingUser: isExistingUser,
-                  animation: _animation,
-                ),
-                const Spacer(flex: 2),
-              ],
+  child: SingleChildScrollView(
+    child: ConstrainedBox(
+      constraints: BoxConstraints(
+        minHeight: MediaQuery.of(context).size.height,
+      ),
+      child: IntrinsicHeight(
+        child: Column(
+          children: [
+            const Spacer(flex: 1),
+            const Illustration(),
+            const SizedBox(height: 20),
+            TabSelector(
+              isExistingUser: isExistingUser,
+              onToggle: toggleForm,
             ),
-          ),
+            const SizedBox(height: 20),
+            AnimatedForm(
+              isExistingUser: isExistingUser,
+              animation: _animation,
+            ),
+            const Spacer(flex: 2),
+          ],
         ),
       ),
+    ),
+  ),
+),
+
     );
   }
 }
