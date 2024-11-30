@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:DentaCarts/constants/app_exports.dart';
 import 'package:DentaCarts/modules/admin/admin_register.dart';
-import 'package:DentaCarts/modules/admin/product-page.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+
 
 void main() {
   runApp(const AdminAuthApp());
@@ -43,50 +41,16 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     setState(() {
       _isLoading = true;
     });
+    context.read<AuthCubit>().loginUser(
+      _emailController,
+      _passwordController,
+      context,
+      isAdmin: true,
+    );
 
-    try {
-      final response = await http.post(
-        Uri.parse('https://json-placeholder.mock.beeceptor.com/login'),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          'username': _emailController.text,
-          'password': _passwordController.text,
-        }),
-      );
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login successful!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const ProductAdminPanel()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login failed , Please check your credentials.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (error) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error occurred: $error'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override

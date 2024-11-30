@@ -85,18 +85,17 @@ class _AnimatedFormState extends State<AnimatedForm> {
         ),
       ),
       const SizedBox(height: 20),
-     LoginButton(
-  text: "LOGIN",
-  onPressed: isLoading
-      ? () {}
-      : () => authCubit.loginUser(
-            loginEmailController,
-            loginPasswordController,
-            context,
-          ),
-  child: isLoading ? const CircularProgressIndicator() : null,
-),
-
+      LoginButton(
+        text: "LOGIN",
+        onPressed: isLoading
+            ? () {}
+            : () => authCubit.loginUser(
+                  loginEmailController,
+                  loginPasswordController,
+                  context,
+                ),
+        child: isLoading ? const CircularProgressIndicator() : null,
+      ),
     ];
   }
 
@@ -142,19 +141,18 @@ class _AnimatedFormState extends State<AnimatedForm> {
       ),
       const SizedBox(height: 20),
       LoginButton(
-  text: "REGISTER",
-  onPressed: isLoading
-      ? null
-      : () => authCubit.registerUser(
-            registerPasswordController,
-            confirmPasswordController,
-            registerNameController,
-            registerEmailController,
-            context,
-          ),
-  child: isLoading ? const CircularProgressIndicator() : null,
-),
-
+        text: "REGISTER",
+        onPressed: isLoading
+            ? null
+            : () => authCubit.registerUser(
+                  registerPasswordController,
+                  confirmPasswordController,
+                  registerNameController,
+                  registerEmailController,
+                  context,
+                ),
+        child: isLoading ? const CircularProgressIndicator() : null,
+      ),
     ];
   }
 }

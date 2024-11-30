@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:DentaCarts/modules/admin/product-page.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:DentaCarts/Layout/layout_modules.dart';
@@ -10,7 +11,10 @@ class AuthCubit extends Cubit<AuthState> {
 
   String token = "";
 
-  Future<void> loginUser(loginEmailController, loginPasswordController, context) async {
+  Future<void> loginUser(loginEmailController, loginPasswordController, context,{
+    bool isAdmin = false,
+  }) async {
+    
     emit(AuthLoginLoadingState());
     try {
       final response = await http.post(
@@ -33,7 +37,7 @@ class AuthCubit extends Cubit<AuthState> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const LayoutModules()),
+          MaterialPageRoute(builder: (context) => isAdmin ? const ProductAdminPanel() : const LayoutModules()),
         );
         emit(AuthLoginSuccessState());
       } else {

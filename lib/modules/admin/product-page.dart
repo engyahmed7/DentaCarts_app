@@ -4,6 +4,13 @@ import 'dart:convert';
 // import 'dart:html' as html;
 import 'package:fl_chart/fl_chart.dart';
 
+import 'package:image_picker_web/image_picker_web.dart';
+import 'dart:typed_data';
+import 'package:http_parser/http_parser.dart';
+import '../../controller/Auth/auth_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+
 void main() {
   runApp(const ProductAdminPanel());
 }
@@ -94,8 +101,11 @@ class _ProductAdminPanelState extends State<ProductAdminPanel> {
   }
 }
 
+
+
+
 class ProductForm extends StatefulWidget {
-  const ProductForm({super.key});
+  const ProductForm({Key? key}) : super(key: key);
 
   @override
   _ProductFormState createState() => _ProductFormState();
@@ -106,69 +116,82 @@ class _ProductFormState extends State<ProductForm> {
   final _titleController = TextEditingController();
   final _descController = TextEditingController();
   final _priceController = TextEditingController();
-  String? imageUrl;
+  final _categoryController = TextEditingController();
+  final _stockController = TextEditingController();
+  Uint8List? _imageData;
   bool _isLoading = false;
 
-  // void _pickImage() async {
-  //   final input = html.FileUploadInputElement()..accept = 'image/*';
-  //   input.click();
-  //
-  //   input.onChange.listen((event) {
-  //     final file = input.files?.first;
-  //     if (file != null) {
-  //       final reader = html.FileReader();
-  //       reader.readAsDataUrl(file);
-  //
-  //       reader.onLoadEnd.listen((event) {
-  //         setState(() {
-  //           imageUrl = reader.result as String;
-  //         });
-  //       });
-  //     }
-  //   });
-  // }
-
-  Future<void> _submitProduct() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    if (_formKey.currentState!.validate()) {
-      final productData = {
-        'title': _titleController.text,
-        'description': _descController.text,
-        'price': _priceController.text,
-        'image': imageUrl,
-        'userId': '1',
-      };
-
-      final response = await http.post(
-        Uri.parse('https://dummyjson.com/posts/add'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(productData),
-      );
-
+  Future<void> _pickImage() async {
+    final Uint8List? bytesFromPicker = await ImagePickerWeb.getImageAsBytes();
+    if (bytesFromPicker != null) {
       setState(() {
-        _isLoading = false;
+        _imageData = bytesFromPicker;
       });
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Product added successfully!'),
-            backgroundColor: Colors.teal,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to add product. Error: ${response.body}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
     }
   }
+
+Future<void> _submitProduct() async {
+  final authCubit = BlocProvider.of<AuthCubit>(context); 
+  setState(() {
+    _isLoading = true;
+  });
+
+  if (_formKey.currentState!.validate() && _imageData != null) {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('http://localhost:3000/products/'),
+    );
+    request.fields['title'] = _titleController.text;
+    request.fields['description'] = _descController.text;
+    request.fields['price'] = _priceController.text;
+    request.fields['category'] = _categoryController.text;
+    request.fields['stock'] = _stockController.text;
+
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'image',  
+        _imageData!, 
+        filename: 'product_image.png',  
+        contentType: MediaType('image', 'png'), 
+      ),
+    );
+    request.headers['Authorization'] = 'Bearer ${authCubit.token}'; 
+
+    debugPrint('Request fields: ${request.fields}');
+    debugPrint('Product token: ${authCubit.token}');
+
+    final response = await request.send();
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Product added successfully!'),
+          backgroundColor: Colors.teal,
+        ),
+      );
+    } else {
+      final responseBody = await response.stream.bytesToString();
+      debugPrint('Error response: $responseBody');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to add product.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please select an image.'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -237,50 +260,59 @@ class _ProductFormState extends State<ProductForm> {
               },
             ),
             const SizedBox(height: 20),
-            if (imageUrl != null)
-              Center(
-                child: Container(
-                  height: 150,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    image: DecorationImage(
-                      image: NetworkImage(imageUrl!),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              )
-            else
-              Center(
-                child: Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.image, size: 50, color: Colors.grey),
-                ),
+            TextFormField(
+              controller: _categoryController,
+              decoration: const InputDecoration(
+                labelText: 'Category',
+                filled: true,
+                prefixIcon: Icon(Icons.category, color: Colors.teal),
               ),
-            const SizedBox(height: 10),
-            Center(
-              child: ElevatedButton.icon(
-                onPressed: (){},//_pickImage,
-                icon: const Icon(Icons.camera_alt),
-                label: const Text('Pick Image'),
-              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the category';
+                }
+                return null;
+              },
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: _stockController,
+              decoration: const InputDecoration(
+                labelText: 'Stock Quantity',
+                filled: true,
+                prefixIcon: Icon(Icons.storage, color: Colors.teal),
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the stock quantity';
+                }
+                if (int.tryParse(value) == null) {
+                  return 'Please enter a valid integer';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _pickImage,
+              child: const Text('Select Image'),
+            ),
+            const SizedBox(height: 20),
+            if (_imageData != null)
+              Image.memory(
+                _imageData!,
+                height: 150,
+                width: 150,
+                fit: BoxFit.cover,
+              ),
+            const SizedBox(height: 20),
             if (_isLoading)
               const Center(child: CircularProgressIndicator())
             else
               Center(
                 child: ElevatedButton(
                   onPressed: _submitProduct,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(300, 50),
-                  ),
                   child: const Text('Submit Product'),
                 ),
               ),
@@ -290,6 +322,10 @@ class _ProductFormState extends State<ProductForm> {
     );
   }
 }
+
+
+
+
 
 class ManageProductsPage extends StatefulWidget {
   const ManageProductsPage({super.key});

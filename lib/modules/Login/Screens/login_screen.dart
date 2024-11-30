@@ -19,15 +19,18 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void initState() {
     super.initState();
-    _animationController =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
-    _animation = CurvedAnimation(parent: _animationController, curve: Curves.easeInOut);
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
+    _animation =
+        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut);
   }
 
   void toggleForm(bool existing) {
     setState(() {
       isExistingUser = existing;
-      existing ? _animationController.reverse() : _animationController.forward();
+      existing
+          ? _animationController.reverse()
+          : _animationController.forward();
     });
   }
 
@@ -36,34 +39,33 @@ class _LoginScreenState extends State<LoginScreen>
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-  child: SingleChildScrollView(
-    child: ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: MediaQuery.of(context).size.height,
-      ),
-      child: IntrinsicHeight(
-        child: Column(
-          children: [
-            const Spacer(flex: 1),
-            const Illustration(),
-            const SizedBox(height: 20),
-            TabSelector(
-              isExistingUser: isExistingUser,
-              onToggle: toggleForm,
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
             ),
-            const SizedBox(height: 20),
-            AnimatedForm(
-              isExistingUser: isExistingUser,
-              animation: _animation,
+            child: IntrinsicHeight(
+              child: Column(
+                children: [
+                  const Spacer(flex: 1),
+                  const Illustration(),
+                  const SizedBox(height: 20),
+                  TabSelector(
+                    isExistingUser: isExistingUser,
+                    onToggle: toggleForm,
+                  ),
+                  const SizedBox(height: 20),
+                  AnimatedForm(
+                    isExistingUser: isExistingUser,
+                    animation: _animation,
+                  ),
+                  const Spacer(flex: 2),
+                ],
+              ),
             ),
-            const Spacer(flex: 2),
-          ],
+          ),
         ),
       ),
-    ),
-  ),
-),
-
     );
   }
 }
