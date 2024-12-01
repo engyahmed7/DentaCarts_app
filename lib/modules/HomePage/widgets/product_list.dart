@@ -28,7 +28,7 @@ class _ProductListState extends State<ProductList> {
         headers: {'Authorization': 'Bearer ${authCubit.token}'}
       );
       
-      debugPrint('HomeScreen: ${json.decode(response.body)}');
+      // debugPrint('HomeScreen: ${json.decode(response.body)}');
 
       if (response.statusCode == 200) {
         setState(() {
@@ -56,13 +56,20 @@ class _ProductListState extends State<ProductList> {
         scrollDirection: Axis.horizontal,
         itemCount: products.length,
         itemBuilder: (context, index) {
+          String prodId = products[index]['_id'] ?? '';
+          debugPrint('ProductList: ${products[index]['_id']}');
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: ProductCard(
+              prodId: prodId,
               cartDesign: false,
               name: products[index]['title'],
               price: products[index]['price'].toString(),
-              imageUrl: products[index]['image'][0], 
+              imageUrl: products[index]['image'][0],
+              qty: 1, 
+              onIncrement: () {},
+              onDecrement: () {},
+              onRemove: () {},
             ),
           );
         },
