@@ -14,11 +14,35 @@ class ProductList extends StatefulWidget {
 class _ProductListState extends State<ProductList> {
   List<dynamic> products = [];
   List<Map<String, dynamic>> cart = [];
+  Set<String> favoriteProducts = {};
 
   @override
   void initState() {
     super.initState();
     fetchProducts();
+    fetchFavorites();
+  }
+
+  Future<void> fetchFavorites() async {
+    final authCubit = BlocProvider.of<AuthCubit>(context);
+    try {
+      final response = await http.get(
+        Uri.parse('http://localhost:3000/favorites'),
+        headers: {
+          'Authorization': 'Bearer ${authCubit.token}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> favorites = json.decode(response.body)['wishList'];
+        setState(() {
+          favoriteProducts =
+              favorites.map((f) => f['productId'].toString()).toSet();
+        });
+      }
+    } catch (e) {
+      debugPrint("Error fetching favorites: $e");
+    }
   }
 
   Future<void> fetchProducts() async {
@@ -105,6 +129,34 @@ class _ProductListState extends State<ProductList> {
     });
   }
 
+  Future<void> toggleFavorite(String productId) async {
+    final authCubit = BlocProvider.of<AuthCubit>(context);
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:3000/wishlist/toggle/'),
+        body: json.encode({'productId': productId}),
+        headers: {
+          'Authorization': 'Bearer ${authCubit.token}',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Added to favorites!')),
+        );
+      } else if (response.statusCode == 204) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Removed from favorites')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating favorites: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (products.isEmpty) {
@@ -129,6 +181,7 @@ class _ProductListState extends State<ProductList> {
                 price: products[index]['price'].toString(),
                 imageUrl: products[index]['image'][0],
                 qty: 1,
+                isFavorite: favoriteProducts.contains(prodId), 
                 onIncrement: () => addToCart(
                   prodId,
                   products[index]['title'],
@@ -143,6 +196,16 @@ class _ProductListState extends State<ProductList> {
                   products[index]['price'],
                   products[index]['image'][0],
                 ),
+                onFavoritePress: () {
+                  setState(() {
+                    if (favoriteProducts.contains(prodId)) {
+                      favoriteProducts.remove(prodId);
+                    } else {
+                      favoriteProducts.add(prodId);
+                    }
+                  });
+                  toggleFavorite(prodId);
+                },
               ));
         },
       ),

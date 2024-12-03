@@ -154,10 +154,37 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     if (products.isEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.shopping_cart_outlined,
+              size: 80,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Your cart is empty',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Time to fill it with amazing products!',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[500],
+              ),
+            ),
+          ],
+        ),
       );
     }
+
     double totalPrice = calculateTotalPrice();
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -176,6 +203,7 @@ class _CartScreenState extends State<CartScreen> {
                     imageUrl: products[index]['img'],
                     prodId: products[index]['productId'],
                     qty: products[index]['qty'],
+                    isFavorite: false,
                     addToCart: () {},
                     onIncrement: () {
                       increaseQuantity(
@@ -188,6 +216,7 @@ class _CartScreenState extends State<CartScreen> {
                     onRemove: () {
                       removeFromCart(products[index]['productId']);
                     },
+                    onFavoritePress: () {},
                   ),
                 );
               },

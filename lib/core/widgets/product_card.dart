@@ -10,11 +10,13 @@ class ProductCard extends StatefulWidget {
   final String imageUrl;
   final String prodId;
   final bool cartDesign;
+  final bool isFavorite;
   final int qty;
   final VoidCallback addToCart;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
   final VoidCallback onRemove;
+  final VoidCallback onFavoritePress;
 
   const ProductCard({
     super.key,
@@ -28,6 +30,8 @@ class ProductCard extends StatefulWidget {
     required this.imageUrl,
     required this.prodId,
     required this.cartDesign,
+    required this.onFavoritePress,
+    required this.isFavorite,
   });
 
   @override
@@ -35,6 +39,8 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
+  bool isFavorite = false;
+
   @override
   Widget build(BuildContext context) {
     if (widget.cartDesign) {
@@ -159,6 +165,15 @@ class _ProductCardState extends State<ProductCard> {
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.teal,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: widget.onFavoritePress,
+                          icon: Icon(
+                            widget.isFavorite
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: Colors.red,
                           ),
                         ),
                         IconButton(

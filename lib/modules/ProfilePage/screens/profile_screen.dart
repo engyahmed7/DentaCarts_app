@@ -1,3 +1,4 @@
+import 'package:DentaCarts/modules/wishlist_screen/wishlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/userModel.dart';
@@ -37,7 +38,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Update Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Update Profile',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -70,7 +72,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () async {
               await updateProfile();
@@ -78,7 +82,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blueAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
             child: const Text('Update'),
           ),
@@ -142,30 +147,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   backgroundColor: Colors.grey.shade200,
                 ),
                 const SizedBox(height: 16),
-                Text(user.username, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.teal)),
+                Text(user.username,
+                    style: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal)),
                 const SizedBox(height: 8),
-                Text(user.email, style: const TextStyle(fontSize: 18, color: Colors.grey)),
+                Text(user.email,
+                    style: const TextStyle(fontSize: 18, color: Colors.grey)),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => _showUpdateProfileDialog(user),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 14),
                     textStyle: const TextStyle(fontSize: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
-                    child: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
+                  child: const Text('Edit Profile',
+                      style: TextStyle(color: Colors.white)),
                 ),
                 const SizedBox(height: 24),
                 Card(
                   elevation: 4,
                   margin: const EdgeInsets.symmetric(vertical: 10),
                   child: ListTile(
-                    leading: const Icon(Icons.shopping_cart, color: Colors.teal),
-                    title: const Text('Order History', style: TextStyle(fontSize: 18)),
+                    leading:
+                        const Icon(Icons.shopping_cart, color: Colors.teal),
+                    title: const Text('Order History',
+                        style: TextStyle(fontSize: 18)),
                     subtitle: const Text('View your previous orders'),
-                    onTap: () {
-                    },
+                    onTap: () {},
                   ),
                 ),
                 Card(
@@ -173,9 +187,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   margin: const EdgeInsets.symmetric(vertical: 10),
                   child: ListTile(
                     leading: const Icon(Icons.favorite, color: Colors.red),
-                    title: const Text('Favorites', style: TextStyle(fontSize: 18)),
+                    title:
+                        const Text('Favorites', style: TextStyle(fontSize: 18)),
                     subtitle: const Text('View your favorite dental products'),
                     onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const FavoritesScreen()),
+                      );
                     },
                   ),
                 ),
@@ -183,11 +203,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   elevation: 4,
                   margin: const EdgeInsets.symmetric(vertical: 10),
                   child: ListTile(
-                    leading: const Icon(Icons.account_balance_wallet, color: Colors.teal),
+                    leading: const Icon(Icons.account_balance_wallet,
+                        color: Colors.teal),
                     title: const Text('Wallet', style: TextStyle(fontSize: 18)),
                     subtitle: const Text('Manage your payment methods'),
-                    onTap: () {
-                    },
+                    onTap: () {},
                   ),
                 ),
               ],
