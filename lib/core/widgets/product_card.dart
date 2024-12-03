@@ -168,21 +168,30 @@ class _ProductCardState extends State<ProductCard> {
                           ),
                         ),
                         IconButton(
-                          onPressed: widget.onFavoritePress,
-                          icon: Icon(
-                            widget.isFavorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: Colors.red,
-                          ),
-                        ),
-                        IconButton(
                           onPressed: widget.onIncrement,
                           icon: const Icon(Icons.add_shopping_cart),
                         ),
                       ],
                     ),
                   ],
+                ),
+              ),
+              Positioned(
+                top: 8,
+                left: 8,
+                child: CircleAvatar(
+                  radius: 15,
+                  backgroundColor: Colors.white,
+                  child: IconButton(
+                    onPressed: widget.onFavoritePress,
+                    icon: Icon(
+                      widget.isFavorite
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: Colors.red,
+                      size: 18,
+                    ),
+                  ),
                 ),
               ),
             ],

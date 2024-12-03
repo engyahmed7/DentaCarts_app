@@ -27,14 +27,16 @@ class _ProductListState extends State<ProductList> {
     final authCubit = BlocProvider.of<AuthCubit>(context);
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:3000/favorites'),
+        Uri.parse('http://localhost:3000/wishlist/'),
         headers: {
           'Authorization': 'Bearer ${authCubit.token}',
         },
       );
 
+      debugPrint("Favorites fetched: ${response.body}");
+
       if (response.statusCode == 200) {
-        final List<dynamic> favorites = json.decode(response.body)['wishList'];
+        final List<dynamic> favorites = json.decode(response.body);
         setState(() {
           favoriteProducts =
               favorites.map((f) => f['productId'].toString()).toSet();
@@ -67,7 +69,6 @@ class _ProductListState extends State<ProductList> {
 
   void addToCart(
       String productId, String title, dynamic price, String imageUrl) async {
-    debugPrint("Adding product to cart: $productId");
     try {
       final authCubit = BlocProvider.of<AuthCubit>(context);
       final response = await http.post(
@@ -86,7 +87,6 @@ class _ProductListState extends State<ProductList> {
       );
 
       if (response.statusCode == 200) {
-        final responseBody = json.decode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Product added to cart successfully!')),
         );
@@ -142,19 +142,32 @@ class _ProductListState extends State<ProductList> {
       );
 
       if (response.statusCode == 200) {
+        setState(() {
+          favoriteProducts.add(productId);
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Added to favorites!')),
         );
       } else if (response.statusCode == 204) {
+        setState(() {
+          favoriteProducts.remove(productId);
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Removed from favorites')),
         );
       }
+      await fetchFavorites();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error updating favorites: $e')),
       );
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchFavorites();
   }
 
   @override
@@ -173,40 +186,32 @@ class _ProductListState extends State<ProductList> {
         itemBuilder: (context, index) {
           String prodId = products[index]['_id'] ?? '';
           return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: ProductCard(
-                prodId: prodId,
-                cartDesign: false,
-                name: products[index]['title'],
-                price: products[index]['price'].toString(),
-                imageUrl: products[index]['image'][0],
-                qty: 1,
-                isFavorite: favoriteProducts.contains(prodId), 
-                onIncrement: () => addToCart(
-                  prodId,
-                  products[index]['title'],
-                  products[index]['price'],
-                  products[index]['image'][0],
-                ),
-                onDecrement: () => updateCart(prodId, 0),
-                onRemove: () => updateCart(prodId, 0),
-                addToCart: () => addToCart(
-                  prodId,
-                  products[index]['title'],
-                  products[index]['price'],
-                  products[index]['image'][0],
-                ),
-                onFavoritePress: () {
-                  setState(() {
-                    if (favoriteProducts.contains(prodId)) {
-                      favoriteProducts.remove(prodId);
-                    } else {
-                      favoriteProducts.add(prodId);
-                    }
-                  });
-                  toggleFavorite(prodId);
-                },
-              ));
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ProductCard(
+              prodId: prodId,
+              cartDesign: false,
+              name: products[index]['title'],
+              price: products[index]['price'].toString(),
+              imageUrl: products[index]['image'][0],
+              qty: 1,
+              isFavorite: favoriteProducts.contains(prodId),
+              onIncrement: () => addToCart(
+                prodId,
+                products[index]['title'],
+                products[index]['price'],
+                products[index]['image'][0],
+              ),
+              onDecrement: () => updateCart(prodId, 0),
+              onRemove: () => updateCart(prodId, 0),
+              addToCart: () => addToCart(
+                prodId,
+                products[index]['title'],
+                products[index]['price'],
+                products[index]['image'][0],
+              ),
+              onFavoritePress: () => toggleFavorite(prodId),
+            ),
+          );
         },
       ),
     );

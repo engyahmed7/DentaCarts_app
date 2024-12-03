@@ -32,7 +32,7 @@ class _CartScreenState extends State<CartScreen> {
       );
 
       if (response.statusCode == 200) {
-        debugPrint("Products fetched: ${response.body}");
+        // debugPrint("Products fetched: ${response.body}");
         setState(() {
           products = json.decode(response.body);
         });
