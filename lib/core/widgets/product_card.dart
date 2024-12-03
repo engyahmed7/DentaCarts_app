@@ -11,11 +11,14 @@ class ProductCard extends StatefulWidget {
   final String prodId;
   final bool cartDesign;
   final int qty;
+  final VoidCallback addToCart;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
   final VoidCallback onRemove;
 
   const ProductCard({
+    super.key,
+    required this.addToCart,
     required this.onIncrement,
     required this.onDecrement,
     required this.qty,
@@ -24,7 +27,6 @@ class ProductCard extends StatefulWidget {
     required this.price,
     required this.imageUrl,
     required this.prodId,
-    super.key,
     required this.cartDesign,
   });
 

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:DentaCarts/constants/app_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:DentaCarts/core/widgets/product_card.dart';
@@ -45,47 +44,33 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  Future<void> updateQty(int index, int newQty) async {
+  Future<void> removeFromCart(String productId) async {
     final authCubit = BlocProvider.of<AuthCubit>(context);
-
-    try {
-      final response = await http.put(
-        Uri.parse('http://localhost:3000/cart/${products[index]['productId']}'),
-        headers: {'Authorization': 'Bearer ${authCubit.token}'},
-        body: json.encode({
-          'qty': newQty,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        debugPrint("Quantity updated for product: ${products[index]['productId']}");
-      } else {
-        throw Exception('Failed to update product quantity');
-      }
-    } catch (e) {
-      debugPrint("Error updating product quantity: $e");
-    }
-  }
-
-  Future<void> removeProduct(int index) async {
-    final authCubit = BlocProvider.of<AuthCubit>(context);
-
     try {
       final response = await http.delete(
-        Uri.parse('http://localhost:3000/cart/${products[index]['productId']}'),
-        headers: {'Authorization': 'Bearer ${authCubit.token}'},
+        Uri.parse('http://localhost:3000/cart/'),
+        body: json.encode({'productId': productId}),
+        headers: {
+          'Authorization': 'Bearer ${authCubit.token}',
+          'Content-Type': 'application/json',
+        },
       );
-
       if (response.statusCode == 200) {
         setState(() {
-          products.removeAt(index);
+          products.removeWhere((item) => item['productId'] == productId);
         });
-        debugPrint("Product removed from cart");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Item removed from cart')),
+        );
       } else {
-        throw Exception('Failed to remove product');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to remove item: ${response.body}')),
+        );
       }
     } catch (e) {
-      debugPrint("Error removing product: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error removing item: $e')),
+      );
     }
   }
 
@@ -95,6 +80,75 @@ class _CartScreenState extends State<CartScreen> {
       total += product['price'] * product['qty'];
     }
     return total;
+  }
+
+  Future<void> increaseQuantity(String productId, int currentQty) async {
+    final authCubit = BlocProvider.of<AuthCubit>(context);
+    try {
+      final response = await http.put(
+        Uri.parse('http://localhost:3000/cart/'),
+        body: json.encode({'qty': currentQty + 1, 'productId': productId}),
+        headers: {
+          'Authorization': 'Bearer ${authCubit.token}',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          final index =
+              products.indexWhere((item) => item['productId'] == productId);
+          if (index != -1) {
+            products[index]['qty'] = currentQty + 1;
+          }
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to increase quantity')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating quantity: $e')),
+      );
+    }
+  }
+
+  Future<void> decreaseQuantity(String productId, int currentQty) async {
+    if (currentQty <= 1) {
+      removeFromCart(productId);
+      return;
+    }
+
+    final authCubit = BlocProvider.of<AuthCubit>(context);
+    try {
+      final response = await http.put(
+        Uri.parse('http://localhost:3000/cart/'),
+        body: json.encode({'qty': currentQty - 1, 'productId': productId}),
+        headers: {
+          'Authorization': 'Bearer ${authCubit.token}',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          final index =
+              products.indexWhere((item) => item['productId'] == productId);
+          if (index != -1) {
+            products[index]['qty'] = currentQty - 1;
+          }
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to decrease quantity')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating quantity: $e')),
+      );
+    }
   }
 
   @override
@@ -122,22 +176,17 @@ class _CartScreenState extends State<CartScreen> {
                     imageUrl: products[index]['img'],
                     prodId: products[index]['productId'],
                     qty: products[index]['qty'],
+                    addToCart: () {},
                     onIncrement: () {
-                      setState(() {
-                        products[index]['qty']++;
-                      });
-                      updateQty(index, products[index]['qty']);
+                      increaseQuantity(
+                          products[index]['productId'], products[index]['qty']);
                     },
                     onDecrement: () {
-                      setState(() {
-                        if (products[index]['qty'] > 1) {
-                          products[index]['qty']--;
-                        }
-                      });
-                      updateQty(index, products[index]['qty']);
+                      decreaseQuantity(
+                          products[index]['productId'], products[index]['qty']);
                     },
                     onRemove: () {
-                      removeProduct(index);
+                      removeFromCart(products[index]['productId']);
                     },
                   ),
                 );
