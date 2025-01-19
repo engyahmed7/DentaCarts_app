@@ -12,7 +12,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Scaffold(
+        body: SingleChildScrollView(
       child: Column(
         children: [
           const SearchBarr(),
@@ -27,12 +28,11 @@ class HomeScreen extends StatelessWidget {
           const SectionHeader(title: 'Best Seller', actionLabel: 'See More'),
           const ProductList(),
           const SizedBox(height: 24.0),
-          const SectionHeader(
-              title: 'Shop By Vendor', actionLabel: 'See More'),
+          const SectionHeader(title: 'Shop By Vendor', actionLabel: 'See More'),
           const ProductList(),
           const SizedBox(height: 24.0),
         ],
       ),
-    );
+    ));
   }
 }

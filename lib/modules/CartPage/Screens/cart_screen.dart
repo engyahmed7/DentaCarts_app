@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'package:DentaCarts/constants/app_exports.dart';
-import 'package:flutter/material.dart';
 import 'package:DentaCarts/core/widgets/product_card.dart';
 import 'package:DentaCarts/modules/PaymentGetway/payment_getway_screen.dart';
 import 'package:http/http.dart' as http;
-import '../../../controller/Auth/auth_cubit.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});

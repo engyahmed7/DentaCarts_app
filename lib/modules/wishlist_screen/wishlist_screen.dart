@@ -2,7 +2,6 @@ import 'package:DentaCarts/constants/app_exports.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../core/widgets/product_card.dart';
-import '../../controller/Auth/auth_cubit.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});

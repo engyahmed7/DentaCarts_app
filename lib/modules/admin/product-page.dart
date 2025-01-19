@@ -105,7 +105,7 @@ class _ProductAdminPanelState extends State<ProductAdminPanel> {
 
 
 class ProductForm extends StatefulWidget {
-  const ProductForm({Key? key}) : super(key: key);
+  const ProductForm({super.key});
 
   @override
   _ProductFormState createState() => _ProductFormState();

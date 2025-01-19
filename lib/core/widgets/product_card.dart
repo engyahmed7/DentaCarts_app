@@ -1,8 +1,5 @@
-import 'dart:convert';
 import 'package:DentaCarts/constants/app_exports.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import '../../controller/Auth/auth_cubit.dart';
 
 class ProductCard extends StatefulWidget {
   final String name;

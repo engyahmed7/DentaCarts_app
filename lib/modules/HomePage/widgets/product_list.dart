@@ -88,7 +88,7 @@ class _ProductListState extends State<ProductList> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Product added to cart successfully!')),
+          const SnackBar(content: Text('Product added to cart successfully!')),
         );
 
         setState(() {
@@ -102,7 +102,7 @@ class _ProductListState extends State<ProductList> {
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add product to cart')),
+          const SnackBar(content: Text('Failed to add product to cart')),
         );
       }
     } catch (e) {
@@ -146,14 +146,14 @@ class _ProductListState extends State<ProductList> {
           favoriteProducts.add(productId);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Added to favorites!')),
+          const SnackBar(content: Text('Added to favorites!')),
         );
       } else if (response.statusCode == 204) {
         setState(() {
           favoriteProducts.remove(productId);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Removed from favorites')),
+          const SnackBar(content: Text('Removed from favorites')),
         );
       }
       await fetchFavorites();
