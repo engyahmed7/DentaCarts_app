@@ -1,6 +1,8 @@
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/screen/cart_screen.dart';
+import 'package:DentaCarts/screen/home_screen.dart';
+import 'package:DentaCarts/screen/profile_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LayoutScreen extends StatefulWidget {
   final int? currentIndex;
@@ -16,16 +18,13 @@ class _LayoutScreenState extends State<LayoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //Logger().i(BlocProvider.of<AuthCubit>(context).token);
     return Scaffold(
       body: IndexedStack(
         index: currentIndex,
-        children: [
-          // NotificationScreen(),
-          // const OrderScreen(),
-          // const HomeScreen(),
-          // const MyFamilyScreen(),
-          // const MoreScreen(),
+        children: const [
+          HomeScreen(),
+          CartScreen(),
+          ProfileScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -40,9 +39,9 @@ class _LayoutScreenState extends State<LayoutScreen> {
         unselectedItemColor: Colors.grey,
         iconSize: 35,
         elevation: 50,
-        items: [
+        items: const [
           BottomNavigationBarItem(
-            icon: const Padding(
+            icon: Padding(
               padding: EdgeInsets.all(8.0),
               child: Icon(
                 Icons.home,
@@ -51,7 +50,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
             label:  "Home",
           ),
           BottomNavigationBarItem(
-            icon: const Padding(
+            icon: Padding(
               padding: EdgeInsets.all(8.0),
               child: Icon(
                 Icons.shopping_cart,
