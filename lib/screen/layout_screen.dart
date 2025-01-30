@@ -24,7 +24,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
         children:  [
           HomeScreen(),
           CartScreen(),
-          ProfileScreen(),
+          const ProfileScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

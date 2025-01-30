@@ -19,12 +19,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
         title: Text("Payment Methods", style: GoogleFonts.poppins(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            // Navigator.of(context).pop();
-          },
-        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),

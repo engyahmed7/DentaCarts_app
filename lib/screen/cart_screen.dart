@@ -74,6 +74,7 @@ class CartScreen extends StatelessWidget {
                     child: Text("Check out", style: GoogleFonts.poppins(fontSize: 18, color: Colors.white)),
                   ),
                 ),
+
               ],
             ),
           ),
@@ -82,6 +83,8 @@ class CartScreen extends StatelessWidget {
     );
   }
 }
+
+
 
 class CartItemCard extends StatelessWidget {
   final Map<String, dynamic> item;
