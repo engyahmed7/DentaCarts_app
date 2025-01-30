@@ -1,5 +1,6 @@
 import 'package:DentaCarts/core/app_strings.dart';
-import 'package:DentaCarts/layout/layout_screen.dart';
+import 'package:DentaCarts/screen/layout_screen.dart';
+import 'package:DentaCarts/screen/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,10 +12,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  MaterialApp(
       debugShowCheckedModeBanner: false,
       title: AppStrings.appName,
-      home: LayoutScreen(),
+      home: WelcomeScreen(),
     );
   }
 }
