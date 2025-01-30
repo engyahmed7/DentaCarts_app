@@ -1,3 +1,4 @@
+import 'package:DentaCarts/screen/layout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -77,7 +78,9 @@ class LoginScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_)=> LayoutScreen()));
+                  },
                   child: Text(
                     "Sign in",
                     style: GoogleFonts.poppins(
@@ -106,7 +109,9 @@ class LoginScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 50,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+
+                  },
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
