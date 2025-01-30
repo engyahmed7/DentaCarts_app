@@ -1,4 +1,6 @@
-import 'package:DentaCarts/constants/app_exports.dart';
+import 'package:DentaCarts/core/app_strings.dart';
+import 'package:DentaCarts/layout/layout_screen.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,32 +11,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => AuthCubit()),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: AppStrings.appName,
-        theme: ThemeData(
-          primarySwatch: Colors.teal,
-          textTheme: GoogleFonts.poppinsTextTheme(),
-        ),
-
-        // implement home screen
-        /*
-        home: BlocBuilder<AuthCubit, AuthState>(
-          builder: (context, state) {
-            if(state is AuthLoginSuccessState){
-              return const LayoutScreen();
-            }else{
-              return const LoginScreen();
-            }
-          },
-        ),
-         */
-        home: const LayoutScreen(),
-      ),
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: AppStrings.appName,
+      home: LayoutScreen(),
     );
   }
 }

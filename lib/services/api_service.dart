@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'package:DentaCarts/model/userModel.dart';
 import 'package:http/http.dart' as http;
-import '../models/userModel.dart';
 
 class ApiService {
   Future<User?> getUserProfile(String token) async {
