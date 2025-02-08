@@ -7,11 +7,15 @@ import 'package:google_fonts/google_fonts.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
-  final List<Map<String, String>> categories = [
-    {'icon': '🦷', 'label': 'perio & Surgery'},
-    {'icon': '🔧', 'label': 'Instruments'},
-    {'icon': '💊', 'label': 'Consumables'},
-    {'icon': '🦴', 'label': 'Implant'},
+  final List<Map<String, dynamic>> categories = [
+    {'icon': Icons.local_hospital, 'label': 'Perio & Surgery'},
+    {'icon': Icons.build, 'label': 'Instruments'},
+    {'icon': Icons.medical_services, 'label': 'Consumables'},
+    {'icon': Icons.healing, 'label': 'Implant'},
+    {'icon': Icons.local_hospital, 'label': 'Perio & Surgery'},
+    {'icon': Icons.build, 'label': 'Instruments'},
+    {'icon': Icons.medical_services, 'label': 'Consumables'},
+    {'icon': Icons.healing, 'label': 'Implant'},
   ];
 
   @override
@@ -134,27 +138,40 @@ class BannerSection extends StatelessWidget {
 }
 
 class CategorySection extends StatelessWidget {
-  final List<Map<String, String>> categories;
+  final List<Map<String, dynamic>> categories;
 
   const CategorySection({super.key, required this.categories});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: categories.map((category) {
-        return Column(
-          children: [
-            CircleAvatar(
-              backgroundColor: Colors.red.shade100,
-              radius: 25,
-              child: Text(category['icon']!, style: TextStyle(fontSize: 24)),
+    return SizedBox(
+      height: 80,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          return Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Column(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Color(0xFF8B0000),
+                  radius: 25,
+                  child: Icon(
+                    category['icon'],
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(category['label']!,
+                    style: GoogleFonts.poppins(fontSize: 12)),
+              ],
             ),
-            SizedBox(height: 5),
-            Text(category['label']!, style: GoogleFonts.poppins(fontSize: 12)),
-          ],
-        );
-      }).toList(),
+          );
+        },
+      ),
     );
   }
 }
