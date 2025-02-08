@@ -14,14 +14,14 @@ class LayoutScreen extends StatefulWidget {
 }
 
 class _LayoutScreenState extends State<LayoutScreen> {
-   int currentIndex = 0;
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: currentIndex,
-        children:  [
+        children: [
           HomeScreen(),
           CartScreen(),
           const ProfileScreen(),
@@ -47,7 +47,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
                 Icons.home,
               ),
             ),
-            label:  "Home",
+            label: "Home",
           ),
           BottomNavigationBarItem(
             icon: Padding(
@@ -65,7 +65,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
                 Icons.person,
               ),
             ),
-            label:  "Profile",
+            label: "Profile",
           ),
         ],
       ),

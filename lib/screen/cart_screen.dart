@@ -9,7 +9,7 @@ class CartScreen extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems = List.generate(3, (index) => {
     'name': "Dental Instruments",
     'price': 8.54,
-    'image': '${AppStrings.marwanHoo}',
+    'image': '${AppStrings.placholderImage}',
     'rating': 5.0,
     'reviews': "70,000+",
   });

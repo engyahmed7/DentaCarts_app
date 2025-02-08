@@ -16,7 +16,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Payment Methods", style: GoogleFonts.poppins(color: Colors.black)),
+        title: Text("Payment Methods",
+            style: GoogleFonts.poppins(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -25,19 +26,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Pay Now!", style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold)),
+            Text("Pay Now!",
+                style: GoogleFonts.poppins(
+                    fontSize: 22, fontWeight: FontWeight.bold)),
             SizedBox(height: 5),
             Text(
               "Now you can pay through fawaterak or cash",
               style: GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
             ),
             SizedBox(height: 20),
-            Text("Select Method", style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text("Select Method",
+                style: GoogleFonts.poppins(
+                    fontSize: 16, fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
             PaymentOptionCard(
               title: "Fawaterak",
-              description: "Fawaterak is a PCI Certified online payments platform for MSMEs",
-              imageUrl: "${AppStrings.marwanHoo}",
+              description:
+                  "Fawaterak is a PCI Certified online payments platform for MSMEs",
+              imageUrl: "${AppStrings.placholderImage}",
               isSelected: selectedMethod == "Fawaterak",
               onTap: () => setState(() => selectedMethod = "Fawaterak"),
             ),
@@ -45,7 +51,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             PaymentOptionCard(
               title: "Cash",
               description: "Pay upon receipt",
-              imageUrl: "${AppStrings.marwanHoo}",
+              imageUrl: "${AppStrings.placholderImage}",
               isSelected: selectedMethod == "Cash",
               onTap: () => setState(() => selectedMethod = "Cash"),
             ),
@@ -56,10 +62,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
                 onPressed: () {},
-                child: Text("Continue", style: GoogleFonts.poppins(fontSize: 18, color: Colors.white)),
+                child: Text("Continue",
+                    style:
+                        GoogleFonts.poppins(fontSize: 18, color: Colors.white)),
               ),
             ),
           ],
@@ -91,7 +100,8 @@ class PaymentOptionCard extends StatelessWidget {
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: isSelected ? Colors.red : Colors.grey.shade300, width: 2),
+          side: BorderSide(
+              color: isSelected ? Colors.red : Colors.grey.shade300, width: 2),
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -103,9 +113,13 @@ class PaymentOptionCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(title,
+                        style: GoogleFonts.poppins(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                     SizedBox(height: 5),
-                    Text(description, style: GoogleFonts.poppins(fontSize: 12, color: Colors.black54)),
+                    Text(description,
+                        style: GoogleFonts.poppins(
+                            fontSize: 12, color: Colors.black54)),
                   ],
                 ),
               ),

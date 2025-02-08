@@ -26,7 +26,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage('${AppStrings.marwanHoo}'),
+                backgroundImage: NetworkImage('${AppStrings.placholderImage}'),
               ),
               Positioned(
                 bottom: 5,
