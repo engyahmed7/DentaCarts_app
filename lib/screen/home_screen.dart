@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -74,32 +76,59 @@ class HomeScreen extends StatelessWidget {
 class BannerSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.pink.shade50,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Dental Link Offers",
-                    style: GoogleFonts.poppins(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
-                SizedBox(height: 5),
-                Text("Get 20% OFF on MH Group Products."),
-              ],
-            ),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Column(
+      children: [
+        SizedBox(height: 35),
+        Container(
+          height: 180,
+          decoration: BoxDecoration(
+            color: Colors.pink.shade50,
+            borderRadius: BorderRadius.circular(16),
           ),
-          Image.network(
-            '${AppStrings.marwanHoo}',
-            height: 80,
+          padding: EdgeInsets.all(16),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Dental Link Offers",
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          "Get 20% OFF on MH Group Products.",
+                          style: GoogleFonts.poppins(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Positioned(
+                right: screenWidth * -0.07,
+                bottom: screenHeight * -0.02,
+                child: Image.network(
+                  'assets/images/banner.png',
+                  height: 240,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -107,7 +136,7 @@ class BannerSection extends StatelessWidget {
 class CategorySection extends StatelessWidget {
   final List<Map<String, String>> categories;
 
-  const CategorySection({required this.categories});
+  const CategorySection({super.key, required this.categories});
 
   @override
   Widget build(BuildContext context) {
@@ -131,6 +160,8 @@ class CategorySection extends StatelessWidget {
 }
 
 class SaleProductCard extends StatelessWidget {
+  const SaleProductCard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Card(
