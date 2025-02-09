@@ -182,7 +182,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         icon: Icon(
                           _obscureText
                               ? MyFlutterApp.noun_eye_7539235
-                              : Icons.visibility_rounded,
+                              : MyFlutterApp.noun_eye_7555386,
                           color: Colors.black,
                           size: 27,
                         ),

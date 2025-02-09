@@ -27,4 +27,6 @@ class MyFlutterApp {
       IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData noun_eye_7555386 =
       IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData noun_whatsapp_6843546 =
+      IconData(0xe804, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

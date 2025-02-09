@@ -16,6 +16,7 @@ class HomeScreen extends StatelessWidget {
     {'icon': Icons.build, 'label': 'Instruments'},
     {'icon': Icons.medical_services, 'label': 'Consumables'},
     {'icon': Icons.healing, 'label': 'Implant'},
+    {'icon': Icons.local_hospital, 'label': 'Perio & Surgery'},
   ];
 
   @override
@@ -203,7 +204,6 @@ class SaleProductCard extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
@@ -295,7 +295,6 @@ class SaleProductCard extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 Container(
                   padding: const EdgeInsets.all(12),
                   margin: const EdgeInsets.only(right: 10),
