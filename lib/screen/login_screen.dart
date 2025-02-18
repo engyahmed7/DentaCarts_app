@@ -1,4 +1,5 @@
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/screen/create_account_screen.dart';
 import 'package:DentaCarts/screen/layout_screen.dart';
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
 import 'package:flutter/material.dart';
@@ -156,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 25),
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
@@ -167,13 +168,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => LayoutScreen()));
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (_)=> LayoutScreen()),
+                          (route) => false,
+                        );
                       },
                       child: Text(
                         "Sign in",
                         style: GoogleFonts.poppins(
-                          fontSize: 18,
+                          //fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -182,7 +185,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 25),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_)=> CreateAccountScreen()));
+                    },
                     child: const Text(
                       "Create new account",
                       style: TextStyle(

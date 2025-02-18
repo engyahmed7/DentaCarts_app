@@ -15,6 +15,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           "Payment Methods",
@@ -161,7 +162,7 @@ class PaymentOptionCard extends StatelessWidget {
           padding: const EdgeInsets.all(12.0),
           child: Row(
             children: [
-              Image.network(imageUrl, height: 120, width: 120),
+              Image.asset(imageUrl, height: 120, width: 120),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(

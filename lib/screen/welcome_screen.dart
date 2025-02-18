@@ -1,5 +1,5 @@
 import 'package:DentaCarts/core/app_colors.dart';
-import 'package:DentaCarts/core/app_strings.dart';
+import 'package:DentaCarts/screen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -77,7 +77,9 @@ class WelcomeScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (_)=> LoginScreen()));
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryColor,
                           padding: const EdgeInsets.symmetric(
