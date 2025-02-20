@@ -22,17 +22,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Home", style: GoogleFonts.poppins(color: Colors.black)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: Colors.black),
-          onPressed: () {},
-        ),
-      ),
-      body: SingleChildScrollView(
+    return SafeArea(
+      child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,7 +127,7 @@ class BannerSection extends StatelessWidget {
               Positioned(
                 right: screenWidth * -0.07,
                 bottom: screenHeight * -0.02,
-                child: Image.network(
+                child: Image.asset(
                   'assets/images/banner.png',
                   height: 240,
                   fit: BoxFit.contain,
@@ -209,7 +200,7 @@ class SaleProductCard extends StatelessWidget {
                     topLeft: Radius.circular(12),
                     bottomLeft: Radius.circular(12),
                   ),
-                  child: Image.network(
+                  child: Image.asset(
                     'assets/images/medical.png',
                     height: double.infinity,
                     width: 100,
