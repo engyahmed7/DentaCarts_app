@@ -1,6 +1,7 @@
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
+import 'package:DentaCarts/screen/wishlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -116,15 +117,22 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
-              const ProfileOptionCard(
+              ProfileOptionCard(
                 icon: Icons.shopping_cart,
                 title: "Order History",
                 subtitle: "View your previous orders",
+                onTap: () {},
               ),
-              const ProfileOptionCard(
+              ProfileOptionCard(
                 icon: Icons.favorite,
                 title: "Wishlist",
                 subtitle: "View your favourite products",
+                onTap: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => WishlistScreen()),
+                    (route) => false,
+                  );
+                },
               ),
               const Spacer(),
               Align(
@@ -164,11 +172,13 @@ class ProfileOptionCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback onTap;
 
   const ProfileOptionCard({
     required this.icon,
     required this.title,
     required this.subtitle,
+    required this.onTap,
     super.key,
   });
 
@@ -176,35 +186,39 @@ class ProfileOptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: AppColors.secondaryColor,
-        elevation: 1,
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(20),
-          leading: CircleAvatar(
-            backgroundColor: AppColors.primaryColor,
-            child: Icon(icon, color: Colors.white),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-          title: Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+          color: AppColors.secondaryColor,
+          elevation: 1,
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(20),
+            leading: CircleAvatar(
+              backgroundColor: AppColors.primaryColor,
+              child: Icon(icon, color: Colors.white),
             ),
-          ),
-          subtitle: Text(
-            subtitle,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: Colors.black54,
+            title: Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
+            subtitle: Text(
+              subtitle,
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                color: Colors.black54,
+              ),
+            ),
+            trailing:
+                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
           ),
-          trailing:
-              Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
         ),
       ),
     );

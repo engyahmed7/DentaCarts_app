@@ -1,188 +1,155 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
-import 'package:DentaCarts/screen/instruments_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+class WishlistScreen extends StatefulWidget {
+  const WishlistScreen({super.key});
 
-  final List<Map<String, dynamic>> categories = [
-    {'icon': Icons.local_hospital, 'label': 'Perio & Surgery'},
-    {'icon': Icons.build, 'label': 'Instruments'},
-    {'icon': Icons.medical_services, 'label': 'Consumables'},
-    {'icon': Icons.healing, 'label': 'Implant'},
-    {'icon': Icons.local_hospital, 'label': 'Perio & Surgery'},
-    {'icon': Icons.build, 'label': 'Instruments'},
-    {'icon': Icons.medical_services, 'label': 'Consumables'},
-    {'icon': Icons.healing, 'label': 'Implant'},
-    {'icon': Icons.local_hospital, 'label': 'Perio & Surgery'},
-  ];
+  @override
+  _WishlistScreenState createState() => _WishlistScreenState();
+}
+
+class _WishlistScreenState extends State<WishlistScreen> {
+  bool isEmpty = false;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Search ....",
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade200,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {},
+        ),
+        title: const Text('Wishlist', style: TextStyle(color: Colors.black)),
+        centerTitle: true,
+      ),
+      body: isEmpty ? EmptyWishlist() : FilledWishlist(),
+    );
+  }
+}
+
+class EmptyWishlist extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              color: AppColors.secondaryColor,
+              shape: BoxShape.circle,
+            ),
+            child: const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Icon(Icons.favorite_border,
+                  size: 80, color: AppColors.primaryColor),
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Your Wishlist is empty',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            "It's time to fill with amazing products!",
+            style: TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+          const SizedBox(height: 25),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor,
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 25),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
               ),
             ),
-            SizedBox(height: 20),
-            BannerSection(),
-            SizedBox(height: 20),
-            Text("Categories",
-                style: GoogleFonts.poppins(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
-            CategorySection(categories: categories),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("On Sale",
-                    style: GoogleFonts.poppins(
-                        fontSize: 18, fontWeight: FontWeight.bold)),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => InstrumentsScreen()),
-                    );
-                  },
-                  child: Text(
-                    "View All",
-                    style: TextStyle(
-                      color: AppColors.primaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            SaleProductCard(),
-          ],
-        ),
+            onPressed: () {},
+            child: const Text('Return to shop',
+                style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }
 }
 
-class BannerSection extends StatelessWidget {
+class FilledWishlist extends StatelessWidget {
+  final List<Map<String, String>> products = List.generate(
+    4,
+    (index) => {
+      'name': 'Dental Instruments',
+      'description': 'USP Grade Vitamin C, 1000 mg, 80 Veggie Capsules',
+      'price': '\$8.54',
+      'old_price': '\$12.0',
+      'discount': '30% OFF',
+      'image': 'assets/product.png',
+    },
+  );
+
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Column(
-      children: [
-        SizedBox(height: 35),
-        Container(
-          height: 180,
-          decoration: BoxDecoration(
-            color: Color(0xFFFDE9E8),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          padding: EdgeInsets.all(16),
-          child: Stack(
-            clipBehavior: Clip.none,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Dental Link Offers",
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          "Get 20% OFF on MH Group Products.",
-                          style: GoogleFonts.poppins(fontSize: 14),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Positioned(
-                right: screenWidth * -0.07,
-                bottom: screenHeight * -0.02,
-                child: Image.asset(
-                  'assets/images/banner.png',
-                  height: 240,
-                  fit: BoxFit.contain,
-                ),
-              ),
+              FilterButton(label: 'All', isSelected: true),
+              FilterButton(label: 'Perio & Surgery'),
+              FilterButton(label: 'Instruments'),
             ],
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class CategorySection extends StatelessWidget {
-  final List<Map<String, dynamic>> categories;
-
-  const CategorySection({super.key, required this.categories});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 80,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final category = categories[index];
-          return Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Column(
-              children: [
-                CircleAvatar(
-                  backgroundColor: Color(0xFF8B0000),
-                  radius: 25,
-                  child: Icon(
-                    category['icon'],
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(category['label']!,
-                    style: GoogleFonts.poppins(fontSize: 12)),
-              ],
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView.builder(
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                return WishlistItem(product: products[index]);
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
 }
 
-class SaleProductCard extends StatelessWidget {
-  const SaleProductCard({super.key});
+class FilterButton extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+
+  const FilterButton({required this.label, this.isSelected = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isSelected ? AppColors.primaryColor : Colors.white,
+          foregroundColor: isSelected ? Colors.white : Colors.black,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+        ),
+        onPressed: () {},
+        child: Text(label),
+      ),
+    );
+  }
+}
+
+class WishlistItem extends StatelessWidget {
+  final Map<String, String> product;
+
+  const WishlistItem({required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -228,9 +195,9 @@ class SaleProductCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 5),
-                            Text(
+                            const Text(
                               "70,000+",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey,
@@ -257,19 +224,19 @@ class SaleProductCard extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
+                            const Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   r"$12.20",
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     decoration: TextDecoration.lineThrough,
                                     color: Colors.grey,
                                   ),
                                 ),
                                 Text(
                                   "\$8.54",
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: AppColors.primaryColor,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -284,9 +251,9 @@ class SaleProductCard extends StatelessWidget {
                                 color: Colors.green,
                                 borderRadius: BorderRadius.circular(5),
                               ),
-                              child: Text(
+                              child: const Text(
                                 "30% OFF",
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -307,7 +274,7 @@ class SaleProductCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
-                    Icons.add_shopping_cart,
+                    Icons.shopping_cart_outlined,
                     color: AppColors.primaryColor,
                   ),
                 ),
