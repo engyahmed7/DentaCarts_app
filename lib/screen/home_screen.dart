@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:DentaCarts/core/app_strings.dart';
+import 'package:DentaCarts/screen/instruments_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -64,9 +65,20 @@ class HomeScreen extends StatelessWidget {
                 Text("On Sale",
                     style: GoogleFonts.poppins(
                         fontSize: 18, fontWeight: FontWeight.bold)),
-                Text("View All",
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => InstrumentsScreen()),
+                    );
+                  },
+                  child: Text(
+                    "View All",
                     style: TextStyle(
-                        color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 10),
