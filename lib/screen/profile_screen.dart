@@ -1,6 +1,7 @@
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
+import 'package:DentaCarts/screen/order_history_screen.dart';
 import 'package:DentaCarts/screen/wishlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -121,7 +122,11 @@ class ProfileScreen extends StatelessWidget {
                 icon: Icons.shopping_cart,
                 title: "Order History",
                 subtitle: "View your previous orders",
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => OrderHistoryScreen()),
+                  );
+                },
               ),
               ProfileOptionCard(
                 icon: Icons.favorite,
