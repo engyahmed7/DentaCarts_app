@@ -19,6 +19,19 @@ class _LayoutScreenState extends State<LayoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: IndexedStack(
+          index: currentIndex,
+          children: [
+            Text("Home"),
+            Text("Cart"),
+            Text("Profile"),
+
+          ],
+        ),
+      ),
+      drawer: Drawer(),
       backgroundColor: Colors.white,
       body: IndexedStack(
         index: currentIndex,
