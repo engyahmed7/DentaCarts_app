@@ -2,6 +2,7 @@
 
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
+import 'package:DentaCarts/screen/details_produc_screen.dart';
 import 'package:DentaCarts/screen/instruments_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,15 +11,42 @@ class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
   final List<Map<String, dynamic>> categories = [
-    {'icon': Icons.local_hospital, 'label': 'Perio & Surgery'},
-    {'icon': Icons.build, 'label': 'Instruments'},
-    {'icon': Icons.medical_services, 'label': 'Consumables'},
-    {'icon': Icons.healing, 'label': 'Implant'},
-    {'icon': Icons.local_hospital, 'label': 'Perio & Surgery'},
-    {'icon': Icons.build, 'label': 'Instruments'},
-    {'icon': Icons.medical_services, 'label': 'Consumables'},
-    {'icon': Icons.healing, 'label': 'Implant'},
-    {'icon': Icons.local_hospital, 'label': 'Perio & Surgery'},
+    {
+      'icon': Icons.local_hospital,
+      'label': 'Perio & Surgery',
+    },
+    {
+      'icon': Icons.build,
+      'label': 'Instruments',
+    },
+    {
+      'icon': Icons.medical_services,
+      'label': 'Consumables',
+    },
+    {
+      'icon': Icons.healing,
+      'label': 'Implant',
+    },
+    {
+      'icon': Icons.local_hospital,
+      'label': 'Perio & Surgery',
+    },
+    {
+      'icon': Icons.build,
+      'label': 'Instruments',
+    },
+    {
+      'icon': Icons.medical_services,
+      'label': 'Consumables',
+    },
+    {
+      'icon': Icons.healing,
+      'label': 'Implant',
+    },
+    {
+      'icon': Icons.local_hospital,
+      'label': 'Perio & Surgery',
+    },
   ];
 
   @override
@@ -186,161 +214,168 @@ class SaleProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Card(
-          elevation: 4,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: SizedBox(
-            height: 150,
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    bottomLeft: Radius.circular(12),
-                  ),
-                  child: Image.asset(
-                    'assets/images/medical.png',
-                    height: double.infinity,
-                    width: 100,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Row(
-                              children: List.generate(
-                                5,
-                                (index) => const Icon(
-                                  Icons.star,
-                                  color: Colors.yellow,
-                                  size: 16,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              "70,000+",
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          "Dental Instruments",
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "USP Grade Vitamin C, 1000 mg, 60 Veggie Capsules",
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  r"$12.20",
-                                  style: const TextStyle(
-                                    decoration: TextDecoration.lineThrough,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                Text(
-                                  "\$8.54",
-                                  style: const TextStyle(
-                                    color: AppColors.primaryColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Colors.green,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Text(
-                                "30% OFF",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+          return DetailsProductPage();
+        }));
+      },
+      child: Stack(
+        children: [
+          Card(
+            elevation: 4,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: SizedBox(
+              height: 150,
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      bottomLeft: Radius.circular(12),
+                    ),
+                    child: Image.asset(
+                      'assets/images/medical.png',
+                      height: double.infinity,
+                      width: 100,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.only(right: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.pink.shade50,
-                    borderRadius: BorderRadius.circular(8),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Row(
+                                children: List.generate(
+                                  5,
+                                  (index) => const Icon(
+                                    Icons.star,
+                                    color: Colors.yellow,
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                "70,000+",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            "Dental Instruments",
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "USP Grade Vitamin C, 1000 mg, 60 Veggie Capsules",
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    r"$12.20",
+                                    style: const TextStyle(
+                                      decoration: TextDecoration.lineThrough,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    "\$8.54",
+                                    style: const TextStyle(
+                                      color: AppColors.primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Text(
+                                  "30% OFF",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.add_shopping_cart,
-                    color: AppColors.primaryColor,
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.pink.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.add_shopping_cart,
+                      color: AppColors.primaryColor,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-          top: 8,
-          left: 8,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.favorite_border,
-                color: AppColors.primaryColor,
+                ],
               ),
-              iconSize: 24,
             ),
           ),
-        ),
-      ],
+          Positioned(
+            top: 8,
+            left: 8,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.favorite_border,
+                  color: AppColors.primaryColor,
+                ),
+                iconSize: 24,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

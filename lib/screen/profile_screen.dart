@@ -5,9 +5,12 @@ import 'package:DentaCarts/screen/order_history_screen.dart';
 import 'package:DentaCarts/screen/wishlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,111 +45,120 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 40),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  height: 130,
-                  width: 130,
-                  decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          AppColors.primaryColor,
-                          AppColors.secondaryColor,
-                        ],
-                        center: Alignment.topCenter,
-                        radius: 1.5,
-                      )),
-                ),
-                const SizedBox(height: 40),
-                const CircleAvatar(
-                  radius: 60,
-                  backgroundImage: NetworkImage(
-                    AppStrings.placholderImage,
+        SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 40),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    height: 130,
+                    width: 130,
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            AppColors.primaryColor,
+                            AppColors.secondaryColor,
+                          ],
+                          center: Alignment.topCenter,
+                          radius: 1.5,
+                        )),
                   ),
-                ),
-                const Positioned(
-                  bottom: 0,
-                  right: 10,
-                  child: CircleAvatar(
-                    radius: 18,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.edit, color: Colors.black, size: 18),
+                  const SizedBox(height: 40),
+                  const CircleAvatar(
+                    radius: 60,
+                    backgroundImage: NetworkImage(
+                      AppStrings.placholderImage,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "Nada Ahmed",
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+                  const Positioned(
+                    bottom: 0,
+                    right: 10,
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.edit, color: Colors.black, size: 18),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              "nada@gmail.com",
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 40),
-            ProfileOptionCard(
-              icon: Icons.shopping_cart,
-              title: "Order History",
-              subtitle: "View your previous orders",
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => OrderHistoryScreen()),
-                );
-              },
-            ),
-            ProfileOptionCard(
-              icon: Icons.favorite,
-              title: "Wishlist",
-              subtitle: "View your favourite products",
-              onTap: () {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => WishlistScreen()),
-                      (route) => false,
-                );
-              },
-            ),
-            const Spacer(),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: FloatingActionButton(
-                  onPressed: () {},
-                  backgroundColor: Colors.green,
-                  child: const Icon(MyFlutterApp.noun_whatsapp_6843546,
-                      color: Colors.white, size: 70),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            GestureDetector(
-              onTap: () {},
-              child: Text(
-                "Log Out",
+              const SizedBox(height: 20),
+              Text(
+                "Nada Ahmed",
                 style: GoogleFonts.poppins(
-                  color: AppColors.primaryColor,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  color: Colors.black,
                 ),
               ),
-            ),
-            const SizedBox(height: 30),
-          ],
+              const SizedBox(height: 10),
+              Text(
+                "nada@gmail.com",
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 40),
+              ProfileOptionCard(
+                icon: Icons.shopping_cart,
+                title: "Order History",
+                subtitle: "View your previous orders",
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => OrderHistoryScreen()),
+                  );
+                },
+              ),
+              ProfileOptionCard(
+                icon: Icons.favorite,
+                title: "Wishlist",
+                subtitle: "View your favourite products",
+                onTap: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => WishlistScreen()),
+                        (route) => false,
+                  );
+                },
+              ),
+              FloatingActionButton(
+                onPressed: ()async{
+                  const String phoneNumber = "+201090039341";
+                  final Uri whatsappUri = Uri.parse("https://wa.me/$phoneNumber");
+
+                  if (await canLaunchUrl(whatsappUri)) {
+                    await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+                  } else {
+                    debugPrint("Could not launch WhatsApp.");
+                  }
+                },
+                backgroundColor: Colors.green,
+                child: const Icon(
+                  MyFlutterApp.noun_whatsapp_6843546,
+                  color: Colors.white,
+                  size: 40, // Adjusted icon size
+                ),
+              ),
+              const SizedBox(height: 20),
+              const SizedBox(height: 20),
+              GestureDetector(
+                onTap: () {},
+                child: Text(
+                  "Log Out",
+                  style: GoogleFonts.poppins(
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ],
     );
@@ -202,7 +214,7 @@ class ProfileOptionCard extends StatelessWidget {
               ),
             ),
             trailing:
-                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
+            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
           ),
         ),
       ),

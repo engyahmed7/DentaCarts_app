@@ -4,14 +4,14 @@
   ],
   "cleanCommandsComponents": [
     [
-      "C:\\Users\\Marwanhoo\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "C:\\Users\\Marwanhoo\\AppData\\Local\\Android\\sdk\\cmake\\3.22.1\\bin\\ninja.exe",
       "-C",
       "C:\\Users\\Marwanhoo\\AndroidStudioProjects\\DentaCarts_flutter\\android\\app\\.cxx\\Debug\\343mh2s1\\x86",
       "clean"
     ]
   ],
   "buildTargetsCommandComponents": [
-    "C:\\Users\\Marwanhoo\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "C:\\Users\\Marwanhoo\\AppData\\Local\\Android\\sdk\\cmake\\3.22.1\\bin\\ninja.exe",
     "-C",
     "C:\\Users\\Marwanhoo\\AndroidStudioProjects\\DentaCarts_flutter\\android\\app\\.cxx\\Debug\\343mh2s1\\x86",
     "{LIST_OF_TARGETS_TO_BUILD}"
