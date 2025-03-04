@@ -104,12 +104,12 @@ class ProductCard extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 18),
+          const SizedBox(height: 18),
           Text(
             product['name']!,
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Text(
             product['type']!,
             style: const TextStyle(fontSize: 12, color: Colors.grey),

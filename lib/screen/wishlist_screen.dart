@@ -26,12 +26,14 @@ class _WishlistScreenState extends State<WishlistScreen> {
         title: const Text('Wishlist', style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
-      body: isEmpty ? EmptyWishlist() : FilledWishlist(),
+      body: isEmpty ? const EmptyWishlist() : FilledWishlist(),
     );
   }
 }
 
 class EmptyWishlist extends StatelessWidget {
+  const EmptyWishlist({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -91,6 +93,8 @@ class FilledWishlist extends StatelessWidget {
     },
   );
 
+  FilledWishlist({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -124,7 +128,7 @@ class FilterButton extends StatelessWidget {
   final String label;
   final bool isSelected;
 
-  const FilterButton({required this.label, this.isSelected = false});
+  const FilterButton({super.key, required this.label, this.isSelected = false});
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +153,7 @@ class FilterButton extends StatelessWidget {
 class WishlistItem extends StatelessWidget {
   final Map<String, String> product;
 
-  const WishlistItem({required this.product});
+  const WishlistItem({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {

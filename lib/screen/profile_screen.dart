@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
@@ -8,6 +10,7 @@ import 'package:DentaCarts/screen/wishlist_screen.dart';
 import 'package:DentaCarts/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -21,6 +24,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   User? user;
   bool isLoading = true;
+  File? _imageFile;
+  bool _isPickingImage = false;
 
   @override
   void initState() {
@@ -50,6 +55,115 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isLoading = false;
       });
       print("Error fetching profile: $e");
+    }
+  }
+
+  Future<void> pickImage() async {
+    if (_isPickingImage) return;
+
+    setState(() {
+      _isPickingImage = true;
+    });
+
+    try {
+      final pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _imageFile = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      print("Error picking image: $e");
+    } finally {
+      setState(() {
+        _isPickingImage = false;
+      });
+    }
+  }
+
+  void showEditProfileDialog() {
+    TextEditingController usernameController =
+        TextEditingController(text: user?.username);
+    TextEditingController emailController =
+        TextEditingController(text: user?.email);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Edit Profile"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: usernameController,
+                decoration: const InputDecoration(labelText: "Username"),
+              ),
+              TextField(
+                controller: emailController,
+                decoration: const InputDecoration(labelText: "Email"),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: _isPickingImage ? null : pickImage,
+                icon: const Icon(Icons.image),
+                label: const Text("Pick Profile Image"),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await updateUserProfile(
+                  usernameController.text.trim(),
+                  emailController.text.trim(),
+                  _imageFile,
+                );
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> updateUserProfile(
+      String username, String email, File? imageFile) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      User? updatedUser =
+          await ApiService().updateUserProfile(username, email, imageFile);
+
+      if (updatedUser != null) {
+        setState(() {
+          user = updatedUser;
+          _imageFile = null;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to update profile")),
+        );
+      }
+    } catch (e) {
+      print("Error updating profile: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("An error occurred while updating profile")),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -87,7 +201,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -99,30 +213,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 130,
                     width: 130,
                     decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            AppColors.primaryColor,
-                            AppColors.secondaryColor,
-                          ],
-                          center: Alignment.topCenter,
-                          radius: 1.5,
-                        )),
-                  ),
-                  const SizedBox(height: 40),
-                  const CircleAvatar(
-                    radius: 60,
-                    backgroundImage: NetworkImage(
-                      AppStrings.placholderImage,
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          AppColors.primaryColor,
+                          AppColors.secondaryColor,
+                        ],
+                        center: Alignment.topCenter,
+                        radius: 1.5,
+                      ),
                     ),
                   ),
-                  const Positioned(
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundImage: _imageFile != null
+                        ? FileImage(_imageFile!)
+                            as ImageProvider 
+                        : (user?.image != null && user!.image.isNotEmpty)
+                            ? NetworkImage(
+                                user!.image) 
+                            : const AssetImage(AppStrings.placholderImage)
+                                as ImageProvider,
+                  ),
+                  Positioned(
                     bottom: 0,
                     right: 10,
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.edit, color: Colors.black, size: 18),
+                    child: GestureDetector(
+                      onTap: showEditProfileDialog,
+                      child: const CircleAvatar(
+                        radius: 18,
+                        backgroundColor: Colors.white,
+                        child: Icon(Icons.edit, color: Colors.black, size: 18),
+                      ),
                     ),
                   ),
                 ],
@@ -151,7 +273,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 subtitle: "View your previous orders",
                 onTap: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => OrderHistoryScreen()),
+                    MaterialPageRoute(
+                        builder: (_) => const OrderHistoryScreen()),
                   );
                 },
               ),
@@ -161,14 +284,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 subtitle: "View your favourite products",
                 onTap: () {
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => WishlistScreen()),
+                    MaterialPageRoute(builder: (_) => const WishlistScreen()),
                     (route) => false,
                   );
                 },
               ),
               FloatingActionButton(
                 onPressed: () async {
-                  const String phoneNumber = "";
+                  const String phoneNumber = "+201114621092";
                   final Uri whatsappUri =
                       Uri.parse("https://wa.me/$phoneNumber");
 
@@ -187,31 +310,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              const SizedBox(height: 20),
               GestureDetector(
                 onTap: () {
                   showDialog(
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: const Text("Log Out",
-                            style: TextStyle(
-                                color: AppColors.primaryColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18)),
-                        content: const Text("Are you sure you want to log out?",
-                            style: TextStyle(
-                              color: Colors.black,
-                            )),
+                        title: const Text(
+                          "Log Out",
+                          style: TextStyle(
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        content: const Text(
+                          "Are you sure you want to log out?",
+                          style: TextStyle(color: Colors.black),
+                        ),
                         actions: [
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: const Text("Cancel",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                )),
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(color: Colors.black),
+                            ),
                           ),
                           TextButton(
                             onPressed: () async {
@@ -220,13 +345,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               prefs.remove('token');
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                    builder: (_) => WelcomeScreen()),
+                                    builder: (_) => const WelcomeScreen()),
                               );
                             },
-                            child: const Text("Confirm",
-                                style: TextStyle(
-                                  color: AppColors.primaryColor,
-                                )),
+                            child: const Text(
+                              "Confirm",
+                              style: TextStyle(color: AppColors.primaryColor),
+                            ),
                           ),
                         ],
                       );
@@ -273,9 +398,8 @@ class ProfileOptionCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           color: AppColors.secondaryColor,
           elevation: 1,
           child: ListTile(
@@ -299,8 +423,8 @@ class ProfileOptionCard extends StatelessWidget {
                 color: Colors.black54,
               ),
             ),
-            trailing:
-                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
+            trailing: const Icon(Icons.arrow_forward_ios,
+                size: 16, color: Colors.black54),
           ),
         ),
       ),

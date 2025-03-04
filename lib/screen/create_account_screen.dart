@@ -6,7 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:DentaCarts/core/app_colors.dart';
 
 class CreateAccountScreen extends StatefulWidget {
-  CreateAccountScreen({super.key});
+  const CreateAccountScreen({super.key});
+
   @override
   _CreateAccountScreenState createState() => _CreateAccountScreenState();
 }
@@ -20,12 +21,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
   bool _obscureText = true;
   bool _isLoading = false;
-  String? _errorMessage;
 
   void _register() async {
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
 
     ApiService apiService = ApiService();
@@ -38,26 +37,21 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     setState(() {
       _isLoading = false;
       if (result.containsKey("error") && result["error"] == true) {
-        _errorMessage = result["message"];
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_errorMessage!),
+            content: Text(result["message"]),
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
+            duration: const Duration(seconds: 3),
           ),
         );
       } else if (result.containsKey("token")) {
-        String token = result["token"];
-
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => LayoutScreen()),
+          MaterialPageRoute(builder: (_) => const LayoutScreen()),
         );
       } else {
-        _errorMessage = "Unexpected error occurred. Please try again.";
-
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_errorMessage!),
+          const SnackBar(
+            content: Text("Unexpected error occurred. Please try again."),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 3),
           ),
@@ -100,240 +94,266 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Create Account",
-                    style: GoogleFonts.poppins(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Create an account so you can explore \n"
-                    "all Dental Supplies",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  const SizedBox(height: 70),
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      labelText: "UserName",
-                      filled: true,
-                      fillColor: const Color(0xFFFDE9E8).withOpacity(0.4),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Create Account",
+                      style: GoogleFonts.poppins(
+                        fontSize: 34,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: "Email",
-                      filled: true,
-                      fillColor: const Color(0xFFFDE9E8).withOpacity(0.4),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    controller: passwordController,
-                    obscureText: _obscureText,
-                    decoration: InputDecoration(
-                      labelText: "Password",
-                      filled: true,
-                      fillColor: const Color(0xFFFDE9E8).withOpacity(0.4),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureText
-                              ? MyFlutterApp.noun_eye_7539235
-                              : Icons.visibility_rounded,
-                          color: Colors.black,
-                          size: 27,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureText = !_obscureText;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
-                      ),
-                    ),
-                    style: const TextStyle(fontSize: 18),
-                    textAlignVertical: TextAlignVertical.center,
-                    maxLines: 1,
-                    minLines: 1,
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    controller: confirmPasswordController,
-                    obscureText: _obscureText,
-                    decoration: InputDecoration(
-                      labelText: "Confirm Password",
-                      filled: true,
-                      fillColor: const Color(0xFFFDE9E8).withOpacity(0.4),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureText
-                              ? MyFlutterApp.noun_eye_7539235
-                              : MyFlutterApp.noun_eye_7555386,
-                          color: Colors.black,
-                          size: 27,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureText = !_obscureText;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryColor, width: 2),
-                      ),
-                    ),
-                    style: const TextStyle(fontSize: 18),
-                    textAlignVertical: TextAlignVertical.center,
-                    maxLines: 1,
-                    minLines: 1,
-                  ),
-                  const SizedBox(height: 35),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 20),
-                        backgroundColor: AppColors.primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      onPressed: _isLoading ? null : _register,
-                      child: _isLoading
-                          ? CircularProgressIndicator(color: Colors.white)
-                          : Text("Sign in",
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              )),
-                    ),
-                  ),
-                  const SizedBox(height: 35),
-                  GestureDetector(
-                    onTap: () {},
-                    child: const Text(
-                      "Already have an account",
-                      style: TextStyle(
-                        color: AppColors.primaryColor,
-                        fontWeight: FontWeight.w700,
+                    const SizedBox(height: 8),
+                    Text(
+                      "Create an account so you can explore\nall Dental Supplies",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade600,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 50),
-                  Text("Or continue with",
+                    const SizedBox(height: 70),
+                    TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: "Username",
+                        filled: true,
+                        fillColor: const Color(0xFFFDE9E8).withOpacity(0.4),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: "Email",
+                        filled: true,
+                        fillColor: const Color(0xFFFDE9E8).withOpacity(0.4),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: passwordController,
+                      obscureText: _obscureText,
+                      decoration: InputDecoration(
+                        labelText: "Password",
+                        filled: true,
+                        fillColor: const Color(0xFFFDE9E8).withOpacity(0.4),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? MyFlutterApp.noun_eye_7539235
+                                : MyFlutterApp.noun_eye_7555192,
+                            color: Colors.black,
+                            size: 27,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: confirmPasswordController,
+                      obscureText: _obscureText,
+                      decoration: InputDecoration(
+                        labelText: "Confirm Password",
+                        filled: true,
+                        fillColor: const Color(0xFFFDE9E8).withOpacity(0.4),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? MyFlutterApp.noun_eye_7539235
+                                : MyFlutterApp.noun_eye_7555192,
+                            color: Colors.black,
+                            size: 27,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 35),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 20,
+                            horizontal: 20,
+                          ),
+                          backgroundColor: AppColors.primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: _isLoading ? null : _register,
+                        child: _isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white)
+                            : Text(
+                                "Sign up",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 35),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        "Already have an account",
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+                    Text(
+                      "Or continue with",
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
-                      )),
-                  const SizedBox(height: 15),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.network(
-                            'https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png',
-                            height: 24,
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            "Sign in with Google",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 15),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: OutlinedButton(
+                        onPressed: () {},
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.network(
+                              'https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png',
+                              height: 24,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              "Sign in with Google",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

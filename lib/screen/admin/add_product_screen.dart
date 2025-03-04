@@ -342,7 +342,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       color: Colors.black87,
                     ),
                     headingRowColor:
-                        MaterialStateProperty.all(AppColors.secondaryColor),
+                        WidgetStateProperty.all(AppColors.secondaryColor),
                     columns: const [
                       DataColumn(label: Text('Orders')),
                       DataColumn(label: Text('Customer')),
@@ -383,9 +383,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                               ],
                             ),
                           ),
-                          DataCell(const Text('Ahmed Mohamed')),
-                          DataCell(const Text('\$12.78')),
-                          DataCell(const Text('24/07/23')),
+                          const DataCell(Text('Ahmed Mohamed')),
+                          const DataCell(Text('\$12.78')),
+                          const DataCell(Text('24/07/23')),
                           DataCell(_buildStatusChip(
                             isPaid ? 'Paid' : 'Unpaid',
                             isPaid

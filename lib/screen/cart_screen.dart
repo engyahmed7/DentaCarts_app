@@ -1,5 +1,4 @@
 import 'package:DentaCarts/core/app_colors.dart';
-import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/screen/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,7 +28,7 @@ class CartScreen extends StatelessWidget {
             style: GoogleFonts.poppins(color: Colors.black)),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 16),
             child: Center(
               child: Text(
                 "${cartItems.length} Item(s)",
@@ -67,7 +66,7 @@ class CartScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -79,7 +78,7 @@ class CartScreen extends StatelessWidget {
                     ),
                     onPressed: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => PaymentScreen()));
+                          MaterialPageRoute(builder: (_) => const PaymentScreen()));
                     },
                     child: Text("Check out",
                         style: GoogleFonts.poppins(
@@ -98,7 +97,7 @@ class CartScreen extends StatelessWidget {
 class CartItemCard extends StatefulWidget {
   final Map<String, dynamic> item;
 
-  const CartItemCard({Key? key, required this.item}) : super(key: key);
+  const CartItemCard({super.key, required this.item});
 
   @override
   _CartItemCardState createState() => _CartItemCardState();

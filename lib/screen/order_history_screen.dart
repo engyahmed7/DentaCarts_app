@@ -99,7 +99,7 @@ class FilledHistory extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SearchBar(),
+          const SearchBar(),
           const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
@@ -274,6 +274,8 @@ class HistoryItem extends StatelessWidget {
 }
 
 class SearchBar extends StatelessWidget {
+  const SearchBar({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -286,11 +288,11 @@ class SearchBar extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 5,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Row(
+      child: const Row(
         children: [
           SizedBox(width: 10),
           Icon(Icons.search, color: Colors.black54),

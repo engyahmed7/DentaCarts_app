@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PaymentScreen extends StatefulWidget {
-  const PaymentScreen({Key? key}) : super(key: key);
+  const PaymentScreen({super.key});
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -138,13 +138,13 @@ class PaymentOptionCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const PaymentOptionCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.description,
     required this.imageUrl,
     required this.isSelected,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

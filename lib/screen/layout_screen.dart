@@ -23,7 +23,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
         centerTitle: true,
         title: IndexedStack(
           index: currentIndex,
-          children: [
+          children: const [
             Text("Home"),
             Text("Cart"),
             Text("Profile"),
@@ -31,7 +31,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
           ],
         ),
       ),
-      drawer: Drawer(),
+      drawer: const Drawer(),
       backgroundColor: Colors.white,
       body: IndexedStack(
         index: currentIndex,

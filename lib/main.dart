@@ -1,5 +1,4 @@
 import 'package:DentaCarts/core/app_strings.dart';
-import 'package:DentaCarts/screen/details_produc_screen.dart';
 import 'package:DentaCarts/screen/welcome_screen.dart';
 import 'package:flutter/material.dart';
 

@@ -80,7 +80,7 @@ class WelcomeScreen extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => LoginScreen()));
+                              MaterialPageRoute(builder: (_) => const LoginScreen()));
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryColor,
@@ -104,7 +104,7 @@ class WelcomeScreen extends StatelessWidget {
                       child: TextButton(
                         onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => CreateAccountScreen()));
+                              builder: (_) => const CreateAccountScreen()));
                         },
                         child: Text(
                           'Register',
