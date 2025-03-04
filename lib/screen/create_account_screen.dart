@@ -1,5 +1,6 @@
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
 import 'package:DentaCarts/screen/layout_screen.dart';
+import 'package:DentaCarts/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:DentaCarts/core/app_colors.dart';
@@ -18,6 +19,52 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       TextEditingController();
 
   bool _obscureText = true;
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  void _register() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    ApiService apiService = ApiService();
+    final result = await apiService.register(
+      emailController.text.trim(),
+      passwordController.text.trim(),
+      nameController.text.trim(),
+    );
+
+    setState(() {
+      _isLoading = false;
+      if (result.containsKey("error") && result["error"] == true) {
+        _errorMessage = result["message"];
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_errorMessage!),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } else if (result.containsKey("token")) {
+        String token = result["token"];
+
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => LayoutScreen()),
+        );
+      } else {
+        _errorMessage = "Unexpected error occurred. Please try again.";
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_errorMessage!),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +130,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   TextField(
                     controller: nameController,
                     decoration: InputDecoration(
-                      labelText: "Full Name",
+                      labelText: "UserName",
                       filled: true,
                       fillColor: const Color(0xFFFDE9E8).withOpacity(0.4),
                       border: OutlineInputBorder(
@@ -226,18 +273,15 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => LayoutScreen()));
-                      },
-                      child: Text(
-                        "Sign Up",
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      onPressed: _isLoading ? null : _register,
+                      child: _isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Text("Sign in",
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              )),
                     ),
                   ),
                   const SizedBox(height: 35),
