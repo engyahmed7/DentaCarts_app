@@ -1,16 +1,57 @@
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
+import 'package:DentaCarts/model/userModel.dart';
 import 'package:DentaCarts/screen/order_history_screen.dart';
+import 'package:DentaCarts/screen/welcome_screen.dart';
 import 'package:DentaCarts/screen/wishlist_screen.dart';
+import 'package:DentaCarts/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
 
+class _ProfileScreenState extends State<ProfileScreen> {
+  User? user;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserProfile();
+  }
+
+  Future<void> fetchUserProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    try {
+      User? fetchedUser = await ApiService().getUserProfile();
+      setState(() {
+        user = fetchedUser;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print("Error fetching profile: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +129,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                "Nada Ahmed",
+                user?.username ?? "Unknown",
                 style: GoogleFonts.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -97,7 +138,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                "nada@gmail.com",
+                user?.email ?? "Unknown",
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   color: Colors.black54,
@@ -121,17 +162,19 @@ class ProfileScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => WishlistScreen()),
-                        (route) => false,
+                    (route) => false,
                   );
                 },
               ),
               FloatingActionButton(
-                onPressed: ()async{
-                  const String phoneNumber = "+201090039341";
-                  final Uri whatsappUri = Uri.parse("https://wa.me/$phoneNumber");
+                onPressed: () async {
+                  const String phoneNumber = "";
+                  final Uri whatsappUri =
+                      Uri.parse("https://wa.me/$phoneNumber");
 
                   if (await canLaunchUrl(whatsappUri)) {
-                    await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+                    await launchUrl(whatsappUri,
+                        mode: LaunchMode.externalApplication);
                   } else {
                     debugPrint("Could not launch WhatsApp.");
                   }
@@ -140,13 +183,56 @@ class ProfileScreen extends StatelessWidget {
                 child: const Icon(
                   MyFlutterApp.noun_whatsapp_6843546,
                   color: Colors.white,
-                  size: 40, // Adjusted icon size
+                  size: 40,
                 ),
               ),
               const SizedBox(height: 20),
               const SizedBox(height: 20),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text("Log Out",
+                            style: TextStyle(
+                                color: AppColors.primaryColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18)),
+                        content: const Text("Are you sure you want to log out?",
+                            style: TextStyle(
+                              color: Colors.black,
+                            )),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("Cancel",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                )),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.remove('token');
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (_) => WelcomeScreen()),
+                              );
+                            },
+                            child: const Text("Confirm",
+                                style: TextStyle(
+                                  color: AppColors.primaryColor,
+                                )),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
                 child: Text(
                   "Log Out",
                   style: GoogleFonts.poppins(
@@ -214,7 +300,7 @@ class ProfileOptionCard extends StatelessWidget {
               ),
             ),
             trailing:
-            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
+                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
           ),
         ),
       ),

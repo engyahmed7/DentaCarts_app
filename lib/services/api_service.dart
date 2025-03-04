@@ -18,7 +18,9 @@ class ApiService {
     final responseData = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', responseData['token']);
+
       return responseData;
     } else {
       if (responseData.containsKey("errors")) {
@@ -89,7 +91,7 @@ class ApiService {
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to fetch user profile');
+      return null;
     }
   }
 
