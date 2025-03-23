@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/screen/details_produc_screen.dart';
 import 'package:DentaCarts/screen/instruments_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/product_api_service.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -101,7 +103,7 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 10),
-            SaleProductCard(),
+            SaleProductsList(),
           ],
         ),
       ),
@@ -211,7 +213,9 @@ class CategorySection extends StatelessWidget {
 }
 
 class SaleProductCard extends StatelessWidget {
-  const SaleProductCard({super.key});
+  final Product product;
+
+  const SaleProductCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -225,8 +229,9 @@ class SaleProductCard extends StatelessWidget {
         children: [
           Card(
             elevation: 4,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: SizedBox(
               height: 150,
               child: Row(
@@ -236,8 +241,10 @@ class SaleProductCard extends StatelessWidget {
                       topLeft: Radius.circular(12),
                       bottomLeft: Radius.circular(12),
                     ),
-                    child: Image.asset(
-                      'assets/images/medical.png',
+                    child: Image.network(
+                      product.images.isNotEmpty
+                          ? product.images.first
+                          : 'https://via.placeholder.com/100',
                       height: double.infinity,
                       width: 100,
                       fit: BoxFit.cover,
@@ -255,16 +262,18 @@ class SaleProductCard extends StatelessWidget {
                               Row(
                                 children: List.generate(
                                   5,
-                                  (index) => const Icon(
+                                  (index) => Icon(
                                     Icons.star,
-                                    color: Colors.yellow,
+                                    color: index < product.rating
+                                        ? Colors.yellow
+                                        : Colors.grey,
                                     size: 16,
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 5),
                               Text(
-                                "70,000+",
+                                "${product.rating}+",
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -274,14 +283,14 @@ class SaleProductCard extends StatelessWidget {
                             ],
                           ),
                           Text(
-                            "Dental Instruments",
+                            product.title,
                             style: GoogleFonts.poppins(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            "USP Grade Vitamin C, 1000 mg, 60 Veggie Capsules",
+                            product.description,
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               color: Colors.grey,
@@ -296,14 +305,14 @@ class SaleProductCard extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    r"$12.20",
+                                    "\$${product.price.toStringAsFixed(2)}",
                                     style: const TextStyle(
                                       decoration: TextDecoration.lineThrough,
                                       color: Colors.grey,
                                     ),
                                   ),
                                   Text(
-                                    "\$8.54",
+                                    "\$${(product.price * 0.8).toStringAsFixed(2)}",
                                     style: const TextStyle(
                                       color: AppColors.primaryColor,
                                       fontWeight: FontWeight.bold,
@@ -369,7 +378,7 @@ class SaleProductCard extends StatelessWidget {
                 onPressed: () {},
                 icon: const Icon(
                   Icons.favorite_border,
-                  color: AppColors.primaryColor,
+                  color: Colors.red,
                 ),
                 iconSize: 24,
               ),
@@ -377,6 +386,69 @@ class SaleProductCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class SaleProductsList extends StatefulWidget {
+  const SaleProductsList({Key? key}) : super(key: key);
+
+  @override
+  _SaleProductsListState createState() => _SaleProductsListState();
+}
+
+class _SaleProductsListState extends State<SaleProductsList> {
+  final ProductApiService _apiService = ProductApiService();
+  List<Product> _products = [];
+  bool _isLoading = true;
+  String _error = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProducts();
+  }
+
+  Future<void> _fetchProducts() async {
+    try {
+      final productList = await _apiService.fetchProducts();
+      if (productList.isEmpty) {
+        setState(() {
+          _error = "No products found.";
+          _isLoading = false;
+        });
+        return;
+      }
+      print(productList);
+      setState(() {
+        _products = productList.map((json) => Product.fromJson(json)).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = "Failed to load products.";
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error.isNotEmpty) {
+      return Center(child: Text(_error));
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: _products.length > 3 ? 3 : _products.length,
+      itemBuilder: (context, index) {
+        return SaleProductCard(product: _products[index]);
+      },
     );
   }
 }

@@ -46,6 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     try {
       User? fetchedUser = await ApiService().getUserProfile();
+      print("User: $fetchedUser");
       setState(() {
         user = fetchedUser;
         isLoading = false;
@@ -227,11 +228,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   CircleAvatar(
                     radius: 60,
                     backgroundImage: _imageFile != null
-                        ? FileImage(_imageFile!)
-                            as ImageProvider 
+                        ? FileImage(_imageFile!) as ImageProvider
                         : (user?.image != null && user!.image.isNotEmpty)
-                            ? NetworkImage(
-                                user!.image) 
+                            ? NetworkImage(user!.image)
                             : const AssetImage(AppStrings.placholderImage)
                                 as ImageProvider,
                   ),
