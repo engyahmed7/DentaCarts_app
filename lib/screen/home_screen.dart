@@ -212,10 +212,47 @@ class CategorySection extends StatelessWidget {
   }
 }
 
-class SaleProductCard extends StatelessWidget {
+class SaleProductCard extends StatefulWidget {
   final Product product;
 
   const SaleProductCard({super.key, required this.product});
+
+  @override
+  _SaleProductCardState createState() => _SaleProductCardState();
+}
+
+class _SaleProductCardState extends State<SaleProductCard> {
+  bool isWishlisted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkWishlistStatus();
+  }
+
+  Future<void> checkWishlistStatus() async {
+    print("Checking wishlist status for product: ${widget.product.id}");
+    bool status =
+        await ProductApiService().checkIfWishlisted(widget.product.id);
+    print("Wishlist status for product ${widget.product.id}: $status");
+    setState(() {
+      isWishlisted = status;
+    });
+  }
+
+  void toggleWishlist() async {
+    try {
+      bool? updatedStatus =
+          await ProductApiService().toggleWishlist(widget.product.id);
+      if (updatedStatus != null) {
+        setState(() {
+          isWishlisted = updatedStatus;
+        });
+      }
+    } catch (e) {
+      print("Error: Exception: Error toggling wishlist: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -242,8 +279,8 @@ class SaleProductCard extends StatelessWidget {
                       bottomLeft: Radius.circular(12),
                     ),
                     child: Image.network(
-                      product.images.isNotEmpty
-                          ? product.images.first
+                      widget.product.images.isNotEmpty
+                          ? widget.product.images.first
                           : 'https://via.placeholder.com/100',
                       height: double.infinity,
                       width: 100,
@@ -264,7 +301,7 @@ class SaleProductCard extends StatelessWidget {
                                   5,
                                   (index) => Icon(
                                     Icons.star,
-                                    color: index < product.rating
+                                    color: index < widget.product.rating
                                         ? Colors.yellow
                                         : Colors.grey,
                                     size: 16,
@@ -273,7 +310,7 @@ class SaleProductCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 5),
                               Text(
-                                "${product.rating}+",
+                                "${widget.product.rating}+",
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -283,14 +320,14 @@ class SaleProductCard extends StatelessWidget {
                             ],
                           ),
                           Text(
-                            product.title,
+                            widget.product.title,
                             style: GoogleFonts.poppins(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            product.description,
+                            widget.product.description,
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               color: Colors.grey,
@@ -305,14 +342,14 @@ class SaleProductCard extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "\$${product.price.toStringAsFixed(2)}",
+                                    "\$${widget.product.price.toStringAsFixed(2)}",
                                     style: const TextStyle(
                                       decoration: TextDecoration.lineThrough,
                                       color: Colors.grey,
                                     ),
                                   ),
                                   Text(
-                                    "\$${(product.price * 0.8).toStringAsFixed(2)}",
+                                    "\$${(widget.product.price * 0.8).toStringAsFixed(2)}",
                                     style: const TextStyle(
                                       color: AppColors.primaryColor,
                                       fontWeight: FontWeight.bold,
@@ -328,9 +365,9 @@ class SaleProductCard extends StatelessWidget {
                                   color: Colors.green,
                                   borderRadius: BorderRadius.circular(5),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   "30% OFF",
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -375,10 +412,10 @@ class SaleProductCard extends StatelessWidget {
                 ],
               ),
               child: IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.favorite_border,
-                  color: Colors.red,
+                onPressed: toggleWishlist,
+                icon: Icon(
+                  isWishlisted ? Icons.favorite : Icons.favorite_border,
+                  color: isWishlisted ? Colors.red : AppColors.primaryColor,
                 ),
                 iconSize: 24,
               ),
