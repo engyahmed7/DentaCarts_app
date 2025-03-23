@@ -82,12 +82,12 @@ class ProductApiService {
       if (response.statusCode == 200) {
         final List<dynamic> wishlist = jsonDecode(response.body);
 
-        print("Response Body from check wishlist: $wishlist");
+        // print("Response Body from check wishlist: $wishlist");
 
         bool isWishlisted =
             wishlist.any((item) => item["productId"] == productId);
 
-        print("Wishlist check for $productId: $isWishlisted");
+        // print("Wishlist check for $productId: $isWishlisted");
         return isWishlisted;
       } else {
         print("Error fetching wishlist: ${response.statusCode}");
@@ -98,4 +98,35 @@ class ProductApiService {
       return false;
     }
   }
+
+  Future<List<dynamic>> fetchWishlist() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    try {
+      final response = await http.get(
+        Uri.parse('${baseUrl}wishlist/'),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+      );
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print("Wishlist data : ${data}");
+        return data;
+      } else {
+        throw Exception("Failed to load wishlist");
+      }
+    } catch (e) {
+      print("Error fetching wishlist apii: $e");
+      throw Exception("Error fetching wishlist api: $e");
+    }
+  }
+
+
 }

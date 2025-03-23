@@ -1,5 +1,7 @@
 import 'package:DentaCarts/core/app_colors.dart';
-import 'package:DentaCarts/core/app_strings.dart';
+import 'package:DentaCarts/model/product_model.dart';
+import 'package:DentaCarts/screen/instruments_screen.dart';
+import 'package:DentaCarts/services/product_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -11,7 +13,33 @@ class WishlistScreen extends StatefulWidget {
 }
 
 class _WishlistScreenState extends State<WishlistScreen> {
-  bool isEmpty = false;
+  late Future<List<Product>> wishlistFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    wishlistFuture = fetchWishlist();
+  }
+
+  Future<List<Product>> fetchWishlist() async {
+    try {
+      List<dynamic> rawProducts = await ProductApiService().fetchWishlist();
+      print("Raw Wishlist Data: $rawProducts");  
+
+      if (rawProducts.isEmpty) {
+        print("Wishlist is empty");
+      }
+
+      List<Product> products =
+          rawProducts.map((json) => Product.fromJson(json)).toList();
+      print("Parsed Wishlist Products: $products");  
+
+      return products;
+    } catch (e) {
+      print("Error fetching wishlist: $e");
+      return [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +47,23 @@ class _WishlistScreenState extends State<WishlistScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {},
-        ),
         title: const Text('Wishlist', style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
-      body: isEmpty ? const EmptyWishlist() : FilledWishlist(),
+      body: FutureBuilder<List<Product>>(
+        future: wishlistFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const EmptyWishlist();
+          }
+
+          return FilledWishlist(wishlistItems: snapshot.data!);
+        },
+      ),
     );
   }
 }
@@ -70,7 +107,11 @@ class EmptyWishlist extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
               ),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => InstrumentsScreen()),
+              );
+            },
             child: const Text('Return to shop',
                 style: TextStyle(color: Colors.white)),
           ),
@@ -81,19 +122,9 @@ class EmptyWishlist extends StatelessWidget {
 }
 
 class FilledWishlist extends StatelessWidget {
-  final List<Map<String, String>> products = List.generate(
-    4,
-    (index) => {
-      'name': 'Dental Instruments',
-      'description': 'USP Grade Vitamin C, 1000 mg, 80 Veggie Capsules',
-      'price': '\$8.54',
-      'old_price': '\$12.0',
-      'discount': '30% OFF',
-      'image': 'assets/product.png',
-    },
-  );
+  final List<Product> wishlistItems;
 
-  FilledWishlist({super.key});
+  const FilledWishlist({super.key, required this.wishlistItems});
 
   @override
   Widget build(BuildContext context) {
@@ -112,9 +143,10 @@ class FilledWishlist extends StatelessWidget {
           const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
-              itemCount: products.length,
+              itemCount: wishlistItems.length,
               itemBuilder: (context, index) {
-                return WishlistItem(product: products[index]);
+                final product = wishlistItems[index];
+                return WishlistItem(product: product);
               },
             ),
           ),
@@ -151,7 +183,7 @@ class FilterButton extends StatelessWidget {
 }
 
 class WishlistItem extends StatelessWidget {
-  final Map<String, String> product;
+  final Product product;
 
   const WishlistItem({super.key, required this.product});
 
@@ -172,8 +204,8 @@ class WishlistItem extends StatelessWidget {
                     topLeft: Radius.circular(12),
                     bottomLeft: Radius.circular(12),
                   ),
-                  child: Image.asset(
-                    'assets/images/medical.png',
+                  child: Image.network(
+                    product.images.first,
                     height: double.infinity,
                     width: 100,
                     fit: BoxFit.cover,
@@ -186,82 +218,29 @@ class WishlistItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Row(
-                              children: List.generate(
-                                5,
-                                (index) => const Icon(
-                                  Icons.star,
-                                  color: Colors.yellow,
-                                  size: 16,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            const Text(
-                              "70,000+",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
                         Text(
-                          "Dental Instruments",
+                          product.title,
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          "USP Grade Vitamin C, 1000 mg, 60 Veggie Capsules",
+                          "Stock: ${product.stock}",
                           style: GoogleFonts.poppins(
                             fontSize: 12,
                             color: Colors.grey,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  r"$12.20",
-                                  style: TextStyle(
-                                    decoration: TextDecoration.lineThrough,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                Text(
-                                  "\$8.54",
-                                  style: TextStyle(
-                                    color: AppColors.primaryColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Colors.green,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: const Text(
-                                "30% OFF",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            Text(
+                              "\$${product.price}",
+                              style: const TextStyle(
+                                color: AppColors.primaryColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
                           ],
@@ -304,8 +283,8 @@ class WishlistItem extends StatelessWidget {
             child: IconButton(
               onPressed: () {},
               icon: const Icon(
-                Icons.favorite_border,
-                color: AppColors.primaryColor,
+                Icons.favorite,
+                color: Colors.red,
               ),
               iconSize: 24,
             ),

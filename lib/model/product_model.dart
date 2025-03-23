@@ -25,16 +25,20 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['_id'],
-      title: json['title'],
-      description: json['description'],
-      price: (json['price'] as num).toDouble(),
-      category: json['category'],
-      images: List<String>.from(json['image']),
-      stock: json['stock'],
-      rating: (json['totalRating']['rating'] as num).toDouble(),
-      reviews: (json['totalRating']['user'] as List).length,
-      
+      id: json['_id']?.toString() ?? '',
+      title: json['title'] ?? json['name'] ?? 'Unknown Product',
+      description: json['description'] ?? 'No description available',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      category: json['category'] ?? 'Uncategorized',
+      images:
+          (json['img'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+              (json['image'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList() ??
+              [],
+      stock: json['stock'] ?? 0,
+      rating: (json['totalRating']?['rating'] as num?)?.toDouble() ?? 0.0,
+      reviews: (json['totalRating']?['user'] as List?)?.length ?? 0,
     );
   }
 }

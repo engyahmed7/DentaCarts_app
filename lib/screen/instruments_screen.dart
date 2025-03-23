@@ -2,6 +2,7 @@ import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:flutter/material.dart';
 import '../services/product_api_service.dart';
+import 'package:DentaCarts/model/product_model.dart';
 
 class InstrumentsScreen extends StatefulWidget {
   const InstrumentsScreen({super.key});
@@ -93,10 +94,48 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
   }
 }
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   final Product product;
 
-  const ProductCard({super.key, required this.product});
+  const ProductCard({Key? key, required this.product}) : super(key: key);
+
+  @override
+  _ProductCardState createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  bool isWishlisted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkWishlistStatus();
+  }
+
+  Future<void> checkWishlistStatus() async {
+    print("Checking wishlist status for product: ${widget.product.id}");
+    bool status =
+        await ProductApiService().checkIfWishlisted(widget.product.id);
+    print("Wishlist status for product ${widget.product.id}: $status");
+
+    setState(() {
+      isWishlisted = status;
+    });
+  }
+
+  void toggleWishlist() async {
+    try {
+      bool? updatedStatus =
+          await ProductApiService().toggleWishlist(widget.product.id);
+      if (updatedStatus != null) {
+        setState(() {
+          isWishlisted = updatedStatus;
+        });
+      }
+    } catch (e) {
+      print("Error: Exception: Error toggling wishlist: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,17 +152,24 @@ class ProductCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Align(
+          Align(
             alignment: Alignment.topRight,
-            child: Icon(Icons.favorite_border, color: AppColors.primaryColor),
+            child: IconButton(
+              onPressed: toggleWishlist,
+              icon: Icon(
+                isWishlisted ? Icons.favorite : Icons.favorite_border,
+                color: isWishlisted ? Colors.red : AppColors.primaryColor,
+              ),
+              iconSize: 24,
+            ),
           ),
           Expanded(
             child: Center(
               child: GestureDetector(
                 onTap: () {},
                 child: Image.network(
-                  product.images.isNotEmpty
-                      ? product.images[0]
+                  widget.product.images.isNotEmpty
+                      ? widget.product.images[0]
                       : 'assets/images/medical.png',
                   fit: BoxFit.contain,
                   height: 100,
@@ -137,17 +183,17 @@ class ProductCard extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Text(
-            product.title,
+            widget.product.title,
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 5),
           Text(
-            product.category,
+            widget.product.category,
             style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
           const SizedBox(height: 5),
           Text(
-            '\$${product.price.toStringAsFixed(2)}',
+            '\$${widget.product.price.toStringAsFixed(2)}',
             style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
