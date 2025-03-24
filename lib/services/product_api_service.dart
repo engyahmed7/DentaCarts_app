@@ -15,7 +15,7 @@ class ProductApiService {
       );
 
       print("Response Body: ${response.body}");
-      print("Response : ${response}");
+      print("Response : $response");
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
@@ -117,7 +117,7 @@ class ProductApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print("Wishlist data : ${data}");
+        print("Wishlist data : $data");
         return data;
       } else {
         throw Exception("Failed to load wishlist");

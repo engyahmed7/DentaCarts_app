@@ -4,6 +4,7 @@ import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/screen/details_produc_screen.dart';
 import 'package:DentaCarts/screen/instruments_screen.dart';
+import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/product_api_service.dart';
@@ -244,13 +245,42 @@ class _SaleProductCardState extends State<SaleProductCard> {
     try {
       bool? updatedStatus =
           await ProductApiService().toggleWishlist(widget.product.id);
-      if (updatedStatus != null) {
-        setState(() {
-          isWishlisted = updatedStatus;
-        });
-      }
+      setState(() {
+        isWishlisted = updatedStatus;
+      });
     } catch (e) {
       print("Error: Exception: Error toggling wishlist: $e");
+    }
+  }
+
+  void addToCart() async {
+    try {
+      final response = await CartApiService().addToCart(widget.product.id, 1);
+      print("Cart Response: $response");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Item added to cart successfully!"),
+          backgroundColor: const Color.fromARGB(255, 30, 68, 31),
+        ),
+      );
+    } catch (e) {
+      String errorMessage = e.toString();
+
+      if (errorMessage.contains("Out of stock")) {
+        errorMessage = "Out of stock";
+      } else {
+        errorMessage = "Failed to add item to cart";
+      }
+
+      print("Error: $errorMessage");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: AppColors.primaryColor,
+        ),
+      );
     }
   }
 
@@ -380,16 +410,19 @@ class _SaleProductCardState extends State<SaleProductCard> {
                       ),
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.pink.shade50,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.add_shopping_cart,
-                      color: AppColors.primaryColor,
+                  GestureDetector(
+                    onTap: addToCart,
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.only(right: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.pink.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.add_shopping_cart,
+                        color: AppColors.primaryColor,
+                      ),
                     ),
                   ),
                 ],
@@ -428,7 +461,7 @@ class _SaleProductCardState extends State<SaleProductCard> {
 }
 
 class SaleProductsList extends StatefulWidget {
-  const SaleProductsList({Key? key}) : super(key: key);
+  const SaleProductsList({super.key});
 
   @override
   _SaleProductsListState createState() => _SaleProductsListState();

@@ -109,7 +109,7 @@ class EmptyWishlist extends StatelessWidget {
             ),
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => InstrumentsScreen()),
+                MaterialPageRoute(builder: (_) => const InstrumentsScreen()),
               );
             },
             child: const Text('Return to shop',

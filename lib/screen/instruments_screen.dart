@@ -97,7 +97,7 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
 class ProductCard extends StatefulWidget {
   final Product product;
 
-  const ProductCard({Key? key, required this.product}) : super(key: key);
+  const ProductCard({super.key, required this.product});
 
   @override
   _ProductCardState createState() => _ProductCardState();
@@ -127,12 +127,10 @@ class _ProductCardState extends State<ProductCard> {
     try {
       bool? updatedStatus =
           await ProductApiService().toggleWishlist(widget.product.id);
-      if (updatedStatus != null) {
-        setState(() {
-          isWishlisted = updatedStatus;
-        });
-      }
-    } catch (e) {
+      setState(() {
+        isWishlisted = updatedStatus;
+      });
+        } catch (e) {
       print("Error: Exception: Error toggling wishlist: $e");
     }
   }
