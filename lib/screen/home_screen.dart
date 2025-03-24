@@ -268,7 +268,7 @@ class _SaleProductCardState extends State<SaleProductCard> {
       String errorMessage = e.toString();
 
       if (errorMessage.contains("Out of stock")) {
-        errorMessage = "Out of stock";
+        errorMessage = "${widget.product.title} is out of stock";
       } else {
         errorMessage = "Failed to add item to cart";
       }

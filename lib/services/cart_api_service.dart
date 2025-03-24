@@ -34,4 +34,27 @@ class CartApiService {
       throw Exception("Error fetching cart: $e");
     }
   }
+
+  Future<List<dynamic>> fetchCart() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    try {
+      final response = await http.get(
+        Uri.parse('${baseUrl}cart'),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+      );
+      print("Response Body: ${response.body}");
+      print("Response : $response");
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception("Failed to load cart");
+      }
+    } catch (e) {
+      throw Exception("Error fetching cart: $e");
+    }
+  }
 }
