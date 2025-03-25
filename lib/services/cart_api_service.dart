@@ -57,4 +57,34 @@ class CartApiService {
       throw Exception("Error fetching cart: $e");
     }
   }
+
+  Future<void> updateCartQuantity(String productId, int quantity) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    try {
+      final response = await http.put(
+        Uri.parse('${baseUrl}cart'),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({
+          'productId': productId,
+          'qty': quantity,
+        }),
+      );
+
+      print("Update Cart Status Code: ${response.statusCode}");
+      print("Update Cart Response: ${response.body}");
+
+      if (response.statusCode != 200) {
+        throw Exception("Failed to update cart: ${response.body}");
+      }
+    } catch (e) {
+      throw Exception("Error updating cart: $e");
+    }
+  }
+
+
 }

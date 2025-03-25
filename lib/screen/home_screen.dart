@@ -289,7 +289,9 @@ class _SaleProductCardState extends State<SaleProductCard> {
     return InkWell(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-          return DetailsProductPage();
+          return DetailsProductPage(
+            product: widget.product,
+          );
         }));
       },
       child: Stack(

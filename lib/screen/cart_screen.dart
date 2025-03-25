@@ -28,6 +28,7 @@ class _CartScreenState extends State<CartScreen> {
       setState(() {
         cartItems = response
             .map((item) => {
+                  'productId': item['productId'] ?? '1',
                   'name': item['name'] ?? 'Unknown',
                   'price': (item['price'] ?? 0).toDouble(),
                   'image': item['img'] ?? 'assets/images/medical.png',
@@ -141,7 +142,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 }
 
-class CartItemCard extends StatelessWidget {
+class CartItemCard extends StatefulWidget {
   final Map<String, dynamic> item;
   final Function(int) onQuantityChanged;
 
@@ -150,6 +151,25 @@ class CartItemCard extends StatelessWidget {
     required this.item,
     required this.onQuantityChanged,
   });
+
+  @override
+  _CartItemCardState createState() => _CartItemCardState();
+}
+
+class _CartItemCardState extends State<CartItemCard> {
+  void onQuantityChangedMethod(String productId, int newQuantity) async {
+    print("Product ID: ${widget.item['productId']}");
+    print("New Quantity: $newQuantity");
+    if (newQuantity < 1) return;
+    try {
+      await CartApiService().updateCartQuantity(productId, newQuantity);
+      setState(() {
+        widget.item['qty'] = newQuantity;
+      });
+    } catch (e) {
+      print("Error updating quantity: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +188,7 @@ class CartItemCard extends StatelessWidget {
                   bottomLeft: Radius.circular(12),
                 ),
                 child: Image.network(
-                  item['image'],
+                  widget.item['image'],
                   height: double.infinity,
                   width: 100,
                   fit: BoxFit.cover,
@@ -185,7 +205,7 @@ class CartItemCard extends StatelessWidget {
                           5,
                           (index) => Icon(
                             Icons.star,
-                            color: index < item['rating']
+                            color: index < widget.item['rating']
                                 ? Colors.yellow
                                 : Colors.grey,
                             size: 16,
@@ -194,7 +214,7 @@ class CartItemCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        item['name'],
+                        widget.item['name'],
                         style: GoogleFonts.poppins(
                             fontSize: 14, fontWeight: FontWeight.bold),
                       ),
@@ -203,16 +223,20 @@ class CartItemCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "\$${item['price']}",
+                            "\$${widget.item['price']}",
                             style: const TextStyle(
                                 color: AppColors.primaryColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),
                           ),
                           QuantitySelector(
-                            quantity: item['qty'],
-                            onDecrease: () => onQuantityChanged(-1),
-                            onIncrease: () => onQuantityChanged(1),
+                            quantity: widget.item['qty'],
+                            onDecrease: () => onQuantityChangedMethod(
+                                widget.item['productId'],
+                                widget.item['qty'] - 1),
+                            onIncrease: () => onQuantityChangedMethod(
+                                widget.item['productId'],
+                                widget.item['qty'] + 1),
                           ),
                         ],
                       ),

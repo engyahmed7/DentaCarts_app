@@ -1,5 +1,7 @@
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/product_model.dart';
+import 'package:DentaCarts/screen/details_produc_screen.dart';
+import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:flutter/material.dart';
 import '../services/product_api_service.dart';
 import 'package:DentaCarts/model/product_model.dart';
@@ -130,8 +132,37 @@ class _ProductCardState extends State<ProductCard> {
       setState(() {
         isWishlisted = updatedStatus;
       });
-        } catch (e) {
+    } catch (e) {
       print("Error: Exception: Error toggling wishlist: $e");
+    }
+  }
+
+  void addToCart() async {
+    try {
+      final response = await CartApiService().addToCart(widget.product.id, 1);
+      print("Cart Response: $response");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Item added to cart successfully!"),
+          backgroundColor: Color.fromARGB(255, 30, 68, 31),
+        ),
+      );
+    } catch (e) {
+      String errorMessage = e.toString();
+
+      if (errorMessage.contains("Out of stock")) {
+        errorMessage = "${widget.product.title} is out of stock";
+      } else {
+        errorMessage = "Failed to add item to cart";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: AppColors.primaryColor,
+        ),
+      );
     }
   }
 
@@ -164,7 +195,14 @@ class _ProductCardState extends State<ProductCard> {
           Expanded(
             child: Center(
               child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DetailsProductPage(
+                              product: widget.product,
+                            )));
+                },
                 child: Image.network(
                   widget.product.images.isNotEmpty
                       ? widget.product.images[0]
@@ -208,8 +246,21 @@ class _ProductCardState extends State<ProductCard> {
                   color: AppColors.secondaryColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.shopping_cart_checkout_sharp,
-                    color: AppColors.primaryColor),
+                child: GestureDetector(
+                  onTap: addToCart,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.pink.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.add_shopping_cart,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

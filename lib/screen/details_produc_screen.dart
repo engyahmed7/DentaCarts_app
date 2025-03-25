@@ -1,10 +1,14 @@
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/model/product_model.dart';
+import 'package:DentaCarts/services/cart_api_service.dart';
+import 'package:DentaCarts/services/product_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart' show GoogleFonts;
 
-
 class DetailsProductPage extends StatefulWidget {
-  const DetailsProductPage({super.key});
+  final Product product;
+
+  const DetailsProductPage({super.key, required this.product});
 
   @override
   _DetailsProductPageState createState() => _DetailsProductPageState();
@@ -12,35 +16,85 @@ class DetailsProductPage extends StatefulWidget {
 
 class _DetailsProductPageState extends State<DetailsProductPage> {
   int selectedIndex = 0;
-  List<String> images = [
-    'https://images.unsplash.com/photo-1734102505163-5050877fbf47?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    "https://images.unsplash.com/photo-1739826009158-edbd53ec9979?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1740098594279-8f54148fa43d?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1740131971089-8f46b62c18d0?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1738402431249-c463ce6c407b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1726066012801-14d892021339?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1739809132996-924f0cb622b2?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1726057403601-c099f03e7b3e?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://plus.unsplash.com/premium_photo-1738935667717-75777a3aaf71?q=80&w=1472&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  bool isWishlisted = false;
 
+  @override
+  void initState() {
+    super.initState();
+    checkWishlistStatus();
+  }
 
-  ];
+  Future<void> checkWishlistStatus() async {
+    print("Checking wishlist status for product: ${widget.product.id}");
+    bool status =
+        await ProductApiService().checkIfWishlisted(widget.product.id);
+    print("Wishlist status for product ${widget.product.id}: $status");
 
+    setState(() {
+      isWishlisted = status;
+    });
+  }
+
+  void toggleWishlist() async {
+    try {
+      bool? updatedStatus =
+          await ProductApiService().toggleWishlist(widget.product.id);
+      setState(() {
+        isWishlisted = updatedStatus;
+      });
+    } catch (e) {
+      print("Error: Exception: Error toggling wishlist: $e");
+    }
+  }
+
+  void addToCart() async {
+    try {
+      final response = await CartApiService().addToCart(widget.product.id, 1);
+      print("Cart Response: $response");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Item added to cart successfully!"),
+          backgroundColor: const Color.fromARGB(255, 30, 68, 31),
+        ),
+      );
+    } catch (e) {
+      String errorMessage = e.toString();
+
+      if (errorMessage.contains("Out of stock")) {
+        errorMessage = "${widget.product.title} is out of stock";
+      } else {
+        errorMessage = "Failed to add item to cart";
+      }
+
+      print("Error: $errorMessage");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: AppColors.primaryColor,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Instrument Name'),
+        title: Text(widget.product.title),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.favorite_border),
-            onPressed: () {},
-          )
+            onPressed: toggleWishlist,
+            icon: Icon(
+              isWishlisted ? Icons.favorite : Icons.favorite_border,
+              color: isWishlisted ? Colors.red : AppColors.primaryColor,
+            ),
+          ),
         ],
       ),
       body: Padding(
@@ -50,12 +104,12 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
           children: [
             Center(
               child: SizedBox(
-                height: 200, // Ensure fixed height
-                width: double.infinity, // Expand width if needed
+                height: 200,
+                width: double.infinity,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.network(
-                    images[selectedIndex],
+                    widget.product.images[selectedIndex],
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -66,7 +120,7 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
               height: 70,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: images.length,
+                itemCount: widget.product.images.length,
                 itemBuilder: (context, idx) {
                   return GestureDetector(
                     onTap: () {
@@ -88,7 +142,7 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          images[idx],
+                          widget.product.images[idx],
                           height: 50,
                           width: 50,
                           fit: BoxFit.cover,
@@ -105,17 +159,19 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
                 Row(
                   children: List.generate(
                     5,
-                        (index) => const Icon(
+                    (index) => Icon(
                       Icons.star,
-                      color: Colors.yellow,
+                      color: index < widget.product.rating.round()
+                          ? Colors.yellow
+                          : Colors.grey,
                       size: 16,
                     ),
                   ),
                 ),
                 const SizedBox(width: 5),
-                const Text(
-                  "70,000+",
-                  style: TextStyle(
+                Text(
+                  "${widget.product.rating.toStringAsFixed(1)}",
+                  style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey,
@@ -124,23 +180,27 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
               ],
             ),
             const SizedBox(height: 16),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Instruments Name',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  widget.product.title,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '\$8.54',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.red),
+                  '\$${widget.product.price.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red),
                 ),
               ],
             ),
-            const Text('Dental Excavator', style: TextStyle(color: Colors.grey)),
-            const Text(
-              'Discover the essential dental instruments that every practitioner should have in their toolkit...',
-              style: TextStyle(fontSize: 14),
+            const SizedBox(height: 8),
+            Text(
+              widget.product.description,
+              style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -155,14 +215,16 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 onPressed: () {
-
+                  addToCart();
                 },
-                child: Text("Add to Cart",
-                    style: GoogleFonts.poppins(
-                        fontSize: 18, color: Colors.white)),
+                child: Text(
+                  "Add to Cart",
+                  style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
+                ),
               ),
             ),
           ],
