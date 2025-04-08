@@ -4,7 +4,6 @@ import 'package:DentaCarts/screen/details_produc_screen.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:flutter/material.dart';
 import '../services/product_api_service.dart';
-import 'package:DentaCarts/model/product_model.dart';
 
 class InstrumentsScreen extends StatefulWidget {
   const InstrumentsScreen({super.key});

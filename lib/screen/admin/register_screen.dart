@@ -1,4 +1,6 @@
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/screen/admin/login_screen.dart';
+import 'package:DentaCarts/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -17,10 +19,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextEditingController();
 
   bool _obscureText = true;
+  bool _isLoading = false;
 
   void _togglePasswordVisibility() {
     setState(() {
       _obscureText = !_obscureText;
+    });
+  }
+
+  void _register() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    ApiService apiService = ApiService();
+    final result = await apiService.register(
+      emailController.text.trim(),
+      passwordController.text.trim(),
+      nameController.text.trim(),
+      role: "admin",
+    );
+
+    print(result);
+
+    setState(() {
+      _isLoading = false;
+      if (result.containsKey("error") && result["error"] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result["message"]),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      } else if (result.containsKey("token")) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Unexpected error occurred. Please try again."),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
     });
   }
 
@@ -60,7 +104,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 40),
                       const Align(
                         alignment: Alignment.centerLeft,
-                        child: Text("Name*",
+                        child: Text("UserName*",
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.black,
@@ -71,7 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       TextField(
                         controller: nameController,
                         decoration: InputDecoration(
-                          hintText: "Enter your name",
+                          hintText: "Enter your username",
                           filled: true,
                           fillColor: AppColors.secondaryColor.withOpacity(0.7),
                           border: OutlineInputBorder(
@@ -170,17 +214,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         width: double.infinity,
                         height: 60,
                         child: ElevatedButton(
-                          onPressed: () {},
                           style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 20,
+                            ),
                             backgroundColor: AppColors.primaryColor,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: const Text(
-                            "Sign up",
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
+                          onPressed: _isLoading ? null : _register,
+                          child: _isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                              : Text(
+                                  "Sign up",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                       ),
                     ],

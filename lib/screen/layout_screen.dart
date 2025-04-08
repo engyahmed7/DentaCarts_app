@@ -37,7 +37,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
         index: currentIndex,
         children: [
           HomeScreen(),
-          CartScreen(),
+          const CartScreen(),
           const ProfileScreen(),
         ],
       ),

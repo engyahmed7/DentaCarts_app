@@ -1,4 +1,7 @@
 import 'package:DentaCarts/core/app_strings.dart';
+import 'package:DentaCarts/screen/admin/add_product_screen.dart';
+import 'package:DentaCarts/screen/admin/login_screen.dart';
+import 'package:DentaCarts/screen/admin/register_screen.dart';
 import 'package:DentaCarts/screen/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -11,10 +14,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return   const MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: AppStrings.appName,
-      home: WelcomeScreen(),
+      home: RegisterScreen(),
     );
   }
 }

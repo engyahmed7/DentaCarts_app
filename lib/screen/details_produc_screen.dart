@@ -53,9 +53,9 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
       print("Cart Response: $response");
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Item added to cart successfully!"),
-          backgroundColor: const Color.fromARGB(255, 30, 68, 31),
+        const SnackBar(
+          content: Text("Item added to cart successfully!"),
+          backgroundColor: Color.fromARGB(255, 30, 68, 31),
         ),
       );
     } catch (e) {
@@ -170,7 +170,7 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  "${widget.product.rating.toStringAsFixed(1)}",
+                  widget.product.rating.toStringAsFixed(1),
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,

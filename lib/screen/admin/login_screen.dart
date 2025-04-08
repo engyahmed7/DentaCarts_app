@@ -1,4 +1,6 @@
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/screen/admin/add_product_screen.dart';
+import 'package:DentaCarts/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -13,10 +15,48 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _obscureText = true;
+  bool _isLoading = false;
 
   void _togglePasswordVisibility() {
     setState(() {
       _obscureText = !_obscureText;
+    });
+  }
+
+  void _login() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    ApiService apiService = ApiService();
+    final result = await apiService.login(
+      emailController.text.trim(),
+      passwordController.text.trim(),
+    );
+
+    setState(() {
+      _isLoading = false;
+      if (result.containsKey("error") && result["error"] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result["message"]),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      } else if (result.containsKey("token")) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const AddProductScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Unexpected error occurred. Please try again."),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
     });
   }
 
@@ -112,17 +152,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         height: 60,
                         child: ElevatedButton(
-                          onPressed: () {},
                           style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 20,
+                            ),
                             backgroundColor: AppColors.primaryColor,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: const Text(
-                            "Sign in",
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
+                          onPressed: _isLoading ? null : _login,
+                          child: _isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                              : Text(
+                                  "Sign in",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
