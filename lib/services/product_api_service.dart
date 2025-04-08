@@ -197,14 +197,18 @@ class ProductApiService {
       } else {
         final errorResponse = await response.stream.bytesToString();
         final errorData = jsonDecode(errorResponse);
-        throw Exception(errorData['message'] ?? 'Failed to add product');
+
+        if (errorData['errors'] != null && errorData['errors'] is List) {
+          List<dynamic> errors = errorData['errors'];
+          String errorMessage = errors.map((error) => error['msg']).join('\n');
+          throw Exception(errorMessage);
+        } else {
+          throw Exception('An unexpected error occurred');
+        }
       }
     } catch (e) {
       print('Error adding product: $e');
-      throw Exception('Error adding product: $e');
+      throw Exception(e.toString().replaceAll('Exception:', '').trim());
     }
   }
-
-
-
 }

@@ -22,6 +22,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   int _selectedTabIndex = 0;
   String? token;
   String username = '';
+  bool _isLoading = false;
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController priceController = TextEditingController();
@@ -81,6 +82,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
         category.isNotEmpty &&
         stock > 0 &&
         imageFiles.isNotEmpty) {
+      setState(() {
+        _isLoading = true; 
+      });
+
       try {
         Map<String, dynamic> result = await ProductApiService().addProduct(
           title: title,
@@ -93,25 +98,51 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
         print('Product added successfully: $result');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Product added successfully!'),
-            duration: const Duration(seconds: 2),
+          const SnackBar(
+            content: Text('Product added successfully!'),
+            duration: Duration(seconds: 2),
             backgroundColor: Colors.green,
           ),
         );
+
+        _clearInputs();
       } catch (e) {
         print('Error adding product: $e');
+
+        String errorMessage = e.toString().replaceAll('Exception:', '').trim();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error adding product: $e'),
+            content: Text(errorMessage),
             duration: const Duration(seconds: 2),
             backgroundColor: AppColors.primaryColor,
           ),
         );
+      } finally {
+        setState(() {
+          _isLoading = false; 
+        });
       }
     } else {
-      print('Please fill all fields and upload at least one image');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Please fill all fields and upload at least one image.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
+  }
+
+  void _clearInputs() {
+    setState(() {
+      titleController.clear(); 
+      descriptionController.clear(); 
+      priceController.clear(); 
+      categoryController.clear();
+      stockController.clear();
+      imageFiles.clear(); 
+    });
   }
 
   @override
@@ -241,19 +272,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
           width: double.infinity,
           height: 60,
           child: ElevatedButton(
-            onPressed: () {
-              _submitProduct();
-            },
+            onPressed: _isLoading ? null : _submitProduct,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5),
               ),
             ),
-            child: const Text(
-              "Submit Product",
-              style: TextStyle(fontSize: 18, color: Colors.white),
-            ),
+            child: _isLoading
+                ? const CircularProgressIndicator(
+                    color: Colors.white,
+                  )
+                : const Text(
+                    "Submit Product",
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
           ),
         ),
       ],
@@ -293,8 +326,23 @@ class _AddProductScreenState extends State<AddProductScreen> {
             borderRadius: BorderRadius.circular(5),
             color: AppColors.secondaryColor.withOpacity(0.8),
           ),
-          child: _selectedImage != null
-              ? Image.file(_selectedImage!, fit: BoxFit.cover)
+          child: imageFiles.isNotEmpty
+              ? ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: imageFiles.length,
+                  itemBuilder: (context, index) {
+                    final imageFile = imageFiles[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Image.network(
+                        html.Url.createObjectUrl(imageFile),
+                        fit: BoxFit.cover,
+                        width: 100,
+                        height: 100,
+                      ),
+                    );
+                  },
+                )
               : const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
