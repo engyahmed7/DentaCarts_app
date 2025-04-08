@@ -37,8 +37,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   another_carousel_pro: ^1.0.2
-  http: ^1.3.0
-  image_picker: ^1.1.2
+  http: ^0.14.0
+  html: ^0.15.0
+  image_picker: ^0.8.5+3
   fl_chart: ^0.70.2
   flutter_svg: ^2.0.17
   google_fonts: ^6.2.1
@@ -53,6 +54,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   url_launcher: ^6.3.1
   dio: ^5.0.0
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_test:

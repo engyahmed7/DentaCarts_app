@@ -1,8 +1,14 @@
+import 'dart:html' as html;
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/services/api_service.dart';
+import 'package:DentaCarts/services/product_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'dart:convert';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -14,14 +20,97 @@ class AddProductScreen extends StatefulWidget {
 class _AddProductScreenState extends State<AddProductScreen> {
   File? _selectedImage;
   int _selectedTabIndex = 0;
+  String? token;
+  String username = '';
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  TextEditingController categoryController = TextEditingController();
+  TextEditingController stockController = TextEditingController();
+  List<html.File> imageFiles = [];
+  @override
+  void initState() {
+    super.initState();
+    _loadUsername();
+  }
 
   Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+    final picker = ImagePicker();
+
+    final pickedFiles = await picker.pickMultiImage();
+
+    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+      List<html.File> htmlFiles = [];
+
+      for (var pickedFile in pickedFiles) {
+        final bytes = await pickedFile.readAsBytes();
+        final htmlFile = html.File([bytes], pickedFile.name);
+        htmlFiles.add(htmlFile);
+      }
+
       setState(() {
-        _selectedImage = File(pickedFile.path);
+        imageFiles = htmlFiles;
       });
+    } else {
+      print('No images selected.');
+    }
+  }
+
+  Future<void> _loadUsername() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    if (token != null && token.isNotEmpty) {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      setState(() {
+        username = decodedToken['username'] ?? 'User';
+      });
+    }
+  }
+
+  Future<void> _submitProduct() async {
+    String title = titleController.text;
+    String description = descriptionController.text;
+    double price = double.tryParse(priceController.text) ?? 0.0;
+    String category = categoryController.text;
+    int stock = int.tryParse(stockController.text) ?? 0;
+
+    if (title.isNotEmpty &&
+        description.isNotEmpty &&
+        price > 0 &&
+        category.isNotEmpty &&
+        stock > 0 &&
+        imageFiles.isNotEmpty) {
+      try {
+        Map<String, dynamic> result = await ProductApiService().addProduct(
+          title: title,
+          description: description,
+          price: price,
+          category: category,
+          images: imageFiles,
+          stock: stock,
+        );
+
+        print('Product added successfully: $result');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Product added successfully!'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } catch (e) {
+        print('Error adding product: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error adding product: $e'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: AppColors.primaryColor,
+          ),
+        );
+      }
+    } else {
+      print('Please fill all fields and upload at least one image');
     }
   }
 
@@ -118,10 +207,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
               fontWeight: FontWeight.bold,
               fontSize: 35,
             ),
-            children: const [
+            children: [
               TextSpan(
-                text: "\nAhmed!",
-                style: TextStyle(
+                text: "\n$username!",
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primaryColor,
@@ -140,18 +229,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
           ),
         ),
         const SizedBox(height: 20),
-        _buildTextField("Product Title", Icons.title),
-        _buildTextField("Product Description", Icons.description),
-        _buildTextField("Price", Icons.attach_money),
-        _buildTextField("Category", Icons.category),
-        _buildTextField("Stock Quantity", Icons.numbers),
+        _buildTextField("Product Title", Icons.title, titleController),
+        _buildTextField(
+            "Product Description", Icons.description, descriptionController),
+        _buildTextField("Price", Icons.attach_money, priceController),
+        _buildTextField("Category", Icons.category, categoryController),
+        _buildTextField("Stock Quantity", Icons.numbers, stockController),
         _buildImageUploader(),
         const SizedBox(height: 20),
         SizedBox(
           width: double.infinity,
           height: 60,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              _submitProduct();
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryColor,
               shape: RoundedRectangleBorder(
@@ -168,10 +260,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildTextField(String label, IconData icon) {
+  Widget _buildTextField(
+      String label, IconData icon, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: TextField(
+        controller: controller,
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon, color: AppColors.primaryColor),

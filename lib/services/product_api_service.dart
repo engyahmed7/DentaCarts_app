@@ -1,6 +1,13 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'dart:html' as html;
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:flutter/foundation.dart';
 
 class ProductApiService {
   final String baseUrl = "http://localhost:3000/";
@@ -127,6 +134,77 @@ class ProductApiService {
       throw Exception("Error fetching wishlist api: $e");
     }
   }
+
+// admin apis
+  Future<Map<String, dynamic>> addProduct({
+    required String title,
+    required String description,
+    required double price,
+    required String category,
+    required List<html.File> images,
+    required int stock,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://localhost:3000/products/'),
+      );
+
+      request.fields['title'] = title;
+      request.fields['description'] = description;
+      request.fields['price'] = price.toString();
+      request.fields['category'] = category;
+      request.fields['stock'] = stock.toString();
+
+      for (var image in images) {
+        final reader = html.FileReader();
+        reader.readAsArrayBuffer(image);
+        await reader.onLoadEnd.first;
+        final imageBytes = reader.result as List<int>;
+        print('File size: ${imageBytes.length} bytes');
+        print('File name: ${image.name}');
+
+        String getContentType(String fileName) {
+          if (fileName.endsWith('.png')) return 'image/png';
+          if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg'))
+            return 'image/jpeg';
+          if (fileName.endsWith('.webp')) return 'image/webp';
+          return 'application/octet-stream';
+        }
+
+        var multipartFile = http.MultipartFile.fromBytes(
+          'image',
+          imageBytes,
+          filename: image.name,
+          contentType: MediaType.parse(getContentType(image.name)),
+        );
+        request.files.add(multipartFile);
+      }
+
+      request.headers['Authorization'] = 'Bearer $token';
+      print('Request Fields: ${request.fields}');
+
+      var response = await request.send();
+      print('Response Status Code: ${response.statusCode}');
+      if (response.statusCode == 201) {
+        final responseData = await response.stream.bytesToString();
+        final data = jsonDecode(responseData);
+        print('Product Added: $data');
+        return data;
+      } else {
+        final errorResponse = await response.stream.bytesToString();
+        final errorData = jsonDecode(errorResponse);
+        throw Exception(errorData['message'] ?? 'Failed to add product');
+      }
+    } catch (e) {
+      print('Error adding product: $e');
+      throw Exception('Error adding product: $e');
+    }
+  }
+
 
 
 }
