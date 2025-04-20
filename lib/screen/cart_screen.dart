@@ -1,6 +1,7 @@
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/blocs/cart/cart_cubit.dart';
 import 'package:DentaCarts/blocs/cart/cart_state.dart';
+import 'package:DentaCarts/screen/instruments_screen.dart';
 import 'package:DentaCarts/screen/payment_screen.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:flutter/material.dart';
@@ -184,6 +185,58 @@ class _CartScreenState extends State<CartScreen> {
             return Center(child: Text(state.message));
           } else if (state is CartLoaded) {
             final cartItems = state.items;
+
+            if (cartItems.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: AppColors.secondaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Icon(Icons.shopping_cart,
+                            size: 80, color: AppColors.primaryColor),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Your Cart is empty',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      "It's time to fill with amazing products!",
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 25),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 32, vertical: 25),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (_) => const InstrumentsScreen()),
+                        );
+                      },
+                      child: const Text('Return to shop',
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              );
+            }
+
             final totalPrice = cartItems.fold(
                 0.0, (sum, item) => sum + (item['price'] * item['qty']));
 
