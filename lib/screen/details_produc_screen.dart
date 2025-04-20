@@ -1,8 +1,10 @@
+import 'package:DentaCarts/blocs/cart/cart_cubit.dart';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:DentaCarts/services/product_api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart' show GoogleFonts;
 
 class DetailsProductPage extends StatefulWidget {
@@ -50,7 +52,20 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
   void addToCart() async {
     try {
       final response = await CartApiService().addToCart(widget.product.id, 1);
-      print("Cart Response: $response");
+
+      final item = {
+        'productId': widget.product.id,
+        'name': widget.product.title,
+        'price': widget.product.price.toDouble(),
+        'image': widget.product.images.isNotEmpty
+            ? widget.product.images.first
+            : 'assets/images/placeholder.png',
+        'rating': widget.product.rating,
+        'reviews': widget.product.reviews.toString(),
+        'qty': 1,
+      };
+
+      context.read<CartCubit>().addItem(item);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -60,7 +75,6 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
       );
     } catch (e) {
       String errorMessage = e.toString();
-
       if (errorMessage.contains("Out of stock")) {
         errorMessage = "${widget.product.title} is out of stock";
       } else {

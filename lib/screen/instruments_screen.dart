@@ -16,22 +16,50 @@ class InstrumentsScreen extends StatefulWidget {
 
 class _InstrumentsScreenState extends State<InstrumentsScreen> {
   late Future<List<Product>> futureProducts;
+  List<String> categories = [];
+  String selectedCategory = 'all';
 
   @override
   void initState() {
     super.initState();
-    futureProducts = _fetchProducts();
+    futureProducts = Future.value([]);
+    _loadInitialData();
+  }
+
+  void _loadInitialData() async {
+    categories = (await ProductApiService().fetchCategories()).cast<String>();
+    print("Categories: $categories");
+
+    setState(() {
+      futureProducts = _fetchProducts();
+    });
   }
 
   Future<List<Product>> _fetchProducts() async {
     try {
-      List<dynamic> rawProducts = await ProductApiService().fetchProducts();
+      List<dynamic> rawProducts;
+      if (selectedCategory == 'all') {
+        rawProducts = await ProductApiService().fetchProducts();
+      } else {
+        rawProducts =
+            await ProductApiService().fetchProductsByCategory(selectedCategory);
+      }
       return rawProducts.map((json) => Product.fromJson(json)).toList();
     } catch (e) {
       print("Error: $e");
       return [];
     }
   }
+
+  // Future<List<Product>> _fetchProducts() async {
+  //   try {
+  //     List<dynamic> rawProducts = await ProductApiService().fetchProducts();
+  //     return rawProducts.map((json) => Product.fromJson(json)).toList();
+  //   } catch (e) {
+  //     print("Error: $e");
+  //     return [];
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +89,42 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            if (categories.isNotEmpty)
+              SizedBox(
+                height: 40,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: categories.length + 1,
+                  itemBuilder: (context, index) {
+                    String category =
+                        index == 0 ? 'all' : categories[index - 1];
+                    bool isSelected = selectedCategory == category;
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: ChoiceChip(
+                        label: Text(category.toUpperCase()),
+                        selected: isSelected,
+                        onSelected: (_) {
+                          setState(() {
+                            selectedCategory = category;
+                            futureProducts = _fetchProducts();
+                          });
+                        },
+                        selectedColor: AppColors.primaryColor,
+                        backgroundColor: AppColors.secondaryColor,
+                        labelStyle: TextStyle(
+                          color: isSelected
+                              ? AppColors.secondaryColor
+                              : AppColors.primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            const SizedBox(height: 20),
             FutureBuilder<List<Product>>(
               future: futureProducts,
               builder: (context, snapshot) {
@@ -69,7 +133,35 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text("Error: ${snapshot.error}"));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text("No products found"));
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            color: AppColors.secondaryColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Icon(Icons.error_sharp,
+                                size: 80, color: AppColors.primaryColor),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'No Products Found',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          "Please try again later. Stay tuned for updates!",
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  );
                 }
 
                 final products = snapshot.data!;
@@ -157,9 +249,9 @@ class _ProductCardState extends State<ProductCard> {
       context.read<CartCubit>().addItem(item);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Item added to cart successfully!"),
-          backgroundColor: const Color.fromARGB(255, 30, 68, 31),
+        const SnackBar(
+          content: Text("Item added to cart successfully!"),
+          backgroundColor: Color.fromARGB(255, 30, 68, 31),
         ),
       );
     } catch (e) {
@@ -263,17 +355,9 @@ class _ProductCardState extends State<ProductCard> {
                 ),
                 child: GestureDetector(
                   onTap: addToCart,
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.pink.shade50,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.add_shopping_cart,
-                      color: AppColors.primaryColor,
-                    ),
+                  child: const Icon(
+                    Icons.add_shopping_cart,
+                    color: AppColors.primaryColor,
                   ),
                 ),
               ),

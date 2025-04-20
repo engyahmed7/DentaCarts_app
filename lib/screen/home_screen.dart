@@ -62,18 +62,18 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Search ....",
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade200,
-              ),
-            ),
+            // TextField(
+            //   decoration: InputDecoration(
+            //     hintText: "Search ....",
+            //     prefixIcon: Icon(Icons.search),
+            //     border: OutlineInputBorder(
+            //       borderRadius: BorderRadius.circular(10),
+            //       borderSide: BorderSide.none,
+            //     ),
+            //     filled: true,
+            //     fillColor: Colors.grey.shade200,
+            //   ),
+            // ),
             SizedBox(height: 20),
             BannerSection(),
             SizedBox(height: 20),

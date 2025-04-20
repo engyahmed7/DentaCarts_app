@@ -135,6 +135,50 @@ class ProductApiService {
     }
   }
 
+  Future<List<dynamic>> fetchProductsByCategory(String category) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    try {
+      final response = await http.get(
+        Uri.parse('${baseUrl}products/category/$category'),
+        headers: {"Authorization": "Bearer $token"},
+      );
+      print("Response Body: ${response.body}");
+      print("Response : $response");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print(data['products']);
+        return data['products'];
+        // return data['products'];
+      } else {
+        throw Exception("Failed to load products");
+      }
+    } catch (e) {
+      throw Exception("Error fetching products: $e");
+    }
+  }
+
+  Future<List<dynamic>> fetchCategories() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    try {
+      final response = await http.get(
+        Uri.parse('${baseUrl}products/categories'),
+        headers: {"Authorization": "Bearer $token"},
+      );
+      print("Response Body: ${response.body}");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print(data);
+        return data;
+      } else {
+        throw Exception("Failed to load categories");
+      }
+    } catch (e) {
+      throw Exception("Error fetching categories: $e");
+    }
+  }
+
 // admin apis
   Future<Map<String, dynamic>> addProduct({
     required String title,
