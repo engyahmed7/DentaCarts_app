@@ -48,4 +48,22 @@ class CartCubit extends Cubit<CartState> {
       emit(CartLoaded(items));
     }
   }
+
+  Future<void> removeItemById(String productId) async {
+    if (state is CartLoaded) {
+      try {
+        await CartApiService().deleteCartItem(productId);
+        final items =
+            List<Map<String, dynamic>>.from((state as CartLoaded).items);
+        items.removeWhere((item) => item['productId'] == productId);
+        emit(CartLoaded(items));
+      } catch (e) {
+        emit(CartError("Failed to remove item: $e"));
+      }
+    }
+  }
+
+  void clearCart() {
+    emit(CartLoaded([]));
+  }
 }

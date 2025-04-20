@@ -144,6 +144,17 @@ class _CartScreenState extends State<CartScreen> {
   //   );
   // }
 
+  void deleteCartItem(String productId) async {
+    try {
+      await CartApiService().deleteCartItem(productId);
+      setState(() {
+        cartItems.removeWhere((item) => item['productId'] == productId);
+      });
+    } catch (e) {
+      print("Error deleting item: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -300,16 +311,29 @@ class _CartItemCardState extends State<CartItemCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        children: List.generate(
-                          5,
-                          (index) => Icon(
-                            Icons.star,
-                            color: index < widget.item['rating']
-                                ? Colors.yellow
-                                : Colors.grey,
-                            size: 16,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: List.generate(
+                              5,
+                              (index) => Icon(
+                                Icons.star,
+                                color: index < widget.item['rating']
+                                    ? Colors.yellow
+                                    : Colors.grey,
+                                size: 16,
+                              ),
+                            ),
                           ),
-                        ),
+                          IconButton(
+                            onPressed: () {
+                              context
+                                  .read<CartCubit>()
+                                  .removeItemById(widget.item['productId']);
+                            },
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 10),
                       Text(

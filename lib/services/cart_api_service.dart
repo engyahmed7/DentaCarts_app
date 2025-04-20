@@ -86,5 +86,27 @@ class CartApiService {
     }
   }
 
-
+  Future<void> deleteCartItem(String productId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    try {
+      final response = await http.delete(
+        Uri.parse('${baseUrl}cart'),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({
+          'productId': productId,
+        }),
+      );
+      print("Remove Cart Status Code: ${response.statusCode}");
+      print("Remove Cart Response: ${response.body}");
+      if (response.statusCode != 200) {
+        throw Exception("Failed to remove item from cart");
+      }
+    } catch (e) {
+      throw Exception("Error removing item from cart: $e");
+    }
+  }
 }
