@@ -1,8 +1,10 @@
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/blocs/cart/cart_cubit.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/screen/details_produc_screen.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../services/product_api_service.dart';
 
 class InstrumentsScreen extends StatefulWidget {
@@ -139,22 +141,36 @@ class _ProductCardState extends State<ProductCard> {
   void addToCart() async {
     try {
       final response = await CartApiService().addToCart(widget.product.id, 1);
-      print("Cart Response: $response");
+
+      final item = {
+        'productId': widget.product.id,
+        'name': widget.product.title,
+        'price': widget.product.price.toDouble(),
+        'image': widget.product.images.isNotEmpty
+            ? widget.product.images.first
+            : 'assets/images/placeholder.png',
+        'rating': widget.product.rating,
+        'reviews': widget.product.reviews.toString(),
+        'qty': 1,
+      };
+
+      context.read<CartCubit>().addItem(item);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Item added to cart successfully!"),
-          backgroundColor: Color.fromARGB(255, 30, 68, 31),
+        SnackBar(
+          content: const Text("Item added to cart successfully!"),
+          backgroundColor: const Color.fromARGB(255, 30, 68, 31),
         ),
       );
     } catch (e) {
       String errorMessage = e.toString();
-
       if (errorMessage.contains("Out of stock")) {
         errorMessage = "${widget.product.title} is out of stock";
       } else {
         errorMessage = "Failed to add item to cart";
       }
+
+      print("Error: $errorMessage");
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -196,11 +212,11 @@ class _ProductCardState extends State<ProductCard> {
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DetailsProductPage(
-                              product: widget.product,
-                            )));
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DetailsProductPage(
+                                product: widget.product,
+                              )));
                 },
                 child: Image.network(
                   widget.product.images.isNotEmpty

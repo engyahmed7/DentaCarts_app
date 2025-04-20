@@ -1,8 +1,11 @@
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/blocs/cart/cart_cubit.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/screen/instruments_screen.dart';
+import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:DentaCarts/services/product_api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class WishlistScreen extends StatefulWidget {
@@ -24,7 +27,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Future<List<Product>> fetchWishlist() async {
     try {
       List<dynamic> rawProducts = await ProductApiService().fetchWishlist();
-      print("Raw Wishlist Data: $rawProducts");  
+      print("Raw Wishlist Data: $rawProducts");
 
       if (rawProducts.isEmpty) {
         print("Wishlist is empty");
@@ -32,7 +35,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
 
       List<Product> products =
           rawProducts.map((json) => Product.fromJson(json)).toList();
-      print("Parsed Wishlist Products: $products");  
+      print("Parsed Wishlist Products: $products");
 
       return products;
     } catch (e) {
@@ -182,10 +185,73 @@ class FilterButton extends StatelessWidget {
   }
 }
 
-class WishlistItem extends StatelessWidget {
+class WishlistItem extends StatefulWidget {
   final Product product;
 
   const WishlistItem({super.key, required this.product});
+
+  @override
+  _WishlistItemState createState() => _WishlistItemState();
+}
+
+class _WishlistItemState extends State<WishlistItem> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void addToCart() async {
+    try {
+      debugPrint("Adding to cart: ${widget.product.id}");
+      print(
+          "Trying to add product to cart: id=${widget.product.id}, title=${widget.product.title}");
+
+      final response = await CartApiService().addToCart(widget.product.id, 1);
+
+      debugPrint("Response from addToCart: $response");
+      final item = {
+        'productId': widget.product.id,
+        'name': widget.product.title,
+        'price': widget.product.price.toDouble(),
+        'image': widget.product.images.isNotEmpty
+            ? widget.product.images.first
+            : 'assets/images/placeholder.png',
+        'rating': widget.product.rating,
+        'reviews': widget.product.reviews.toString(),
+        'qty': 1,
+      };
+
+      if (mounted) {
+        context.read<CartCubit>().addItem(item);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Item added to cart successfully!"),
+            backgroundColor: Color.fromARGB(255, 30, 68, 31),
+          ),
+        );
+      }
+    } catch (e) {
+      String errorMessage = e.toString();
+      if (errorMessage.contains("Out of stock")) {
+        errorMessage = "${widget.product.title} is out of stock";
+      } else {
+        debugPrint("Error: $errorMessage");
+        errorMessage = "Failed to add item to cart";
+      }
+
+      debugPrint("Error: $errorMessage");
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: AppColors.primaryColor,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -205,7 +271,7 @@ class WishlistItem extends StatelessWidget {
                     bottomLeft: Radius.circular(12),
                   ),
                   child: Image.network(
-                    product.images.first,
+                    widget.product.images.first,
                     height: double.infinity,
                     width: 100,
                     fit: BoxFit.cover,
@@ -219,14 +285,14 @@ class WishlistItem extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          product.title,
+                          widget.product.title,
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          "Stock: ${product.stock}",
+                          "Stock: ${widget.product.stock}",
                           style: GoogleFonts.poppins(
                             fontSize: 12,
                             color: Colors.grey,
@@ -236,7 +302,7 @@ class WishlistItem extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "\$${product.price}",
+                              "\$${widget.product.price}",
                               style: const TextStyle(
                                 color: AppColors.primaryColor,
                                 fontWeight: FontWeight.bold,
@@ -249,13 +315,17 @@ class WishlistItem extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.only(right: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.pink.shade50,
-                    borderRadius: BorderRadius.circular(8),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pink.shade50,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.all(12),
                   ),
+                  onPressed: () {
+                    addToCart();
+                  },
                   child: const Icon(
                     Icons.shopping_cart_outlined,
                     color: AppColors.primaryColor,

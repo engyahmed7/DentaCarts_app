@@ -1,7 +1,10 @@
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/blocs/cart/cart_cubit.dart';
+import 'package:DentaCarts/blocs/cart/cart_state.dart';
 import 'package:DentaCarts/screen/payment_screen.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CartScreen extends StatefulWidget {
@@ -53,11 +56,96 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   double totalPrice =
+  //       cartItems.fold(0, (sum, item) => sum + (item['price'] * item['qty']));
+
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       backgroundColor: Colors.white,
+  //       elevation: 0,
+  //       title: Text("Your Products",
+  //           style: GoogleFonts.poppins(color: Colors.black)),
+  //       actions: [
+  //         Padding(
+  //           padding: const EdgeInsets.only(right: 16),
+  //           child: Center(
+  //             child: Text(
+  //               "${cartItems.length} Item(s)",
+  //               style: GoogleFonts.poppins(
+  //                   color: Colors.black, fontWeight: FontWeight.bold),
+  //             ),
+  //           ),
+  //         )
+  //       ],
+  //     ),
+  //     body: isLoading
+  //         ? const Center(child: CircularProgressIndicator())
+  //         : errorMessage.isNotEmpty
+  //             ? Center(
+  //                 child: Text(errorMessage,
+  //                     style: const TextStyle(color: Colors.red)))
+  //             : Column(
+  //                 children: [
+  //                   Expanded(
+  //                     child: ListView.builder(
+  //                       itemCount: cartItems.length,
+  //                       itemBuilder: (context, index) {
+  //                         return CartItemCard(
+  //                           item: cartItems[index],
+  //                           onQuantityChanged: (change) =>
+  //                               updateQuantity(index, change),
+  //                         );
+  //                       },
+  //                     ),
+  //                   ),
+  //                   Padding(
+  //                     padding: const EdgeInsets.all(16.0),
+  //                     child: Column(
+  //                       children: [
+  //                         Row(
+  //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                           children: [
+  //                             Text("TOTAL",
+  //                                 style: GoogleFonts.poppins(
+  //                                     fontSize: 18,
+  //                                     fontWeight: FontWeight.bold)),
+  //                             Text("\$${totalPrice.toStringAsFixed(2)}",
+  //                                 style: GoogleFonts.poppins(
+  //                                     fontSize: 18,
+  //                                     fontWeight: FontWeight.bold)),
+  //                           ],
+  //                         ),
+  //                         const SizedBox(height: 10),
+  //                         SizedBox(
+  //                           width: double.infinity,
+  //                           height: 50,
+  //                           child: ElevatedButton(
+  //                             style: ElevatedButton.styleFrom(
+  //                               backgroundColor: AppColors.primaryColor,
+  //                               shape: RoundedRectangleBorder(
+  //                                   borderRadius: BorderRadius.circular(10)),
+  //                             ),
+  //                             onPressed: () {
+  //                               Navigator.of(context).push(MaterialPageRoute(
+  //                                   builder: (_) => const PaymentScreen()));
+  //                             },
+  //                             child: Text("Check out",
+  //                                 style: GoogleFonts.poppins(
+  //                                     fontSize: 18, color: Colors.white)),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
-    double totalPrice =
-        cartItems.fold(0, (sum, item) => sum + (item['price'] * item['qty']));
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -77,67 +165,78 @@ class _CartScreenState extends State<CartScreen> {
           )
         ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : errorMessage.isNotEmpty
-              ? Center(
-                  child: Text(errorMessage,
-                      style: const TextStyle(color: Colors.red)))
-              : Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: cartItems.length,
-                        itemBuilder: (context, index) {
-                          return CartItemCard(
-                            item: cartItems[index],
-                            onQuantityChanged: (change) =>
-                                updateQuantity(index, change),
-                          );
+      body: BlocBuilder<CartCubit, CartState>(
+        builder: (context, state) {
+          if (state is CartLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is CartError) {
+            return Center(child: Text(state.message));
+          } else if (state is CartLoaded) {
+            final cartItems = state.items;
+            final totalPrice = cartItems.fold(
+                0.0, (sum, item) => sum + (item['price'] * item['qty']));
+
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: cartItems.length,
+                    itemBuilder: (context, index) {
+                      return CartItemCard(
+                        item: cartItems[index],
+                        onQuantityChanged: (change) {
+                          context
+                              .read<CartCubit>()
+                              .updateQuantity(index, change);
                         },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("TOTAL",
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold)),
-                              Text("\$${totalPrice.toStringAsFixed(2)}",
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => const PaymentScreen()));
-                              },
-                              child: Text("Check out",
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 18, color: Colors.white)),
-                            ),
-                          ),
+                          Text("TOTAL",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text("\$${totalPrice.toStringAsFixed(2)}",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
                         ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (_) => const PaymentScreen()));
+                          },
+                          child: Text("Check out",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 18, color: Colors.white)),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              ],
+            );
+          }
+
+          return Container();
+        },
+      ),
     );
   }
 }

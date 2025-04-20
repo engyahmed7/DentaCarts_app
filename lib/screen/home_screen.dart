@@ -1,11 +1,13 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/blocs/cart/cart_cubit.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/screen/details_produc_screen.dart';
 import 'package:DentaCarts/screen/instruments_screen.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/product_api_service.dart';
 
@@ -256,7 +258,20 @@ class _SaleProductCardState extends State<SaleProductCard> {
   void addToCart() async {
     try {
       final response = await CartApiService().addToCart(widget.product.id, 1);
-      print("Cart Response: $response");
+
+      final item = {
+        'productId': widget.product.id,
+        'name': widget.product.title,
+        'price': widget.product.price.toDouble(),
+        'image': widget.product.images.isNotEmpty
+            ? widget.product.images.first
+            : 'assets/images/placeholder.png',
+        'rating': widget.product.rating,
+        'reviews': widget.product.reviews.toString(),
+        'qty': 1,
+      };
+
+      context.read<CartCubit>().addItem(item);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -266,7 +281,6 @@ class _SaleProductCardState extends State<SaleProductCard> {
       );
     } catch (e) {
       String errorMessage = e.toString();
-
       if (errorMessage.contains("Out of stock")) {
         errorMessage = "${widget.product.title} is out of stock";
       } else {
@@ -283,6 +297,37 @@ class _SaleProductCardState extends State<SaleProductCard> {
       );
     }
   }
+
+  // void addToCart() async {
+  //   try {
+  //     final response = await CartApiService().addToCart(widget.product.id, 1);
+  //     print("Cart Response: $response");
+
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: const Text("Item added to cart successfully!"),
+  //         backgroundColor: const Color.fromARGB(255, 30, 68, 31),
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     String errorMessage = e.toString();
+
+  //     if (errorMessage.contains("Out of stock")) {
+  //       errorMessage = "${widget.product.title} is out of stock";
+  //     } else {
+  //       errorMessage = "Failed to add item to cart";
+  //     }
+
+  //     print("Error: $errorMessage");
+
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text(errorMessage),
+  //         backgroundColor: AppColors.primaryColor,
+  //       ),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
