@@ -18,6 +18,8 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
   late Future<List<Product>> futureProducts;
   List<String> categories = [];
   String selectedCategory = 'all';
+  TextEditingController searchController = TextEditingController();
+  String searchQuery = '';
 
   @override
   void initState() {
@@ -38,12 +40,16 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
   Future<List<Product>> _fetchProducts() async {
     try {
       List<dynamic> rawProducts;
-      if (selectedCategory == 'all') {
+
+      if (searchQuery.isNotEmpty) {
+        rawProducts = await ProductApiService().searchProducts(searchQuery);
+      } else if (selectedCategory == 'all') {
         rawProducts = await ProductApiService().fetchProducts();
       } else {
         rawProducts =
             await ProductApiService().fetchProductsByCategory(selectedCategory);
       }
+
       return rawProducts.map((json) => Product.fromJson(json)).toList();
     } catch (e) {
       print("Error: $e");
@@ -76,6 +82,13 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
+              controller: searchController,
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value;
+                  futureProducts = _fetchProducts();
+                });
+              },
               decoration: InputDecoration(
                 hintText: 'Search ...',
                 prefixIcon: const Icon(Icons.search),
@@ -212,6 +225,7 @@ class _ProductCardState extends State<ProductCard> {
     bool status =
         await ProductApiService().checkIfWishlisted(widget.product.id);
     print("Wishlist status for product ${widget.product.id}: $status");
+    if (!mounted) return;
 
     setState(() {
       isWishlisted = status;

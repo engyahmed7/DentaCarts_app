@@ -77,6 +77,11 @@ class ProductApiService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
 
+    if (token == null) {
+      print("Token not found in SharedPreferences.");
+      return false;
+    }
+
     try {
       final response = await http.get(
         Uri.parse('${baseUrl}wishlist/'),
@@ -89,12 +94,8 @@ class ProductApiService {
       if (response.statusCode == 200) {
         final List<dynamic> wishlist = jsonDecode(response.body);
 
-        // print("Response Body from check wishlist: $wishlist");
-
         bool isWishlisted =
             wishlist.any((item) => item["productId"] == productId);
-
-        // print("Wishlist check for $productId: $isWishlisted");
         return isWishlisted;
       } else {
         print("Error fetching wishlist: ${response.statusCode}");
@@ -176,6 +177,23 @@ class ProductApiService {
       }
     } catch (e) {
       throw Exception("Error fetching categories: $e");
+    }
+  }
+
+  Future<List<dynamic>> searchProducts(String query) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    final response = await http.get(
+      Uri.parse('${baseUrl}products/search?query=$query'),
+      headers: {"Authorization": "Bearer $token"},
+    );
+
+    print("Response Body: ${response.body}");
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data;
+    } else {
+      throw Exception("Failed to search products");
     }
   }
 
