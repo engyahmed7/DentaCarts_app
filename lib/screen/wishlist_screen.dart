@@ -1,3 +1,4 @@
+import 'package:DentaCarts/blocs/whishlist/wishlist_cubit.dart';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/blocs/cart/cart_cubit.dart';
 import 'package:DentaCarts/model/product_model.dart';
@@ -12,36 +13,14 @@ class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
 
   @override
-  _WishlistScreenState createState() => _WishlistScreenState();
+  State<WishlistScreen> createState() => _WishlistScreenState();
 }
 
 class _WishlistScreenState extends State<WishlistScreen> {
-  late Future<List<Product>> wishlistFuture;
-
   @override
   void initState() {
     super.initState();
-    wishlistFuture = fetchWishlist();
-  }
-
-  Future<List<Product>> fetchWishlist() async {
-    try {
-      List<dynamic> rawProducts = await ProductApiService().fetchWishlist();
-      print("Raw Wishlist Data: $rawProducts");
-
-      if (rawProducts.isEmpty) {
-        print("Wishlist is empty");
-      }
-
-      List<Product> products =
-          rawProducts.map((json) => Product.fromJson(json)).toList();
-      print("Parsed Wishlist Products: $products");
-
-      return products;
-    } catch (e) {
-      print("Error fetching wishlist: $e");
-      return [];
-    }
+    context.read<WishlistCubit>().loadWishlist();
   }
 
   @override
@@ -53,18 +32,22 @@ class _WishlistScreenState extends State<WishlistScreen> {
         title: const Text('Wishlist', style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
-      body: FutureBuilder<List<Product>>(
-        future: wishlistFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: BlocBuilder<WishlistCubit, WishlistState>(
+        builder: (context, state) {
+          if (state is WishlistLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const EmptyWishlist();
+          } else if (state is WishlistError) {
+            return Center(child: Text(state.message));
+          } else if (state is WishlistLoaded) {
+            final items =
+                state.wishlist.map((json) => Product.fromJson(json)).toList();
+            if (items.isEmpty) {
+              return const EmptyWishlist();
+            } else {
+              return FilledWishlist(wishlistItems: items);
+            }
           }
-
-          return FilledWishlist(wishlistItems: snapshot.data!);
+          return const SizedBox();
         },
       ),
     );
@@ -253,6 +236,10 @@ class _WishlistItemState extends State<WishlistItem> {
     }
   }
 
+  void toggleWishlist() {
+    context.read<WishlistCubit>().toggleWishlist(widget.product.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -271,7 +258,9 @@ class _WishlistItemState extends State<WishlistItem> {
                     bottomLeft: Radius.circular(12),
                   ),
                   child: Image.network(
-                    widget.product.images.first,
+                    widget.product.images.isNotEmpty
+                        ? widget.product.images.first
+                        : 'https://via.placeholder.com/100',
                     height: double.infinity,
                     width: 100,
                     fit: BoxFit.cover,
@@ -351,10 +340,19 @@ class _WishlistItemState extends State<WishlistItem> {
               ],
             ),
             child: IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.favorite,
-                color: Colors.red,
+              onPressed: toggleWishlist,
+              icon: BlocBuilder<WishlistCubit, WishlistState>(
+                builder: (context, state) {
+                  if (state is WishlistLoaded) {
+                    final isFavorite =
+                        state.wishlist.contains(widget.product.id);
+                    return Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : Colors.grey,
+                    );
+                  }
+                  return const CircularProgressIndicator();
+                },
               ),
               iconSize: 24,
             ),
