@@ -339,4 +339,26 @@ class ProductApiService {
       throw Exception(e.toString().replaceAll('Exception:', '').trim());
     }
   }
+
+  Future<void> deleteProduct(String productId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    try {
+      final response = await http.delete(
+        Uri.parse('${baseUrl}products/$productId'),
+        headers: {
+          "Authorization": "Bearer $token",
+        },
+      );
+      if (response.statusCode == 200) {
+        print('Product deleted successfully');
+      } else {
+        print('Error deleting product: ${response.reasonPhrase}');
+        throw Exception('Failed to delete product');
+      }
+    } catch (e) {
+      print('Error deleting product: $e');
+      throw Exception(e.toString().replaceAll('Exception:', '').trim());
+    }
+  }
 }

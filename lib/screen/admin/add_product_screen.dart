@@ -559,14 +559,28 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  // void _deleteProduct(int index) {
-  //   setState(() {
-  //     products.removeAt(index);
-  //   });
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     const SnackBar(content: Text('Product deleted successfully!')),
-  //   );
-  // }
+  void _deleteProduct(List<Product> products, int index) async {
+    final productId = products[index].id;
+    try {
+      await ProductApiService().deleteProduct(productId);
+      setState(() {
+        products.removeAt(index);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Product deleted successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting product: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   Widget _buildManageProductsTable() {
     return FutureBuilder<List<Product>>(
@@ -787,7 +801,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                   IconButton(
                                     icon: const Icon(Icons.delete_outline,
                                         size: 20),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      _deleteProduct(
+                                          products, products.indexOf(product));
+                                    },
                                     color: AppColors.primaryColor,
                                   ),
                                 ],
