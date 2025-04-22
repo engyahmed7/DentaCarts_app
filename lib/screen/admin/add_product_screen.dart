@@ -11,6 +11,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:convert';
 
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
 
@@ -432,11 +435,30 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       ),
                       const SizedBox(width: 15),
                       ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          ProductApiService()
+                              .fetchProducts()
+                              .then((fetchedProducts) {
+                            final products = fetchedProducts
+                                .map((product) => Product.fromJson(product))
+                                .toList();
+                            generateAndDownloadPdf(products
+                                .map((product) => {
+                                      'id': product.id,
+                                      'name': product.title,
+                                      'price': product.price,
+                                    })
+                                .toList());
+                          }).catchError((error) {
+                            print('Error fetching products: $error');
+                          });
+                        },
                         icon: const Icon(Icons.file_download,
                             color: Colors.black),
-                        label: const Text('Export',
-                            style: TextStyle(color: Colors.black)),
+                        label: const Text(
+                          'Export',
+                          style: TextStyle(color: Colors.black),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
@@ -467,14 +489,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-              Row(
-                children: [
-                  _buildStatusTab('All Products (${products.length})', true),
-                  _buildStatusTab('Shipping (100)', false),
-                  _buildStatusTab('Completed (500)', false),
-                  _buildStatusTab('Cancel (0)', false),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     _buildStatusTab('All Products (${products.length})', true),
+              //     _buildStatusTab('Shipping (100)', false),
+              //     _buildStatusTab('Completed (500)', false),
+              //     _buildStatusTab('Cancel (0)', false),
+              //   ],
+              // ),
               const SizedBox(height: 20),
               Expanded(
                 child: Container(
@@ -518,11 +540,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           DataColumn(label: Text('Action')),
                         ],
                         rows: products.map((product) {
-                          bool isPaid = int.tryParse(product.id) != null &&
-                              int.parse(product.id) % 3 == 0;
-                          bool isCanceled = int.tryParse(product.id) != null &&
-                              int.parse(product.id) % 4 == 0;
-
                           return DataRow(
                             cells: [
                               DataCell(
@@ -607,6 +624,79 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
+  Future<void> generateAndDownloadPdf(
+      List<Map<String, dynamic>> products) async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text('Product Data', style: pw.TextStyle(fontSize: 24)),
+              pw.SizedBox(height: 20),
+              pw.Table(
+                border: pw.TableBorder.all(),
+                children: [
+                  pw.TableRow(
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text('ID',
+                            style:
+                                pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text('Name',
+                            style:
+                                pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text('Price',
+                            style:
+                                pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                  ...products.map(
+                    (product) => pw.TableRow(
+                      children: [
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Text(product['id'].toString()),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Text(product['name']),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Text('\$${product['price']}'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    final pdfBytes = await pdf.save();
+
+    final blob = html.Blob([pdfBytes], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final anchor = html.AnchorElement(href: url)
+      ..setAttribute('download', 'product_data.pdf')
+      ..click();
+    html.Url.revokeObjectUrl(url);
+  }
+
   Widget _buildManageOrdersTable() {
     return Padding(
       padding: const EdgeInsets.all(20.0),
@@ -655,10 +745,29 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   ),
                   const SizedBox(width: 15),
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      ProductApiService()
+                          .fetchProducts()
+                          .then((fetchedProducts) {
+                        final products = fetchedProducts
+                            .map((product) => Product.fromJson(product))
+                            .toList();
+                        generateAndDownloadPdf(products
+                            .map((product) => {
+                                  'id': product.id,
+                                  'name': product.title,
+                                  'price': product.price,
+                                })
+                            .toList());
+                      }).catchError((error) {
+                        print('Error fetching products: $error');
+                      });
+                    },
                     icon: const Icon(Icons.file_download, color: Colors.black),
-                    label: const Text('Export',
-                        style: TextStyle(color: Colors.black)),
+                    label: const Text(
+                      'Export',
+                      style: TextStyle(color: Colors.black),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
