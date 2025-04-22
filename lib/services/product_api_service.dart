@@ -212,7 +212,7 @@ class ProductApiService {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://localhost:3000/products/'),
+        Uri.parse('${baseUrl}products/'),
       );
 
       request.fields['title'] = title;
@@ -270,6 +270,72 @@ class ProductApiService {
       }
     } catch (e) {
       print('Error adding product: $e');
+      throw Exception(e.toString().replaceAll('Exception:', '').trim());
+    }
+  }
+
+  Future<Map<String, dynamic>> editProduct({
+    required String productId,
+    required String title,
+    required String description,
+    required double price,
+    required String category,
+    required List<html.File> images,
+    required int stock,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    try {
+      var request = http.MultipartRequest(
+        'PUT',
+        Uri.parse('${baseUrl}products/$productId'),
+      );
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['title'] = title;
+      request.fields['description'] = description;
+      request.fields['price'] = price.toString();
+      request.fields['category'] = category;
+      request.fields['stock'] = stock.toString();
+
+      for (var image in images) {
+        final reader = html.FileReader();
+        reader.readAsArrayBuffer(image);
+        await reader.onLoadEnd.first;
+        final imageBytes = reader.result as List<int>;
+        print('File size: ${imageBytes.length} bytes');
+        print('File name: ${image.name}');
+
+        String getContentType(String fileName) {
+          if (fileName.endsWith('.png')) return 'image/png';
+          if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg'))
+            return 'image/jpeg';
+          if (fileName.endsWith('.webp')) return 'image/webp';
+          return 'application/octet-stream';
+        }
+
+        var multipartFile = http.MultipartFile.fromBytes(
+          'image',
+          imageBytes,
+          filename: image.name,
+          contentType: MediaType.parse(getContentType(image.name)),
+        );
+        request.files.add(multipartFile);
+      }
+
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        var responseBody = await response.stream.bytesToString();
+        var jsonResponse = jsonDecode(responseBody);
+        return jsonResponse;
+      } else {
+        print('Error editing product: ${response.reasonPhrase}');
+        final errorResponse = await response.stream.bytesToString();
+        final errorData = jsonDecode(errorResponse);
+        print('Error Data: $errorData');
+        throw Exception('Failed to edit product');
+      }
+    } catch (e) {
+      print('Error editing product: $e');
       throw Exception(e.toString().replaceAll('Exception:', '').trim());
     }
   }

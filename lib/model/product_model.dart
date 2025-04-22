@@ -1,15 +1,15 @@
 import 'dart:convert';
 
 class Product {
-  final String id;
-  final String title;
-  final String description;
-  final double price;
-  final String category;
-  final List<String> images;
-  final int stock;
-  final double rating;
-  final int reviews;
+  String id;
+  String title;
+  String description;
+  double price;
+  String category;
+  List<String> images;
+  int stock;
+  double rating;
+  int reviews;
 
   Product({
     required this.id,

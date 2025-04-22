@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -183,13 +184,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
               _selectedTabIndex = 0;
             });
           }),
-          _buildSidebarButton("Manage Products", Icons.inventory_2_outlined,
+          _buildSidebarButton("Manage Products", Icons.shopping_bag_sharp,
               isSelected: _selectedTabIndex == 1, onTap: () {
             setState(() {
               _selectedTabIndex = 1;
             });
           }),
-          _buildSidebarButton("Manage Orders", Icons.open_in_browser_rounded,
+          _buildSidebarButton("Manage Orders", Icons.receipt_long,
               isSelected: _selectedTabIndex == 2, onTap: () {
             setState(() {
               _selectedTabIndex = 2;
@@ -369,6 +370,203 @@ class _AddProductScreenState extends State<AddProductScreen> {
       ),
     );
   }
+
+  void _editProduct(List<Product> products, int index) {
+    final product = products[index];
+
+    final TextEditingController titleController =
+        TextEditingController(text: product.title);
+    final TextEditingController descriptionController =
+        TextEditingController(text: product.description);
+    final TextEditingController priceController =
+        TextEditingController(text: product.price.toString());
+    final TextEditingController categoryController =
+        TextEditingController(text: product.category);
+    final TextEditingController stockController =
+        TextEditingController(text: product.stock.toString());
+
+    List<html.File> updatedImages = [];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Product'),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 500,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: const InputDecoration(labelText: 'Title'),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(labelText: 'Description'),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: priceController,
+                    decoration: const InputDecoration(labelText: 'Price'),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: categoryController,
+                    decoration: const InputDecoration(labelText: 'Category'),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: stockController,
+                    decoration:
+                        const InputDecoration(labelText: 'Stock Quantity'),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 10),
+                  GestureDetector(
+                    onTap: () async {
+                      final picker = ImagePicker();
+                      final pickedFiles = await picker.pickMultiImage();
+                      if (pickedFiles != null && pickedFiles.isNotEmpty) {
+                        List<html.File> htmlFiles = [];
+                        for (var pickedFile in pickedFiles) {
+                          final bytes = await pickedFile.readAsBytes();
+                          final htmlFile = html.File([bytes], pickedFile.name);
+                          htmlFiles.add(htmlFile);
+                        }
+                        setState(() {
+                          updatedImages = htmlFiles;
+                        });
+                      }
+                    },
+                    child: Container(
+                      height: 120,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black26),
+                        borderRadius: BorderRadius.circular(5),
+                        color: AppColors.secondaryColor.withOpacity(0.8),
+                      ),
+                      child: updatedImages.isNotEmpty
+                          ? ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: updatedImages.length,
+                              itemBuilder: (context, index) {
+                                final imageFile = updatedImages[index];
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  child: Image.network(
+                                    html.Url.createObjectUrl(imageFile),
+                                    fit: BoxFit.cover,
+                                    width: 100,
+                                    height: 100,
+                                  ),
+                                );
+                              },
+                            )
+                          : const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.cloud_upload,
+                                  color: AppColors.primaryColor,
+                                  size: 40,
+                                ),
+                                SizedBox(height: 5),
+                                Text("Tap to upload or drag and drop files"),
+                              ],
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel',
+                  style: TextStyle(color: AppColors.primaryColor)),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  double price = double.tryParse(priceController.text) ?? 0.0;
+                  int stock = int.tryParse(stockController.text) ?? 0;
+
+                  List<html.File> fallbackImages = [];
+                  if (product.images.isNotEmpty) {
+                    for (var imageName in product.images) {
+                      final placeholderBytes = Uint8List(0);
+                      final htmlFile = html.File([placeholderBytes], imageName);
+                      fallbackImages.add(htmlFile);
+                    }
+                  }
+
+                  await ProductApiService().editProduct(
+                    productId: product.id,
+                    title: titleController.text,
+                    description: descriptionController.text,
+                    price: price,
+                    category: categoryController.text,
+                    images: updatedImages.isNotEmpty
+                        ? updatedImages
+                        : fallbackImages,
+                    stock: stock,
+                  );
+
+                  setState(() {
+                    product.title = titleController.text;
+                    product.description = descriptionController.text;
+                    product.price = price;
+                    product.category = categoryController.text;
+                    product.stock = stock;
+                    if (updatedImages.isNotEmpty) {
+                      product.images =
+                          updatedImages.map((file) => file.name).toList();
+                    }
+                  });
+
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Product updated successfully!')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: $e'),
+                      backgroundColor: AppColors.primaryColor,
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+              ),
+              child: const Text('Save', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // void _deleteProduct(int index) {
+  //   setState(() {
+  //     products.removeAt(index);
+  //   });
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text('Product deleted successfully!')),
+  //   );
+  // }
 
   Widget _buildManageProductsTable() {
     return FutureBuilder<List<Product>>(
@@ -580,7 +778,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                   IconButton(
                                     icon: const Icon(Icons.edit_outlined,
                                         size: 20),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      _editProduct(
+                                          products, products.indexOf(product));
+                                    },
                                     color: Colors.grey,
                                   ),
                                   IconButton(
