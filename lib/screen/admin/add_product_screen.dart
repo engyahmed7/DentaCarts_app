@@ -1,5 +1,6 @@
 import 'dart:html' as html;
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/services/api_service.dart';
 import 'package:DentaCarts/services/product_api_service.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +84,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         stock > 0 &&
         imageFiles.isNotEmpty) {
       setState(() {
-        _isLoading = true; 
+        _isLoading = true;
       });
 
       try {
@@ -119,7 +120,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         );
       } finally {
         setState(() {
-          _isLoading = false; 
+          _isLoading = false;
         });
       }
     } else {
@@ -136,12 +137,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   void _clearInputs() {
     setState(() {
-      titleController.clear(); 
-      descriptionController.clear(); 
-      priceController.clear(); 
+      titleController.clear();
+      descriptionController.clear();
+      priceController.clear();
       categoryController.clear();
       stockController.clear();
-      imageFiles.clear(); 
+      imageFiles.clear();
     });
   }
 
@@ -183,6 +184,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
               isSelected: _selectedTabIndex == 1, onTap: () {
             setState(() {
               _selectedTabIndex = 1;
+            });
+          }),
+          _buildSidebarButton("Manage Orders", Icons.open_in_browser_rounded,
+              isSelected: _selectedTabIndex == 2, onTap: () {
+            setState(() {
+              _selectedTabIndex = 2;
             });
           }),
           const Spacer(),
@@ -361,6 +368,246 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   Widget _buildManageProductsTable() {
+    return FutureBuilder<List<Product>>(
+      future: ProductApiService().fetchProducts().then((products) {
+        return products.map((product) => Product.fromJson(product)).toList();
+      }),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No products available.'));
+        }
+
+        List<Product> products = snapshot.data!;
+
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    height: 45,
+                    width: 500,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Search for id,name,product',
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide.none,
+                        ),
+                        suffixIcon:
+                            const Icon(Icons.search, color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () {},
+                        icon:
+                            const Icon(Icons.filter_list, color: Colors.black),
+                        label: const Text('Filter',
+                            style: TextStyle(color: Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: BorderSide(color: Colors.grey.shade300),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.file_download,
+                            color: Colors.black),
+                        label: const Text('Export',
+                            style: TextStyle(color: Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                          side: BorderSide(color: Colors.grey.shade300),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.add, color: Colors.white),
+                        label: const Text('New Product',
+                            style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryColor,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  _buildStatusTab('All Products (${products.length})', true),
+                  _buildStatusTab('Shipping (100)', false),
+                  _buildStatusTab('Completed (500)', false),
+                  _buildStatusTab('Cancel (0)', false),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: Colors.grey.shade300),
+                      left: BorderSide(color: Colors.grey.shade300),
+                      right: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                        dividerColor: Colors.grey.shade200,
+                      ),
+                      child: DataTable(
+                        columnSpacing: 20,
+                        horizontalMargin: 20,
+                        headingRowHeight: 50,
+                        dataRowHeight: 60,
+                        showCheckboxColumn: true,
+                        dividerThickness: 1,
+                        headingTextStyle: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                        dataTextStyle: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                        headingRowColor:
+                            WidgetStateProperty.all(AppColors.secondaryColor),
+                        columns: const [
+                          DataColumn(label: Text('Product Name')),
+                          DataColumn(label: Text('Stock')),
+                          DataColumn(label: Text('Price')),
+                          DataColumn(label: Text('Category')),
+                          DataColumn(label: Text('Action')),
+                        ],
+                        rows: products.map((product) {
+                          bool isPaid = int.tryParse(product.id) != null &&
+                              int.parse(product.id) % 3 == 0;
+                          bool isCanceled = int.tryParse(product.id) != null &&
+                              int.parse(product.id) % 4 == 0;
+
+                          return DataRow(
+                            cells: [
+                              DataCell(
+                                Row(
+                                  children: [
+                                    Image.network(
+                                      product.images.isNotEmpty
+                                          ? product.images[0]
+                                          : 'assets/images/medical.png',
+                                      width: 50,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          product.title,
+                                          style: GoogleFonts.poppins(
+                                            color: AppColors.primaryColor,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(product.description),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              DataCell(Text(product.stock.toString())),
+                              DataCell(Text('\$${product.price}')),
+                              DataCell(Text(product.category)),
+                              DataCell(Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit_outlined,
+                                        size: 20),
+                                    onPressed: () {},
+                                    color: Colors.grey,
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_outline,
+                                        size: 20),
+                                    onPressed: () {},
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ],
+                              )),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text('1 of 5 pages', style: GoogleFonts.poppins()),
+                    const SizedBox(width: 16),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios, size: 16),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildManageOrdersTable() {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
