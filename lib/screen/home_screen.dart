@@ -373,17 +373,32 @@ class _SaleProductCardState extends State<SaleProductCard> {
                         children: [
                           Row(
                             children: [
-                              Row(
-                                children: List.generate(
-                                  5,
-                                  (index) => Icon(
-                                    Icons.star,
-                                    color: index < widget.product.rating
-                                        ? Colors.yellow
-                                        : Colors.grey,
-                                    size: 16,
-                                  ),
-                                ),
+                              FutureBuilder<double>(
+                                future: ProductApiService()
+                                    .fetchAverageRating(widget.product.id),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const CircularProgressIndicator();
+                                  } else if (snapshot.hasError) {
+                                    print("Error: ${snapshot.error}");
+                                    return const Text("Error loading rating");
+                                  } else {
+                                    double avgRating = snapshot.data!;
+                                    return Row(
+                                      children: List.generate(
+                                        5,
+                                        (index) => Icon(
+                                          Icons.star,
+                                          color: index < avgRating.round()
+                                              ? Colors.amber
+                                              : Colors.grey,
+                                          size: 16,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
                               ),
                               const SizedBox(width: 5),
                               Text(

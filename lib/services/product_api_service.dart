@@ -197,6 +197,55 @@ class ProductApiService {
     }
   }
 
+  Future<void> submitRating({
+    required String productId,
+    required int rating,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    final response = await http.post(
+      Uri.parse('${baseUrl}products/rating/'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'productId': productId,
+        'rating': rating,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print("Rating submitted: ${data['product']}");
+    } else {
+      print("Error submitting rating: ${response.body}");
+    }
+  }
+
+  Future<double> fetchAverageRating(String productId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    final response = await http.get(
+      Uri.parse(
+        '${baseUrl}products/rating/$productId',
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return (data['rating'] as num).toDouble();
+    } else {
+      print("Error fetching rating: ${response.body}");
+      throw Exception('Failed to load rating');
+    }
+  }
+
 // admin apis
   Future<Map<String, dynamic>> addProduct({
     required String title,

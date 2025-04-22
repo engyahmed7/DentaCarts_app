@@ -19,6 +19,7 @@ class DetailsProductPage extends StatefulWidget {
 class _DetailsProductPageState extends State<DetailsProductPage> {
   int selectedIndex = 0;
   bool isWishlisted = false;
+  int selectedRating = 0;
 
   @override
   void initState() {
@@ -169,29 +170,24 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
             ),
             const SizedBox(height: 16),
             Row(
-              children: [
-                Row(
-                  children: List.generate(
-                    5,
-                    (index) => Icon(
-                      Icons.star,
-                      color: index < widget.product.rating.round()
-                          ? Colors.yellow
-                          : Colors.grey,
-                      size: 16,
-                    ),
+              children: List.generate(5, (index) {
+                return IconButton(
+                  icon: Icon(
+                    Icons.star,
+                    color: index < selectedRating ? Colors.amber : Colors.grey,
                   ),
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  widget.product.rating.toStringAsFixed(1),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
+                  onPressed: () {
+                    setState(() {
+                      selectedRating = index + 1;
+                    });
+
+                    ProductApiService().submitRating(
+                      productId: widget.product.id,
+                      rating: selectedRating,
+                    );
+                  },
+                );
+              }),
             ),
             const SizedBox(height: 16),
             Row(

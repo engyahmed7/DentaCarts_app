@@ -4,6 +4,7 @@ import 'package:DentaCarts/blocs/cart/cart_state.dart';
 import 'package:DentaCarts/screen/instruments_screen.dart';
 import 'package:DentaCarts/screen/payment_screen.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
+import 'package:DentaCarts/services/product_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -366,17 +367,32 @@ class _CartItemCardState extends State<CartItemCard> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: List.generate(
-                              5,
-                              (index) => Icon(
-                                Icons.star,
-                                color: index < widget.item['rating']
-                                    ? Colors.yellow
-                                    : Colors.grey,
-                                size: 16,
-                              ),
-                            ),
+                          FutureBuilder<double>(
+                            future: ProductApiService()
+                                .fetchAverageRating(widget.item['productId']),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              } else if (snapshot.hasError) {
+                                print("Error: ${snapshot.error}");
+                                return const Text("Error loading rating");
+                              } else {
+                                double avgRating = snapshot.data!;
+                                return Row(
+                                  children: List.generate(
+                                    5,
+                                    (index) => Icon(
+                                      Icons.star,
+                                      color: index < avgRating.round()
+                                          ? Colors.amber
+                                          : Colors.grey,
+                                      size: 16,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
                           ),
                           IconButton(
                             onPressed: () {

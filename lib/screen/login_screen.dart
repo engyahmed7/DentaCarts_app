@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SingleChildScrollView(
                 child: Column(
-                  mainAxisSize: MainAxisSize.min, 
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
@@ -129,6 +129,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: AppColors.primaryColor,
                             width: 2,
                           ),
+                        ),
+                        floatingLabelStyle: const TextStyle(
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.bold,
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -181,6 +185,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: AppColors.primaryColor,
                             width: 2,
                           ),
+                        ),
+                        floatingLabelStyle: const TextStyle(
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.bold,
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
