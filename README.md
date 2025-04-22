@@ -1,8 +1,6 @@
-# 🦷 DentaCarts Flutter
+# 🦷 DentaCarts Application
 
-[![Flutter](https://img.shields.io/badge/Flutter-blue?logo=flutter)](https://flutter.dev)
-
-**DentaCarts Flutter** is a specialized e-commerce application built using Flutter, designed specifically for dental products. Whether you're a customer looking to purchase dental supplies or an admin managing products and orders, DentaCarts provides a seamless and efficient experience.
+**DentaCarts Application** is a specialized e-commerce application built using Flutter, designed specifically for dental products. Whether you're a customer looking to purchase dental supplies or an admin managing products and orders, DentaCarts provides a seamless and efficient experience.
 
 This app supports **FAWaterk** as the sole payment gateway, ensuring secure and reliable transactions. It also includes advanced features like **state management using Cubit**, **wishlist functionality**, and **API integration with a Node.js backend**. The app is optimized for both **mobile users** and **admin management**, with distinct screens for each role.
 
