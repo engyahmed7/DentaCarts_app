@@ -20,11 +20,22 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
   int selectedIndex = 0;
   bool isWishlisted = false;
   int selectedRating = 0;
+  bool hasRated = false;
 
   @override
   void initState() {
     super.initState();
     checkWishlistStatus();
+    fetchRating();
+  }
+
+  Future<void> fetchRating() async {
+    int rating =
+        (await ProductApiService().fetchAverageRating(widget.product.id))
+            .toInt();
+    setState(() {
+      selectedRating = rating;
+    });
   }
 
   Future<void> checkWishlistStatus() async {
@@ -176,16 +187,38 @@ class _DetailsProductPageState extends State<DetailsProductPage> {
                     Icons.star,
                     color: index < selectedRating ? Colors.amber : Colors.grey,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      selectedRating = index + 1;
-                    });
+                  onPressed: hasRated
+                      ? null // disable if already rated
+                      : () async {
+                          setState(() {
+                            selectedRating = index + 1;
+                          });
 
-                    ProductApiService().submitRating(
-                      productId: widget.product.id,
-                      rating: selectedRating,
-                    );
-                  },
+                          await ProductApiService().submitRating(
+                            productId: widget.product.id,
+                            rating: selectedRating,
+                          );
+
+                          if (hasRated) {
+                            setState(() {
+                              hasRated = true;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text("You already rated this product.")),
+                            );
+                          } else {
+                            setState(() {
+                              hasRated = true;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text("Rating submitted successfully!")),
+                            );
+                          }
+                        },
                 );
               }),
             ),

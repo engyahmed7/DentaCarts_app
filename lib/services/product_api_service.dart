@@ -37,6 +37,7 @@ class ProductApiService {
   }
 
   Future<bool> toggleWishlist(String productId) async {
+    print("Toggling wishlist for product: $productId");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
 
@@ -65,6 +66,7 @@ class ProductApiService {
         return false;
       } else {
         print("Error: Unexpected response code: ${response.statusCode}");
+        print("Response Body: ${response.body}");
         return false;
       }
     } catch (e) {
@@ -280,8 +282,9 @@ class ProductApiService {
 
         String getContentType(String fileName) {
           if (fileName.endsWith('.png')) return 'image/png';
-          if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg'))
+          if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) {
             return 'image/jpeg';
+          }
           if (fileName.endsWith('.webp')) return 'image/webp';
           return 'application/octet-stream';
         }
@@ -356,8 +359,9 @@ class ProductApiService {
 
         String getContentType(String fileName) {
           if (fileName.endsWith('.png')) return 'image/png';
-          if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg'))
+          if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) {
             return 'image/jpeg';
+          }
           if (fileName.endsWith('.webp')) return 'image/webp';
           return 'application/octet-stream';
         }

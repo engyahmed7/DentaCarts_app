@@ -1,5 +1,6 @@
 import 'dart:html' as html;
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/model/homeModel.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/services/api_service.dart';
 import 'package:DentaCarts/services/product_api_service.dart';
@@ -11,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -45,7 +47,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
     final pickedFiles = await picker.pickMultiImage();
 
-    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+    if (pickedFiles.isNotEmpty) {
       List<html.File> htmlFiles = [];
 
       for (var pickedFile in pickedFiles) {
@@ -158,11 +160,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
           _buildSidebar(),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(80.0),
-              child: _selectedTabIndex == 0
-                  ? _buildAddProductForm()
-                  : _buildManageProductsTable(),
-            ),
+                padding: const EdgeInsets.all(80.0),
+                child: _selectedTabIndex == 0
+                    ? _buildAddProductForm()
+                    : _selectedTabIndex == 1
+                        ? _buildManageProductsTable()
+                        : _selectedTabIndex == 2
+                            ? _buildManageOrdersTable()
+                            : _buildHomeScreenSettingsForm()),
           ),
         ],
       ),
@@ -194,6 +199,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
               isSelected: _selectedTabIndex == 2, onTap: () {
             setState(() {
               _selectedTabIndex = 2;
+            });
+          }),
+          _buildSidebarButton("Manage Home Screen", Icons.home,
+              isSelected: _selectedTabIndex == 3, onTap: () {
+            setState(() {
+              _selectedTabIndex = 3;
             });
           }),
           const Spacer(),
@@ -431,7 +442,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     onTap: () async {
                       final picker = ImagePicker();
                       final pickedFiles = await picker.pickMultiImage();
-                      if (pickedFiles != null && pickedFiles.isNotEmpty) {
+                      if (pickedFiles.isNotEmpty) {
                         List<html.File> htmlFiles = [];
                         for (var pickedFile in pickedFiles) {
                           final bytes = await pickedFile.readAsBytes();
@@ -852,7 +863,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('Product Data', style: pw.TextStyle(fontSize: 24)),
+              pw.Text('Product Data', style: const pw.TextStyle(fontSize: 24)),
               pw.SizedBox(height: 20),
               pw.Table(
                 border: pw.TableBorder.all(),
@@ -1204,5 +1215,222 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildHomeScreenSettingsForm() {
+    final titleController = TextEditingController();
+    final subtitleController = TextEditingController();
+    final bannerController = TextEditingController();
+
+    return FutureBuilder<HomeSettings>(
+      future: fetchHomeSettings(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        if (!snapshot.hasData || snapshot.data == null) {
+          return const Center(child: Text('No data found.'));
+        }
+
+        final settings = snapshot.data!;
+        titleController.text = settings.homeTitle;
+        subtitleController.text = settings.homeSubtitle;
+        bannerController.text = settings.homeBanner ?? '';
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                "Manage Home Screen",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryColor,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+
+              // Title Card
+              Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                elevation: 6,
+                shadowColor: AppColors.primaryColor.withOpacity(0.4),
+                color: Colors.white,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Home Title", style: _labelTextStyle()),
+                      const SizedBox(height: 8),
+                      _styledTextField(controller: titleController),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Subtitle Card
+              Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                elevation: 6,
+                shadowColor: AppColors.primaryColor.withOpacity(0.4),
+                color: Colors.white,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Home Subtitle", style: _labelTextStyle()),
+                      const SizedBox(height: 8),
+                      _styledTextField(controller: subtitleController),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Banner URL Card
+              Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                elevation: 6,
+                shadowColor: AppColors.primaryColor.withOpacity(0.4),
+                color: Colors.white,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Banner URL", style: _labelTextStyle()),
+                      const SizedBox(height: 8),
+                      _styledTextField(controller: bannerController),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // Save Button Card
+              Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                elevation: 8,
+                shadowColor: AppColors.primaryColor.withOpacity(0.6),
+                color: AppColors.primaryColor,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(15),
+                  onTap: () async {
+                    final updated = HomeSettings(
+                      homeTitle: titleController.text,
+                      homeSubtitle: subtitleController.text,
+                      homeBanner: bannerController.text.isEmpty
+                          ? null
+                          : bannerController.text,
+                    );
+
+                    try {
+                      await updateHomeSettings(updated);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Settings saved!")),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Error saving settings: $e")),
+                      );
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      "Save Settings",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  TextStyle _labelTextStyle() {
+    return const TextStyle(
+      fontWeight: FontWeight.w600,
+      fontSize: 16,
+      color: Color(0xFF8B0000), // primary color
+    );
+  }
+
+  Widget _styledTextField({required TextEditingController controller}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        filled: true,
+        fillColor: AppColors.secondaryColor,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide:
+              BorderSide(color: AppColors.primaryColor.withOpacity(0.6)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
+        ),
+      ),
+    );
+  }
+
+  Future<HomeSettings> fetchHomeSettings() async {
+    final response = await http.get(
+      Uri.parse('http://127.0.0.1:8000/api/settings/home'),
+      headers: {"Authorization": "Bearer $token"},
+    );
+
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      return HomeSettings.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load settings');
+    }
+  }
+
+  Future<void> updateHomeSettings(HomeSettings settings) async {
+    final response = await http.put(
+      Uri.parse('http://127.0.0.1:8000/api/settings/home'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(settings.toJson()),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update settings');
+    }
   }
 }

@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:DentaCarts/model/userModel.dart';
 
 class ApiService {
-  final String baseUrl = "http://localhost:3000";
+  final String baseUrl = "http://127.0.0.1:8000/api/auth";
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     final response = await http.post(
