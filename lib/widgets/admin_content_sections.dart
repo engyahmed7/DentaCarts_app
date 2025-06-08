@@ -5,10 +5,12 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'dart:html' as html;
 import 'dart:typed_data';
+import 'dart:convert';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/homeModel.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/services/product_api_service.dart';
+import 'package:http/http.dart' as http;
 
 class AdminContentSections extends StatelessWidget {
   final int selectedTabIndex;
@@ -24,7 +26,6 @@ class AdminContentSections extends StatelessWidget {
   final Function(bool) onSetLoading;
   final Function(List<html.File>) onUpdateImageFiles;
   final Future<HomeSettings> Function() fetchHomeSettings;
-  final Future<void> Function(HomeSettings) updateHomeSettings;
   final String? token;
 
   const AdminContentSections({
@@ -42,7 +43,6 @@ class AdminContentSections extends StatelessWidget {
     required this.onSetLoading,
     required this.onUpdateImageFiles,
     required this.fetchHomeSettings,
-    required this.updateHomeSettings,
     required this.token,
   });
 
@@ -70,7 +70,7 @@ class AdminContentSections extends StatelessWidget {
       case 3:
         return _HomeScreenSettingsForm(
           fetchHomeSettings: fetchHomeSettings,
-          updateHomeSettings: updateHomeSettings,
+          token: token,
         );
       default:
         return _AddProductForm(
@@ -1130,11 +1130,11 @@ class _ManageOrdersTable extends StatelessWidget {
 
 class _HomeScreenSettingsForm extends StatelessWidget {
   final Future<HomeSettings> Function() fetchHomeSettings;
-  final Future<void> Function(HomeSettings) updateHomeSettings;
+  final String? token;
 
   const _HomeScreenSettingsForm({
     required this.fetchHomeSettings,
-    required this.updateHomeSettings,
+    required this.token,
   });
 
   @override
@@ -1157,7 +1157,7 @@ class _HomeScreenSettingsForm extends StatelessWidget {
         final settings = snapshot.data!;
         return _HomeSettingsContent(
           settings: settings,
-          updateHomeSettings: updateHomeSettings,
+          token: token,
         );
       },
     );
@@ -1166,11 +1166,11 @@ class _HomeScreenSettingsForm extends StatelessWidget {
 
 class _HomeSettingsContent extends StatefulWidget {
   final HomeSettings settings;
-  final Future<void> Function(HomeSettings) updateHomeSettings;
+  final String? token;
 
   const _HomeSettingsContent({
     required this.settings,
-    required this.updateHomeSettings,
+    required this.token,
   });
 
   @override
@@ -1180,7 +1180,9 @@ class _HomeSettingsContent extends StatefulWidget {
 class _HomeSettingsContentState extends State<_HomeSettingsContent> {
   late TextEditingController titleController;
   late TextEditingController subtitleController;
-  late TextEditingController bannerController;
+  html.File? selectedBannerImage;
+  String? currentBannerUrl;
+  bool isSaving = false;
 
   @override
   void initState() {
@@ -1188,15 +1190,13 @@ class _HomeSettingsContentState extends State<_HomeSettingsContent> {
     titleController = TextEditingController(text: widget.settings.homeTitle);
     subtitleController =
         TextEditingController(text: widget.settings.homeSubtitle);
-    bannerController =
-        TextEditingController(text: widget.settings.homeBanner ?? '');
+    currentBannerUrl = widget.settings.homeBanner;
   }
 
   @override
   void dispose() {
     titleController.dispose();
     subtitleController.dispose();
-    bannerController.dispose();
     super.dispose();
   }
 
@@ -1221,7 +1221,7 @@ class _HomeSettingsContentState extends State<_HomeSettingsContent> {
           const SizedBox(height: 20),
           _buildSettingCard("Home Subtitle", subtitleController),
           const SizedBox(height: 20),
-          _buildSettingCard("Banner URL", bannerController),
+          _buildBannerUploadCard(),
           const SizedBox(height: 30),
           _buildSaveButton(),
         ],
@@ -1249,6 +1249,271 @@ class _HomeSettingsContentState extends State<_HomeSettingsContent> {
     );
   }
 
+  Widget _buildBannerUploadCard() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 6,
+      shadowColor: AppColors.primaryColor.withOpacity(0.4),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text("Banner Image", style: _labelTextStyle()),
+                const SizedBox(width: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.blue.shade200),
+                  ),
+                  child: Text(
+                    "Max 2MB",
+                    style: GoogleFonts.poppins(
+                      fontSize: 10,
+                      color: Colors.blue.shade700,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildBannerUploader(),
+            if (currentBannerUrl != null &&
+                currentBannerUrl!.isNotEmpty &&
+                selectedBannerImage == null) ...[
+              const SizedBox(height: 16),
+              Text(
+                "Current Banner:",
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: Colors.grey[700],
+                ),
+              ),
+              const SizedBox(height: 8),
+              _buildCurrentBannerPreview(),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBannerUploader() {
+    return GestureDetector(
+      onTap: isSaving ? null : _pickBannerImage,
+      child: Container(
+        height: 200,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: AppColors.primaryColor.withOpacity(0.6),
+            width: 2,
+            style: BorderStyle.solid,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          color: AppColors.secondaryColor.withOpacity(0.3),
+        ),
+        child: selectedBannerImage != null
+            ? _buildSelectedImagePreview()
+            : _buildUploadPlaceholder(),
+      ),
+    );
+  }
+
+  Widget _buildSelectedImagePreview() {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.network(
+            html.Url.createObjectUrl(selectedBannerImage!),
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
+        ),
+        Positioned(
+          top: 8,
+          right: 8,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.close, color: Colors.white, size: 20),
+              onPressed: isSaving
+                  ? null
+                  : () {
+                      setState(() {
+                        selectedBannerImage = null;
+                      });
+                    },
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 8,
+          left: 8,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.green.withOpacity(0.9),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white, size: 16),
+                const SizedBox(width: 4),
+                Text(
+                  "New Banner Selected",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUploadPlaceholder() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.cloud_upload_outlined,
+          color: AppColors.primaryColor,
+          size: 48,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          "Upload Banner Image",
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppColors.primaryColor,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          "Click to select an image file\nRecommended: 1200x400px",
+          textAlign: TextAlign.center,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            color: Colors.grey[600],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppColors.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.primaryColor.withOpacity(0.3)),
+          ),
+          child: Text(
+            "JPEG, PNG, JPG, GIF up to 2MB",
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: AppColors.primaryColor,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCurrentBannerPreview() {
+    return Container(
+      height: 120,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              currentBannerUrl!, 
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: Colors.grey.shade200,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.broken_image,
+                          color: Colors.grey.shade400, size: 32),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Failed to load current banner",
+                        style: TextStyle(
+                            color: Colors.grey.shade600, fontSize: 12),
+                      ),
+                      const SizedBox(height: 4),
+                    ],
+                  ),
+                );
+              },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  color: Colors.grey.shade100,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                "Current",
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSaveButton() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -1257,19 +1522,42 @@ class _HomeSettingsContentState extends State<_HomeSettingsContent> {
       color: AppColors.primaryColor,
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
-        onTap: _saveSettings,
+        onTap: isSaving ? null : _saveSettings,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 18),
           alignment: Alignment.center,
-          child: const Text(
-            "Save Settings",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-            ),
-          ),
+          child: isSaving
+              ? const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Text(
+                      "Saving Settings...",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                )
+              : const Text(
+                  "Save Settings",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
         ),
       ),
     );
@@ -1304,22 +1592,141 @@ class _HomeSettingsContentState extends State<_HomeSettingsContent> {
     );
   }
 
-  Future<void> _saveSettings() async {
-    final updated = HomeSettings(
-      homeTitle: titleController.text,
-      homeSubtitle: subtitleController.text,
-      homeBanner: bannerController.text.isEmpty ? null : bannerController.text,
-    );
-
+  Future<void> _pickBannerImage() async {
     try {
-      await widget.updateHomeSettings(updated);
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1200,
+        maxHeight: 400,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        final bytes = await pickedFile.readAsBytes();
+        if (bytes.length > 2 * 1024 * 1024) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Image size should be less than 2MB'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+
+        final fileName = pickedFile.name.toLowerCase();
+        final allowedExtensions = ['jpeg', 'jpg', 'png', 'gif'];
+        final isValidType =
+            allowedExtensions.any((ext) => fileName.endsWith('.$ext'));
+
+        if (!isValidType) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                    'Please select a valid image file (JPEG, PNG, JPG, GIF)'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+
+        final htmlFile = html.File([bytes], pickedFile.name);
+        setState(() {
+          selectedBannerImage = htmlFile;
+        });
+      }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Settings saved successfully!"),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: Text('Error selecting image: $e'),
+            backgroundColor: Colors.red,
           ),
         );
+      }
+    }
+  }
+
+  Future<void> _saveSettings() async {
+    if (titleController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Home title is required'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (subtitleController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Home subtitle is required'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      setState(() {
+        isSaving = true;
+      });
+
+      var request = http.MultipartRequest(
+        'post',
+        Uri.parse('http://127.0.0.1:8000/api/settings/home'),
+      );
+
+      if (widget.token != null) {
+        request.headers['Authorization'] = 'Bearer ${widget.token}';
+      }
+
+      request.fields['home_title'] = titleController.text.trim();
+      request.fields['home_subtitle'] = subtitleController.text.trim();
+
+      if (selectedBannerImage != null) {
+        final bytes = await _fileToBytes(selectedBannerImage!);
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'home_banner', 
+            bytes,
+            filename: selectedBannerImage!.name,
+          ),
+        );
+      }
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        if (selectedBannerImage != null) {
+          await _refreshSettings();
+        }
+
+        setState(() {
+          selectedBannerImage = null; 
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  responseData['message'] ?? 'Settings updated successfully!'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to update settings');
       }
     } catch (e) {
       if (mounted) {
@@ -1327,9 +1734,45 @@ class _HomeSettingsContentState extends State<_HomeSettingsContent> {
           SnackBar(
             content: Text("Error saving settings: $e"),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isSaving = false;
+        });
+      }
     }
+  }
+
+  Future<void> _refreshSettings() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://127.0.0.1:8000/api/settings/home'),
+        headers: {
+          if (widget.token != null) "Authorization": "Bearer ${widget.token}",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final settings = HomeSettings.fromJson(json.decode(response.body));
+        setState(() {
+          currentBannerUrl = settings.homeBanner;
+          titleController.text = settings.homeTitle;
+          subtitleController.text = settings.homeSubtitle;
+        });
+      }
+    } catch (e) {
+      print('Error refreshing settings: $e');
+    }
+  }
+
+  Future<Uint8List> _fileToBytes(html.File file) async {
+    final reader = html.FileReader();
+    reader.readAsArrayBuffer(file);
+    await reader.onLoad.first;
+    return reader.result as Uint8List;
   }
 }

@@ -103,18 +103,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  Future<void> updateHomeSettings(HomeSettings settings) async {
-    final response = await http.put(
-      Uri.parse('http://127.0.0.1:8000/api/settings/home'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(settings.toJson()),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Failed to update settings');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,7 +129,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 onSetLoading: _setLoading,
                 onUpdateImageFiles: _updateImageFiles,
                 fetchHomeSettings: fetchHomeSettings,
-                updateHomeSettings: updateHomeSettings,
                 token: token,
               ),
             ),
