@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/homeModel.dart';
-import 'package:DentaCarts/model/product_model.dart';
-import 'package:DentaCarts/services/product_api_service.dart';
 import 'package:DentaCarts/widgets/admin_sidebar.dart';
 import 'package:DentaCarts/widgets/admin_content_sections.dart';
 import 'dart:html' as html;

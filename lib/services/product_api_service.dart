@@ -1,16 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 import 'dart:html' as html;
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:flutter/foundation.dart';
 
 class ProductApiService {
-  final String baseUrl = "http://localhost:3000/";
+  final String baseUrl = "http://127.0.0.1:8000/api/";
 
   Future<List<dynamic>> fetchProducts() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -21,8 +16,8 @@ class ProductApiService {
         headers: {"Authorization": "Bearer $token"},
       );
 
-      print("Response Body: ${response.body}");
-      print("Response : $response");
+      print("Response Body product api : ${response.body}");
+      print("Response product api : $response");
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
@@ -348,6 +343,8 @@ class ProductApiService {
       request.fields['price'] = price.toString();
       request.fields['category'] = category;
       request.fields['stock'] = stock.toString();
+
+      print('Request Fields: ${request.fields}');
 
       for (var image in images) {
         final reader = html.FileReader();
