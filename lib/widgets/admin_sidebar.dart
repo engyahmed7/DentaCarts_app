@@ -40,6 +40,7 @@ class AdminSidebar extends StatelessWidget {
       NavigationItem("Manage Products", Icons.shopping_bag_sharp, 1),
       NavigationItem("Manage Orders", Icons.receipt_long, 2),
       NavigationItem("Manage Home Screen", Icons.home, 3),
+      NavigationItem("Shipping Control", Icons.local_shipping, 4),
     ];
 
     return navigationItems

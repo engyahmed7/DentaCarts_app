@@ -2,6 +2,7 @@ import 'package:DentaCarts/widgets/admin/add_product_form.dart';
 import 'package:DentaCarts/widgets/admin/home_screen_settings_form.dart';
 import 'package:DentaCarts/widgets/admin/manage_orders_table.dart';
 import 'package:DentaCarts/widgets/admin/manage_products_table.dart';
+import 'package:DentaCarts/widgets/admin/manage_shipping_table.dart';
 import 'package:flutter/material.dart';
 import 'package:DentaCarts/model/homeModel.dart';
 import 'dart:html' as html;
@@ -66,6 +67,8 @@ class AdminContentSections extends StatelessWidget {
           fetchHomeSettings: fetchHomeSettings,
           token: token,
         );
+      case 4:
+        return ManageShippingTable();
       default:
         return AddProductForm(
           username: username,
