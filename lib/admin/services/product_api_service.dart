@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:html' as html;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+
+import 'package:DentaCarts/admin/html_stub.dart'
+if (dart.library.html) 'dart:html' as html;
+
 
 class ProductApiService {
   final String baseUrl = "http://127.0.0.1:8000/api/";
@@ -367,7 +370,7 @@ class ProductApiService {
           'image',
           imageBytes,
           filename: image.name,
-          contentType: MediaType.parse(getContentType(image.name)),
+          contentType: MediaType.parse(getContentType("$image.name")),
         );
         request.files.add(multipartFile);
       }

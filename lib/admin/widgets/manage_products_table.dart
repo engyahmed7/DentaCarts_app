@@ -7,11 +7,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'dart:html' as html;
 import 'dart:typed_data';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/admin/services/product_api_service.dart';
+
+import 'package:DentaCarts/admin/html_stub.dart'
+if (dart.library.html) 'dart:html' as html;
 
 class ManageProductsTable extends StatefulWidget {
   const ManageProductsTable({super.key});

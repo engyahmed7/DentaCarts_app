@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:html' as html;
+
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/admin/services/product_api_service.dart';
+import 'package:DentaCarts/admin/html_stub.dart'
+if (dart.library.html) 'dart:html' as html;
 
 class AddProductForm extends StatelessWidget {
   final String username;
@@ -35,18 +37,20 @@ class AddProductForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildWelcomeHeader(),
-        const SizedBox(height: 30),
-        _buildSectionTitle(),
-        const SizedBox(height: 20),
-        _buildFormFields(),
-        _buildImageUploader(),
-        const SizedBox(height: 20),
-        _buildSubmitButton(context),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildWelcomeHeader(),
+          const SizedBox(height: 30),
+          _buildSectionTitle(),
+          const SizedBox(height: 20),
+          _buildFormFields(),
+          _buildImageUploader(),
+          const SizedBox(height: 20),
+          _buildSubmitButton(context),
+        ],
+      ),
     );
   }
 

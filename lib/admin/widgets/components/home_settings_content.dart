@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:html' as html;
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/homeModel.dart';
+import 'package:DentaCarts/admin/html_stub.dart'
+if (dart.library.html) 'dart:html' as html;
+
 
 class HomeSettingsContent extends StatefulWidget {
   final HomeSettings settings;

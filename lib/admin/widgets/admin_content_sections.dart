@@ -5,7 +5,8 @@ import 'package:DentaCarts/admin/widgets/manage_products_table.dart';
 import 'package:DentaCarts/admin/widgets/manage_shipping_table.dart';
 import 'package:flutter/material.dart';
 import 'package:DentaCarts/model/homeModel.dart';
-import 'dart:html' as html;
+import 'package:DentaCarts/admin/html_stub.dart'
+if (dart.library.html) 'dart:html' as html;
 
 class AdminContentSections extends StatelessWidget {
   final int selectedTabIndex;

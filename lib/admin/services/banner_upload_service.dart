@@ -1,7 +1,9 @@
-import 'dart:html' as html;
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+
+import 'package:DentaCarts/admin/html_stub.dart'
+if (dart.library.html) 'dart:html' as html;
 
 class BannerUploadService {
   static const String baseUrl = 'http://127.0.0.1:8000/api';
@@ -66,7 +68,7 @@ class BannerUploadService {
 
   static bool isValidImageFile(html.File file) {
     final allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    final fileName = file.name.toLowerCase();
+    final fileName = file.name!.toLowerCase();
     return allowedExtensions.any((ext) => fileName.endsWith('.$ext'));
   }
 

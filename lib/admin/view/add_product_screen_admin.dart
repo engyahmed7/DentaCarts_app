@@ -6,7 +6,8 @@ import 'package:DentaCarts/admin/widgets/admin_sidebar.dart';
 import 'package:DentaCarts/admin/widgets/admin_content_sections.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'dart:html' as html;
+ import 'package:DentaCarts/admin/html_stub.dart'
+  if (dart.library.html) 'dart:html' as html;
 
 
 
