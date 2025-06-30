@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:DentaCarts/model/homeModel.dart';
-import 'package:DentaCarts/widgets/admin_sidebar.dart';
-import 'package:DentaCarts/widgets/admin_content_sections.dart';
-import 'dart:html' as html;
+import 'package:DentaCarts/admin/widgets/admin_sidebar.dart';
+import 'package:DentaCarts/admin/widgets/admin_content_sections.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:html' as html;
+
+
+
 
 class AddProductScreenAdmin extends StatefulWidget {
   const AddProductScreenAdmin({super.key});

@@ -1,6 +1,6 @@
+import 'package:DentaCarts/admin/widgets/components/home_settings_content.dart';
 import 'package:flutter/material.dart';
 import 'package:DentaCarts/model/homeModel.dart';
-import 'package:DentaCarts/widgets/admin/components/home_settings_content.dart';
 
 class HomeScreenSettingsForm extends StatelessWidget {
   final Future<HomeSettings> Function() fetchHomeSettings;

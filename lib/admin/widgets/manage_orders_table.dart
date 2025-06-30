@@ -1,7 +1,7 @@
-import 'package:DentaCarts/widgets/admin/components/orders_data_table.dart';
-import 'package:DentaCarts/widgets/admin/components/orders_status_tabs.dart';
-import 'package:DentaCarts/widgets/admin/components/orders_table_header.dart';
-import 'package:DentaCarts/widgets/admin/components/table_pagination.dart';
+import 'package:DentaCarts/admin/widgets/components/orders_data_table.dart';
+import 'package:DentaCarts/admin/widgets/components/orders_status_tabs.dart';
+import 'package:DentaCarts/admin/widgets/components/orders_table_header.dart';
+import 'package:DentaCarts/admin/widgets/components/table_pagination.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:DentaCarts/core/app_colors.dart';

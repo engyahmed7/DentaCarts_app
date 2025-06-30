@@ -5,7 +5,7 @@ import 'dart:html' as html;
 import 'dart:typed_data';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/product_model.dart';
-import 'package:DentaCarts/services/product_api_service.dart';
+import 'package:DentaCarts/admin/services/product_api_service.dart';
 
 class EditProductDialog extends StatefulWidget {
   final Product product;

@@ -1,7 +1,7 @@
-import 'package:DentaCarts/widgets/admin/dialogs/edit_product_dialog.dart';
-import 'package:DentaCarts/widgets/admin/components/product_data_table.dart';
-import 'package:DentaCarts/widgets/admin/components/table_pagination.dart';
-import 'package:DentaCarts/widgets/admin/components/product_table_header.dart';
+import 'package:DentaCarts/admin/widgets/components/product_data_table.dart';
+import 'package:DentaCarts/admin/widgets/components/product_table_header.dart';
+import 'package:DentaCarts/admin/widgets/components/table_pagination.dart';
+import 'package:DentaCarts/admin/widgets/dialogs/edit_product_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,7 +11,7 @@ import 'dart:html' as html;
 import 'dart:typed_data';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/product_model.dart';
-import 'package:DentaCarts/services/product_api_service.dart';
+import 'package:DentaCarts/admin/services/product_api_service.dart';
 
 class ManageProductsTable extends StatefulWidget {
   const ManageProductsTable({super.key});

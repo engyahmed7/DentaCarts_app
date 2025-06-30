@@ -1,23 +1,19 @@
 import 'package:DentaCarts/core/app_colors.dart';
-import 'package:DentaCarts/screen/admin/login_screen_admin.dart';
+import 'package:DentaCarts/admin/view/add_product_screen_admin.dart';
 import 'package:DentaCarts/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class RegisterScreenAdmin extends StatefulWidget {
-  const RegisterScreenAdmin({super.key});
+class LoginScreenAdmin extends StatefulWidget {
+  const LoginScreenAdmin({super.key});
 
   @override
-  _RegisterScreenAdminState createState() => _RegisterScreenAdminState();
+  _LoginScreenAdminState createState() => _LoginScreenAdminState();
 }
 
-class _RegisterScreenAdminState extends State<RegisterScreenAdmin> {
-  final TextEditingController nameController = TextEditingController();
+class _LoginScreenAdminState extends State<LoginScreenAdmin> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
-
   bool _obscureText = true;
   bool _isLoading = false;
 
@@ -27,20 +23,16 @@ class _RegisterScreenAdminState extends State<RegisterScreenAdmin> {
     });
   }
 
-  void _register() async {
+  void _login() async {
     setState(() {
       _isLoading = true;
     });
 
     ApiService apiService = ApiService();
-    final result = await apiService.register(
+    final result = await apiService.login(
       emailController.text.trim(),
       passwordController.text.trim(),
-      nameController.text.trim(),
-      role: "admin",
     );
-
-    print(result);
 
     setState(() {
       _isLoading = false;
@@ -54,7 +46,7 @@ class _RegisterScreenAdminState extends State<RegisterScreenAdmin> {
         );
       } else if (result.containsKey("token")) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LoginScreenAdmin()),
+          MaterialPageRoute(builder: (_) => const AddProductScreenAdmin()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -86,7 +78,7 @@ class _RegisterScreenAdminState extends State<RegisterScreenAdmin> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "Create Account",
+                        "Login here",
                         style: GoogleFonts.poppins(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -94,37 +86,14 @@ class _RegisterScreenAdminState extends State<RegisterScreenAdmin> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Sign up to access exclusive dental supplies and offers!",
+                        "Welcome back you’ve been missed!",
                         style: GoogleFonts.poppins(
                           color: Colors.grey,
                           fontSize: 18,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 40),
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text("UserName*",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            )),
-                      ),
-                      const SizedBox(height: 5),
-                      TextField(
-                        controller: nameController,
-                        decoration: InputDecoration(
-                          hintText: "Enter your username",
-                          filled: true,
-                          fillColor: AppColors.secondaryColor.withOpacity(0.7),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 35),
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: Text("Email*",
@@ -178,37 +147,6 @@ class _RegisterScreenAdminState extends State<RegisterScreenAdmin> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text("Confirm Password*",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            )),
-                      ),
-                      const SizedBox(height: 5),
-                      TextField(
-                        controller: confirmPasswordController,
-                        obscureText: _obscureText,
-                        decoration: InputDecoration(
-                          hintText: "Enter your password",
-                          filled: true,
-                          fillColor: AppColors.secondaryColor.withOpacity(0.7),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: BorderSide.none,
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureText
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                            onPressed: _togglePasswordVisibility,
-                          ),
-                        ),
-                      ),
                       const SizedBox(height: 35),
                       SizedBox(
                         width: double.infinity,
@@ -224,12 +162,12 @@ class _RegisterScreenAdminState extends State<RegisterScreenAdmin> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onPressed: _isLoading ? null : _register,
+                          onPressed: _isLoading ? null : _login,
                           child: _isLoading
                               ? const CircularProgressIndicator(
                                   color: Colors.white)
                               : Text(
-                                  "Sign up",
+                                  "Sign in",
                                   style: GoogleFonts.poppins(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w600,

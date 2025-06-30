@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:html' as html;
 import 'package:DentaCarts/core/app_colors.dart';
-import 'package:DentaCarts/services/product_api_service.dart';
+import 'package:DentaCarts/admin/services/product_api_service.dart';
 
 class AddProductForm extends StatelessWidget {
   final String username;
