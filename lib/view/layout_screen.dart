@@ -1,7 +1,7 @@
 import 'package:DentaCarts/core/app_colors.dart';
-import 'package:DentaCarts/screen/cart_screen.dart';
-import 'package:DentaCarts/screen/home_screen.dart';
-import 'package:DentaCarts/screen/profile_screen.dart';
+import 'package:DentaCarts/view/cart_screen.dart';
+import 'package:DentaCarts/view/home_screen.dart';
+import 'package:DentaCarts/view/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class LayoutScreen extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:DentaCarts/core/app_colors.dart';
-import 'package:DentaCarts/screen/create_account_screen.dart';
-import 'package:DentaCarts/screen/login_screen.dart';
+import 'package:DentaCarts/view/create_account_screen.dart';
+import 'package:DentaCarts/view/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

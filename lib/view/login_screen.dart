@@ -1,7 +1,7 @@
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
-import 'package:DentaCarts/screen/create_account_screen.dart';
-import 'package:DentaCarts/screen/layout_screen.dart';
+import 'package:DentaCarts/view/create_account_screen.dart';
+import 'package:DentaCarts/view/layout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:DentaCarts/services/api_service.dart';

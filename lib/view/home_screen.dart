@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:DentaCarts/core/app_colors.dart';
-import 'package:DentaCarts/blocs/cart/cart_cubit.dart';
 import 'package:DentaCarts/model/product_model.dart';
-import 'package:DentaCarts/screen/details_produc_screen.dart';
-import 'package:DentaCarts/screen/instruments_screen.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
+import 'package:DentaCarts/view/details_produc_screen.dart';
+import 'package:DentaCarts/view/instruments_screen.dart';
+import 'package:DentaCarts/viewmodel/cart/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
