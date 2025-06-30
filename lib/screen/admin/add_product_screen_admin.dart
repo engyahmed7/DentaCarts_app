@@ -8,14 +8,14 @@ import 'dart:html' as html;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({super.key});
+class AddProductScreenAdmin extends StatefulWidget {
+  const AddProductScreenAdmin({super.key});
 
   @override
-  State<AddProductScreen> createState() => _AddProductScreenState();
+  State<AddProductScreenAdmin> createState() => _AddProductScreenAdminState();
 }
 
-class _AddProductScreenState extends State<AddProductScreen> {
+class _AddProductScreenAdminState extends State<AddProductScreenAdmin> {
   int _selectedTabIndex = 0;
   String? token;
   String username = '';

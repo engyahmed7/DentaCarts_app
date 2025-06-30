@@ -1,17 +1,17 @@
 import 'package:DentaCarts/core/app_colors.dart';
-import 'package:DentaCarts/screen/admin/login_screen.dart';
+import 'package:DentaCarts/screen/admin/login_screen_admin.dart';
 import 'package:DentaCarts/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class RegisterScreenAdmin extends StatefulWidget {
+  const RegisterScreenAdmin({super.key});
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _RegisterScreenAdminState createState() => _RegisterScreenAdminState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenAdminState extends State<RegisterScreenAdmin> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -54,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       } else if (result.containsKey("token")) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          MaterialPageRoute(builder: (_) => const LoginScreenAdmin()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

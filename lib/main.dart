@@ -1,10 +1,11 @@
 import 'package:DentaCarts/blocs/whishlist/wishlist_cubit.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/blocs/cart/cart_cubit.dart';
-import 'package:DentaCarts/screen/admin/login_screen.dart';
 import 'package:DentaCarts/services/product_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'screen/welcome_screen.dart';
 
 void main() {
   final productApiService = ProductApiService();
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: AppStrings.appName,
-      home: LoginScreen(),
+      home: WelcomeScreen(),
     );
   }
 }

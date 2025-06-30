@@ -1,6 +1,8 @@
-import 'package:DentaCarts/core/app_colors.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -10,7 +12,7 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  String selectedMethod = "Fawaterak";
+  String? selectedMethod;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
           "Payment Methods",
           style: GoogleFonts.poppins(color: Colors.black, fontSize: 18),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                selectedMethod = null;
+              });
+            },
+            icon: const Icon(
+              Icons.delete,
+              color: Colors.black,
+            ),
+          ),
+        ],
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
@@ -54,7 +69,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   TextSpan(
                     text: " or ",
                     style: GoogleFonts.poppins(
-                        fontSize: 16, color: Colors.black54),
+                      fontSize: 16,
+                      color: Colors.black54,
+                    ),
                   ),
                   TextSpan(
                     text: "\nCash",
@@ -79,7 +96,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             PaymentOptionCard(
               title: "Fawaterak",
               description:
-                  "Fawaterak is a PCI Certified online payments \nplatform for MSMEs",
+              "Fawaterak is a PCI Certified online payments \nplatform for MSMEs",
               imageUrl: 'assets/images/fawaterak.png',
               isSelected: selectedMethod == "Fawaterak",
               onTap: () {
@@ -106,23 +123,37 @@ class _PaymentScreenState extends State<PaymentScreen> {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
+                  backgroundColor: const Color(0xFF8B0000),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 onPressed: () {
-                  // Navigator.of(context).pop();
+                  if (selectedMethod == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Please Select Payment Method"),
+                      ),
+                    );
+                  } else {
+                    if (selectedMethod == "Fawaterak") {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_)=> const FawaterakScreen()),
+                      );
+                    } else if (selectedMethod == "Cash") {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_)=> const CashScreen()),
+                      );
+                    }
+                  }
                 },
                 child: Text(
                   "Continue",
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
+                  style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
                 ),
               ),
             ),
+
           ],
         ),
       ),
@@ -154,7 +185,7 @@ class PaymentOptionCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
           side: BorderSide(
-            color: isSelected ? AppColors.primaryColor : Colors.grey.shade300,
+            color: isSelected ? const Color(0xFF8B0000) : Colors.grey.shade300,
             width: 2,
           ),
         ),
@@ -162,7 +193,11 @@ class PaymentOptionCard extends StatelessWidget {
           padding: const EdgeInsets.all(12.0),
           child: Row(
             children: [
-              Image.asset(imageUrl, height: 120, width: 120),
+              Image.network(
+                "https://avatars.githubusercontent.com/u/125823028?v=4",
+                height: 120,
+                width: 120,
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -190,6 +225,196 @@ class PaymentOptionCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+
+
+class CashScreen extends StatelessWidget {
+  const CashScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Cash Payment"),
+      ),
+      body: const Center(
+        child: Text("Cash Payment Screen"),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+class FawaterakScreen extends StatefulWidget {
+  const FawaterakScreen({super.key});
+
+  @override
+  State<FawaterakScreen> createState() => _FawaterakScreenState();
+}
+
+class _FawaterakScreenState extends State<FawaterakScreen> {
+  final String accessToken =
+      '42fa7d257e5896a28d9626197a5daa52eb87a1f96482ed468c';
+  final String apiUrlGetPaymentMethods =
+      'https://staging.fawaterk.com/api/v2/getPaymentmethods';
+  final String apiUrlProcessPaymentMethods =
+      'https://staging.fawaterk.com/api/v2/invoiceInitPay';
+
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAndPay();
+  }
+
+  Future<void> _getPaymentMethods() async {
+    final dio = Dio(BaseOptions(headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    }))
+      ..interceptors.add(PrettyDioLogger());
+    await dio.get(apiUrlGetPaymentMethods);
+  }
+
+  Future<void> _processPayment() async {
+    final dio = Dio(BaseOptions(headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    }))
+      ..interceptors.add(PrettyDioLogger());
+
+    final requestData = {
+      'payment_method_id': 2,
+      'cartTotal': '5000',
+      'currency': 'EGP',
+      'customer': {
+        'first_name': 'Engy',
+        'last_name': 'Abdelaziz',
+        'email': 'engy@engy.com',
+        'phone': '01114621092',
+        'address': 'Cairo',
+      },
+      'redirectionUrls': {
+        'successUrl': 'https://dev.fawaterk.com/success',
+        'failUrl': 'https://dev.fawaterk.com/fail',
+        'pendingUrl': 'https://dev.fawaterk.com/pending',
+      },
+      'cartItems': [
+        {'name': 'Engy Abdelaziz', 'price': '1000', 'quantity': '5'},
+      ],
+    };
+
+    final response =
+    await dio.post(apiUrlProcessPaymentMethods, data: requestData);
+
+    final redirectUrl = response.data['data']['payment_data']['redirectTo'];
+
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => WebViewFawaterak(url: redirectUrl),
+      ),
+    );
+  }
+
+  Future<void> _fetchAndPay() async {
+    try {
+      await _getPaymentMethods();
+      await _processPayment();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حصل خطأ أثناء الدفع: $e')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
+  }
+}
+
+
+
+
+class WebViewFawaterak extends StatefulWidget {
+  const WebViewFawaterak({super.key, required this.url});
+
+  final String url;
+
+  @override
+  State<WebViewFawaterak> createState() => _WebViewFawaterakState();
+}
+
+class _WebViewFawaterakState extends State<WebViewFawaterak> {
+  late WebViewController controller;
+  bool isLoading = false; // track loading state
+
+
+  @override
+  void initState() {
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            // Update loading bar.
+          },
+          onPageStarted: (String url) {
+            setState(() {
+              isLoading = true;
+            });
+          },
+          onPageFinished: (String url) {},
+          onHttpError: (HttpResponseError error) {},
+          onWebResourceError: (WebResourceError error) {},
+          onNavigationRequest: (NavigationRequest request) {
+            // if (request.url.startsWith('https://www.youtube.com/')) {
+            //   return NavigationDecision.prevent;
+            // }
+
+            if(request.url.contains("https://dev.fawaterk.com/success")){
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=> const Scaffold()));
+              return NavigationDecision.prevent;
+            }else if(request.url.contains("https://dev.fawaterk.com/fail")){
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=> const Scaffold()));
+              return NavigationDecision.prevent;
+            }else if(request.url.contains("https://dev.fawaterk.com/pending")){
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=> const Scaffold()));
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
+    super.initState();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: const Text('Flutter Simple Example')),
+        body: isLoading
+            ?WebViewWidget(controller: controller)
+            : Center(child: CircularProgressIndicator(),)
+      // body: Stack(
+      //   children: [
+      //     WebViewWidget(controller: controller),
+      //     if(isLoading) const Center(child: CircularProgressIndicator()),
+      //   ],
+      // ),
     );
   }
 }
