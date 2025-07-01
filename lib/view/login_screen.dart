@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
 import 'package:DentaCarts/view/create_account_screen.dart';
@@ -5,6 +7,7 @@ import 'package:DentaCarts/view/layout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:DentaCarts/services/api_service.dart';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,44 +20,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _obscureText = true;
-  bool _isLoading = false;
-
-  void _login() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    ApiService apiService = ApiService();
-    final result = await apiService.login(
-      emailController.text.trim(),
-      passwordController.text.trim(),
-    );
-
-    setState(() {
-      _isLoading = false;
-      if (result.containsKey("error") && result["error"] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result["message"]),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      } else if (result.containsKey("token")) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LayoutScreen()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Unexpected error occurred. Please try again."),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
-          ),
-        );
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,33 +177,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 25),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 60,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 20,
-                            horizontal: 20,
-                          ),
-                          backgroundColor: AppColors.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: _isLoading ? null : _login,
-                        child: _isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white)
-                            : Text(
-                                "Sign in",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                      ),
+                    LoginButton(
+                      emailController: emailController,
+                      passwordController: passwordController,
                     ),
                     const SizedBox(height: 25),
                     GestureDetector(
@@ -258,45 +199,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 50),
-                    Text(
-                      "Or continue with",
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.network(
-                              'https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png',
-                              height: 24,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              "Sign in with Google",
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -305,5 +207,93 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
     );
+  }
+}
+
+
+class LoginButton extends StatelessWidget {
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+
+  const LoginButton({
+    super.key,
+    required this.emailController,
+    required this.passwordController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(
+            vertical: 20,
+            horizontal: 20,
+          ),
+          backgroundColor: AppColors.primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        onPressed: () async {
+          final email = emailController.text.trim();
+          final password = passwordController.text;
+
+          if (
+              email.isEmpty ||
+              password.isEmpty ) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Please fill all fields!')),
+            );
+            return;
+          }
+
+
+
+          await login(context, email, password );
+        },
+        child: Text(
+          "Login",
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> login(BuildContext context, String email, String password) async {
+
+  final response = await http.post(
+    Uri.parse('https://server.dentallink.co/api/auth/login'),
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      "email": email,
+      "password": password,
+    }),
+
+  );
+
+  final data = json.decode(response.body);
+
+  if (response.statusCode == 200) {
+
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${data['msg']}')),
+    );
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const LayoutScreen()), (_) => false);
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${data['Error']}')),
+    );
+
   }
 }

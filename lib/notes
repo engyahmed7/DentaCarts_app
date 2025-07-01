@@ -1,3 +1,20 @@
-Routes
-Sizes
-image network and assets
+String errorMsg = 'Signup failed';
+
+    // Check for errors key and combine messages
+    if (data['errors'] != null && data['errors'] is Map) {
+      List<String> messages = [];
+      data['errors'].forEach((key, value) {
+        if (value is List) {
+          messages.addAll(value.map((v) => v.toString()));
+        } else {
+          messages.add(value.toString());
+        }
+      });
+      errorMsg = messages.join('\n');
+    } else if (data['message'] != null) {
+      errorMsg = data['message'].toString();
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(errorMsg)),
+    );
