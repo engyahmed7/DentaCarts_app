@@ -211,15 +211,23 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 
-class LoginButton extends StatelessWidget {
+class LoginButton extends StatefulWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
+
 
   const LoginButton({
     super.key,
     required this.emailController,
     required this.passwordController,
   });
+
+  @override
+  State<LoginButton> createState() => _LoginButtonState();
+}
+
+class _LoginButtonState extends State<LoginButton> {
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -236,24 +244,37 @@ class LoginButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
         ),
-        onPressed: () async {
-          final email = emailController.text.trim();
-          final password = passwordController.text;
+        onPressed: isLoading
+            ? null
+            : () async {
+          final email = widget.emailController.text.trim();
+          final password = widget.passwordController.text;
 
-          if (
-              email.isEmpty ||
-              password.isEmpty ) {
+          if (email.isEmpty || password.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Please fill all fields!')),
             );
             return;
           }
 
+          setState(() => isLoading = true);
 
+          await login(context, email, password);
 
-          await login(context, email, password );
+          if (mounted) {
+            setState(() => isLoading = false);
+          }
         },
-        child: Text(
+        child: isLoading
+            ? const SizedBox(
+          height: 24,
+          width: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            color: Colors.white,
+          ),
+        )
+            : Text(
           "Login",
           style: GoogleFonts.poppins(
             fontSize: 18,
@@ -264,36 +285,35 @@ class LoginButton extends StatelessWidget {
       ),
     );
   }
-}
 
-Future<void> login(BuildContext context, String email, String password) async {
+  Future<void> login(BuildContext context, String email,
+      String password) async {
+    final response = await http.post(
+      Uri.parse('https://server.dentallink.co/api/auth/login'),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "email": email,
+        "password": password,
+      }),
 
-  final response = await http.post(
-    Uri.parse('https://server.dentallink.co/api/auth/login'),
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: jsonEncode({
-      "email": email,
-      "password": password,
-    }),
-
-  );
-
-  final data = json.decode(response.body);
-
-  if (response.statusCode == 200) {
-
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${data['msg']}')),
-    );
-    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const LayoutScreen()), (_) => false);
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${data['Error']}')),
     );
 
+    final data = json.decode(response.body);
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${data['msg']}')),
+      );
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LayoutScreen()), (
+          _) => false);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${data['Error']}')),
+      );
+    }
   }
 }
