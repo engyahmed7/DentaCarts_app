@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
 import 'package:DentaCarts/services/api_service.dart';
 import 'package:DentaCarts/view/layout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:http/http.dart' as http;
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
@@ -13,114 +16,96 @@ class CreateAccountScreen extends StatefulWidget {
 }
 
 class _CreateAccountScreenState extends State<CreateAccountScreen> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
 
-  bool _obscureText = true;
-  bool _isLoading = false;
+  bool obscureTextPassword = true;
+  bool obscureTextConfirmPassword = true;
 
-  void _register() async {
-    setState(() {
-      _isLoading = true;
-    });
+  String? _selectedGender;
 
-    ApiService apiService = ApiService();
-    final result = await apiService.register(
-      emailController.text.trim(),
-      passwordController.text.trim(),
-      nameController.text.trim(),
-    );
-
-    setState(() {
-      _isLoading = false;
-      if (result.containsKey("error") && result["error"] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result["message"]),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      } else if (result.containsKey("token")) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LayoutScreen()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Unexpected error occurred. Please try again."),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
-          ),
-        );
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned(
-            top: -250,
-            right: -250,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: 500,
-                  height: 500,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFDE9E8).withOpacity(0.4),
-                    shape: BoxShape.circle,
+        body: SafeArea(
+      child: Stack(children: [
+        // Responsive background circles
+        Positioned(
+          top: -screenHeight * 0.3,
+          right: -screenWidth * 0.3,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: screenWidth * 0.8,
+                height: screenWidth * 0.8,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFDE9E8).withOpacity(0.4),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              Container(
+                width: screenWidth * 1.05,
+                height: screenWidth * 1.05,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFFFDE9E8).withOpacity(0.8),
+                    width: 4,
                   ),
                 ),
-                Container(
-                  width: 650,
-                  height: 650,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFFFDE9E8).withOpacity(0.8),
-                      width: 4,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SingleChildScrollView(
+        ),
+        Center(
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
                     Text(
                       "Create Account",
                       style: GoogleFonts.poppins(
-                        fontSize: 34,
+                        fontSize: screenWidth * 0.07, // responsive text
                         fontWeight: FontWeight.w800,
                         color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: screenHeight * 0.01),
                     Text(
                       "Create an account so you can explore\nall Dental Supplies",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
-                        fontSize: 16,
+                        fontSize: screenWidth * 0.04,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey.shade600,
                       ),
                     ),
-                    const SizedBox(height: 70),
+                    SizedBox(height: screenHeight * 0.06),
+                    // Username
                     TextField(
                       controller: nameController,
                       decoration: InputDecoration(
@@ -150,7 +135,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: screenHeight * 0.025),
+                    // Email
                     TextField(
                       controller: emailController,
                       decoration: InputDecoration(
@@ -180,17 +166,18 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: screenHeight * 0.025),
+                    // Password
                     TextField(
                       controller: passwordController,
-                      obscureText: _obscureText,
+                      obscureText: obscureTextPassword,
                       decoration: InputDecoration(
                         labelText: "Password",
                         filled: true,
                         fillColor: const Color(0xFFFDE9E8).withOpacity(0.4),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureText
+                            !obscureTextPassword
                                 ? MyFlutterApp.noun_eye_7539235
                                 : MyFlutterApp.noun_eye_7555192,
                             color: Colors.black,
@@ -198,7 +185,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _obscureText = !_obscureText;
+                              obscureTextPassword = !obscureTextPassword;
                             });
                           },
                         ),
@@ -225,17 +212,18 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: screenHeight * 0.025),
+                    // Confirm Password
                     TextField(
                       controller: confirmPasswordController,
-                      obscureText: _obscureText,
+                      obscureText: obscureTextConfirmPassword,
                       decoration: InputDecoration(
                         labelText: "Confirm Password",
                         filled: true,
                         fillColor: const Color(0xFFFDE9E8).withOpacity(0.4),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureText
+                            !obscureTextConfirmPassword
                                 ? MyFlutterApp.noun_eye_7539235
                                 : MyFlutterApp.noun_eye_7555192,
                             color: Colors.black,
@@ -243,7 +231,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _obscureText = !_obscureText;
+                              obscureTextConfirmPassword = !obscureTextConfirmPassword;
                             });
                           },
                         ),
@@ -270,36 +258,58 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 35),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 20,
-                            horizontal: 20,
-                          ),
-                          backgroundColor: AppColors.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                    SizedBox(height: screenHeight * 0.025),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Gender",
+                        style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.041,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
                         ),
-                        onPressed: _isLoading ? null : _register,
-                        child: _isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white)
-                            : Text(
-                                "Sign up",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
                       ),
                     ),
-                    const SizedBox(height: 35),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: RadioListTile<String>(
+                            value: 'male',
+                            groupValue: _selectedGender,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedGender = value;
+                              });
+                            },
+                            title: const Text('Male'),
+                            activeColor: AppColors.primaryColor,
+                          ),
+                        ),
+                        Expanded(
+                          child: RadioListTile<String>(
+                            value: 'female',
+                            groupValue: _selectedGender,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedGender = value;
+                              });
+                            },
+                            title: const Text('Female'),
+                            activeColor: AppColors.primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+                    // Responsive Signup Button, pass controllers/gender
+                    SignupButton(
+                      nameController: nameController,
+                      emailController: emailController,
+                      passwordController: passwordController,
+                      confirmPasswordController: confirmPasswordController,
+                      gender: _selectedGender,
+                    ),
+                    SizedBox(height: screenHeight * 0.035),
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).pop();
@@ -313,52 +323,136 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 50),
-                    Text(
-                      "Or continue with",
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.network(
-                              'https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png',
-                              height: 24,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              "Sign in with Google",
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    SizedBox(height: screenHeight * 0.045),
                   ],
                 ),
               ),
             ),
           ),
-        ],
+        ),
+      ]),
+    ));
+  }
+}
+
+class SignupButton extends StatelessWidget {
+  final TextEditingController nameController;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final TextEditingController confirmPasswordController;
+  final String? gender;
+
+  const SignupButton({
+    Key? key,
+    required this.nameController,
+    required this.emailController,
+    required this.passwordController,
+    required this.confirmPasswordController,
+    required this.gender,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(
+            vertical: 20,
+            horizontal: 20,
+          ),
+          backgroundColor: AppColors.primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        onPressed: () async {
+          final name = nameController.text.trim();
+          final email = emailController.text.trim();
+          final password = passwordController.text;
+          final confirmPassword = confirmPasswordController.text;
+
+          if (name.isEmpty ||
+              email.isEmpty ||
+              password.isEmpty ||
+              confirmPassword.isEmpty ||
+              gender == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Please fill all fields!')),
+            );
+            return;
+          }
+
+          if (password != confirmPassword) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Passwords do not match!')),
+            );
+            return;
+          }
+
+          await signup(context, name, email, password, gender!);
+        },
+        child: Text(
+          "Sign up",
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
+}
+
+Future<void> signup(BuildContext context, String name, String email,
+    String password, String gender) async {
+
+    final response = await http.post(
+      Uri.parse('https://server.dentallink.co/api/auth/signup'),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "email": email,
+        "username": name,
+        "password": password,
+        "gender": gender,
+      }),
+
+    );
+
+    final data = json.decode(response.body);
+
+    if (response.statusCode == 200) {
+
+
+      ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(content: Text('${data['msg']}')),
+      );
+      Navigator.of(context).pop();
+    } else {
+
+      String errorMsg = 'Signup failed';
+
+      // Check for errors key and combine messages
+      if (data['errors'] != null && data['errors'] is Map) {
+        List<String> messages = [];
+        data['errors'].forEach((key, value) {
+          if (value is List) {
+            messages.addAll(value.map((v) => v.toString()));
+          } else {
+            messages.add(value.toString());
+          }
+        });
+        errorMsg = messages.join('\n');
+      } else if (data['message'] != null) {
+        errorMsg = data['message'].toString();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMsg)),
+      );
+    }
 }
