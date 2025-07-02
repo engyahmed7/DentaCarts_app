@@ -1,4 +1,5 @@
 import 'package:DentaCarts/admin/view/add_product_screen_admin.dart';
+import 'package:DentaCarts/admin/view/login_screen_admin.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/admin/services/product_api_service.dart';
 import 'package:DentaCarts/view/welcome_screen.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
         title: AppStrings.appName,
-        home: kIsWeb ? AddProductScreenAdmin() : WelcomeScreen(),
+        home: kIsWeb ? LoginScreenAdmin() : WelcomeScreen(),
       ),
     );
   }

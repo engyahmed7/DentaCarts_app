@@ -1,3 +1,5 @@
+import 'package:DentaCarts/admin/view/login_screen_admin.dart';
+import 'package:DentaCarts/core/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -6,17 +8,19 @@ class AdminUtils {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove('token');
-      await prefs.remove('user_data');
+      // await prefs.remove('user_data');
 
       if (context.mounted) {
-        Navigator.of(context).pushReplacementNamed('/login');
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const LoginScreenAdmin()),
+        );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error during logout: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.primaryColor,
           ),
         );
       }
@@ -68,11 +72,12 @@ class AdminUtils {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(cancelText),
+            child: Text(cancelText, style: TextStyle(color: Colors.grey[800])),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text(confirmText),
+            child: Text(confirmText,
+                style: const TextStyle(color: AppColors.primaryColor)),
           ),
         ],
       ),

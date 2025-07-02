@@ -6,11 +6,8 @@ import 'package:DentaCarts/admin/widgets/admin_sidebar.dart';
 import 'package:DentaCarts/admin/widgets/admin_content_sections.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
- import 'package:DentaCarts/admin/html_stub.dart'
-  if (dart.library.html) 'dart:html' as html;
-
-
-
+import 'package:DentaCarts/admin/html_stub.dart'
+    if (dart.library.html) 'dart:html' as html;
 
 class AddProductScreenAdmin extends StatefulWidget {
   const AddProductScreenAdmin({super.key});
@@ -92,6 +89,9 @@ class _AddProductScreenAdminState extends State<AddProductScreenAdmin> {
   }
 
   Future<HomeSettings> fetchHomeSettings() async {
+    if (token == null || token!.isEmpty) {
+      throw Exception('Token is null or empty. Please login again.');
+    }
     final response = await http.get(
       Uri.parse('http://127.0.0.1:8000/api/settings/home'),
       headers: {"Authorization": "Bearer $token"},
