@@ -14,7 +14,6 @@ void main() {
   runApp(const MyApp());
 }
 
-// ---- دوال التوكن ----
 
 Future<void> saveToken(String token) async {
   if (!kIsWeb) {
@@ -37,7 +36,6 @@ Future<bool> hasToken() async {
   return token != null && token.isNotEmpty;
 }
 
-// ---- نهاية دوال التوكن ----
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -53,9 +51,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: AppStrings.appName,
-        // لاحظ: هنا كود الويب كما هو عندك
         home: kIsWeb
-            ? LoginScreenAdmin()
+            ? const LoginScreenAdmin()
             : FutureBuilder<bool>(
           future: hasToken(),
           builder: (context, snapshot) {
