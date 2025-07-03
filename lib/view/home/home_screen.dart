@@ -1,15 +1,15 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:DentaCarts/view/details_produc_screen.dart';
+import 'package:DentaCarts/view/home/banner_section.dart';
 import 'package:DentaCarts/view/instruments_screen.dart';
 import 'package:DentaCarts/viewmodel/cart/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../admin/services/product_api_service.dart';
+import '../../admin/services/product_api_service.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -57,11 +57,11 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             // TextField(
             //   decoration: InputDecoration(
             //     hintText: "Search ....",
@@ -74,15 +74,15 @@ class HomeScreen extends StatelessWidget {
             //     fillColor: Colors.grey.shade200,
             //   ),
             // ),
-            SizedBox(height: 20),
-            BannerSection(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            const BannerSection(),
+            const SizedBox(height: 20),
             Text("Categories",
                 style: GoogleFonts.poppins(
                     fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             CategorySection(categories: categories),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -92,10 +92,10 @@ class HomeScreen extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => InstrumentsScreen()),
+                      MaterialPageRoute(builder: (_) => const InstrumentsScreen()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     "View All",
                     style: TextStyle(
                       color: AppColors.primaryColor,
@@ -105,8 +105,8 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 10),
-            SaleProductsList(),
+            const SizedBox(height: 10),
+            const SaleProductsList(),
           ],
         ),
       ),
@@ -114,67 +114,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class BannerSection extends StatelessWidget {
-  const BannerSection({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Column(
-      children: [
-        SizedBox(height: 35),
-        Container(
-          height: 180,
-          decoration: BoxDecoration(
-            color: Color(0xFFFDE9E8),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          padding: EdgeInsets.all(16),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Dental Link Offers",
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          "Get 20% OFF on MH Group Products.",
-                          style: GoogleFonts.poppins(fontSize: 14),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Positioned(
-                right: screenWidth * -0.07,
-                bottom: screenHeight * -0.02,
-                child: Image.asset(
-                  'assets/images/banner.png',
-                  height: 240,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class CategorySection extends StatelessWidget {
   final List<Map<String, dynamic>> categories;
@@ -195,7 +135,7 @@ class CategorySection extends StatelessWidget {
             child: Column(
               children: [
                 CircleAvatar(
-                  backgroundColor: Color(0xFF8B0000),
+                  backgroundColor: const Color(0xFF8B0000),
                   radius: 25,
                   child: Icon(
                     category['icon'],
@@ -203,7 +143,7 @@ class CategorySection extends StatelessWidget {
                     size: 24,
                   ),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Text(category['label']!,
                     style: GoogleFonts.poppins(fontSize: 12)),
               ],
@@ -274,9 +214,9 @@ class _SaleProductCardState extends State<SaleProductCard> {
       context.read<CartCubit>().addItem(item);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Item added to cart successfully!"),
-          backgroundColor: const Color.fromARGB(255, 30, 68, 31),
+        const SnackBar(
+          content: Text("Item added to cart successfully!"),
+          backgroundColor: Color.fromARGB(255, 30, 68, 31),
         ),
       );
     } catch (e) {
@@ -576,7 +516,7 @@ class _SaleProductsListState extends State<SaleProductsList> {
 
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: _products.length > 3 ? 3 : _products.length,
       itemBuilder: (context, index) {
         return SaleProductCard(product: _products[index]);
