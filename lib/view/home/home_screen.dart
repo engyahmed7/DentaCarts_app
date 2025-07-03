@@ -4,6 +4,7 @@ import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:DentaCarts/view/details_produc_screen.dart';
 import 'package:DentaCarts/view/home/banner_section.dart';
+import 'package:DentaCarts/view/home/category_section.dart';
 import 'package:DentaCarts/view/instruments_screen.dart';
 import 'package:DentaCarts/viewmodel/cart/cart_cubit.dart';
 import 'package:flutter/material.dart';
@@ -14,44 +15,7 @@ import '../../admin/services/product_api_service.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
-  final List<Map<String, dynamic>> categories = [
-    {
-      'icon': Icons.local_hospital,
-      'label': 'Perio & Surgery',
-    },
-    {
-      'icon': Icons.build,
-      'label': 'Instruments',
-    },
-    {
-      'icon': Icons.medical_services,
-      'label': 'Consumables',
-    },
-    {
-      'icon': Icons.healing,
-      'label': 'Implant',
-    },
-    {
-      'icon': Icons.local_hospital,
-      'label': 'Perio & Surgery',
-    },
-    {
-      'icon': Icons.build,
-      'label': 'Instruments',
-    },
-    {
-      'icon': Icons.medical_services,
-      'label': 'Consumables',
-    },
-    {
-      'icon': Icons.healing,
-      'label': 'Implant',
-    },
-    {
-      'icon': Icons.local_hospital,
-      'label': 'Perio & Surgery',
-    },
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +45,7 @@ class HomeScreen extends StatelessWidget {
                 style: GoogleFonts.poppins(
                     fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            CategorySection(categories: categories),
+            CategorySection(categories: categoriesMap),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -116,44 +80,7 @@ class HomeScreen extends StatelessWidget {
 
 
 
-class CategorySection extends StatelessWidget {
-  final List<Map<String, dynamic>> categories;
 
-  const CategorySection({super.key, required this.categories});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 80,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final category = categories[index];
-          return Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Column(
-              children: [
-                CircleAvatar(
-                  backgroundColor: const Color(0xFF8B0000),
-                  radius: 25,
-                  child: Icon(
-                    category['icon'],
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(category['label']!,
-                    style: GoogleFonts.poppins(fontSize: 12)),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
 
 class SaleProductCard extends StatefulWidget {
   final Product product;
