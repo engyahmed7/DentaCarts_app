@@ -4,6 +4,7 @@ import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
 import 'package:DentaCarts/model/user_model.dart';
+import 'package:DentaCarts/view/login_screen.dart';
 import 'package:DentaCarts/view/order_history_screen.dart';
 import 'package:DentaCarts/view/welcome_screen.dart';
 import 'package:DentaCarts/view/wishlist_screen.dart';
@@ -334,13 +335,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           TextButton(
                             onPressed: () async {
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              prefs.remove('token');
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (_) => const WelcomeScreen()),
+
+
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              await prefs.clear();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Logged out successfully"),
+                                  backgroundColor: AppColors.primaryColor,
+                                ),
                               );
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                                (route) => false,
+                              );
+
+
                             },
                             child: const Text(
                               "Confirm",
