@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:DentaCarts/model/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:DentaCarts/model/userModel.dart';
 
 class ApiService {
   final String baseUrl = "http://127.0.0.1:8000/api/auth";
@@ -86,56 +86,56 @@ class ApiService {
     }
   }
 
-  Future<User?> getUserProfile() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
+  // Future<UserModel> getUserProfile() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? token = prefs.getString('token');
+  //
+  //   if (token == null) return null;
+  //
+  //   final response = await http.get(
+  //     Uri.parse('$baseUrl/profile'),
+  //     headers: {"Authorization": "Bearer $token"},
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     return User.fromJson(jsonDecode(response.body));
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
-    if (token == null) return null;
-
-    final response = await http.get(
-      Uri.parse('$baseUrl/profile'),
-      headers: {"Authorization": "Bearer $token"},
-    );
-
-    if (response.statusCode == 200) {
-      return User.fromJson(jsonDecode(response.body));
-    } else {
-      return null;
-    }
-  }
-
-  Future<User?> updateUserProfile(
-      String username, String email, File? imageFile) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
-
-    if (token == null) return null;
-
-    try {
-      var request = http.MultipartRequest('PUT', Uri.parse('$baseUrl/profile'));
-      request.headers['Authorization'] = 'Bearer $token';
-
-      request.fields['username'] = username;
-      request.fields['email'] = email;
-
-      if (imageFile != null) {
-        request.files
-            .add(await http.MultipartFile.fromPath('image', imageFile.path));
-      }
-
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-
-      if (response.statusCode == 200) {
-        return User.fromJson(jsonDecode(response.body));
-      } else {
-        print(
-            "Error updating profile: ${response.statusCode} - ${response.body}");
-        return null;
-      }
-    } catch (e) {
-      print("Exception updating profile: $e");
-      return null;
-    }
-  }
+  // Future<User?> updateUserProfile(
+  //     String username, String email, File? imageFile) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? token = prefs.getString('token');
+  //
+  //   if (token == null) return null;
+  //
+  //   try {
+  //     var request = http.MultipartRequest('PUT', Uri.parse('$baseUrl/profile'));
+  //     request.headers['Authorization'] = 'Bearer $token';
+  //
+  //     request.fields['username'] = username;
+  //     request.fields['email'] = email;
+  //
+  //     if (imageFile != null) {
+  //       request.files
+  //           .add(await http.MultipartFile.fromPath('image', imageFile.path));
+  //     }
+  //
+  //     final streamedResponse = await request.send();
+  //     final response = await http.Response.fromStream(streamedResponse);
+  //
+  //     if (response.statusCode == 200) {
+  //       return User.fromJson(jsonDecode(response.body));
+  //     } else {
+  //       print(
+  //           "Error updating profile: ${response.statusCode} - ${response.body}");
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     print("Exception updating profile: $e");
+  //     return null;
+  //   }
+  // }
 }

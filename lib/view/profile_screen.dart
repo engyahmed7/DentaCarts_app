@@ -1,9 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
-import 'package:DentaCarts/model/userModel.dart';
+import 'package:DentaCarts/model/user_model.dart';
 import 'package:DentaCarts/view/order_history_screen.dart';
 import 'package:DentaCarts/view/welcome_screen.dart';
 import 'package:DentaCarts/view/wishlist_screen.dart';
@@ -13,7 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:http/http.dart' as http;
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -22,10 +22,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  User? user;
+  UserModel? user;
   bool isLoading = true;
-  File? _imageFile;
-  bool _isPickingImage = false;
+  // File? _imageFile;
+  // bool _isPickingImage = false;
 
   @override
   void initState() {
@@ -34,139 +34,123 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> fetchUserProfile() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
-
-    if (token == null) {
-      setState(() {
-        isLoading = false;
-      });
-      return;
-    }
-
-    try {
-      User? fetchedUser = await ApiService().getUserProfile();
-      print("User: $fetchedUser");
-      setState(() {
-        user = fetchedUser;
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      print("Error fetching profile: $e");
-    }
-  }
-
-  Future<void> pickImage() async {
-    if (_isPickingImage) return;
-
+    setState(() => isLoading = true);
+    UserModel? fetchedUser = await getProfileData();
     setState(() {
-      _isPickingImage = true;
+      user = fetchedUser;
+      isLoading = false;
     });
-
-    try {
-      final pickedFile =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        setState(() {
-          _imageFile = File(pickedFile.path);
-        });
-      }
-    } catch (e) {
-      print("Error picking image: $e");
-    } finally {
-      setState(() {
-        _isPickingImage = false;
-      });
-    }
   }
 
-  void showEditProfileDialog() {
-    TextEditingController usernameController =
-        TextEditingController(text: user?.username);
-    TextEditingController emailController =
-        TextEditingController(text: user?.email);
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Edit Profile"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: usernameController,
-                decoration: const InputDecoration(labelText: "Username"),
-              ),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: "Email"),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton.icon(
-                onPressed: _isPickingImage ? null : pickImage,
-                icon: const Icon(Icons.image),
-                label: const Text("Pick Profile Image"),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await updateUserProfile(
-                  usernameController.text.trim(),
-                  emailController.text.trim(),
-                  _imageFile,
-                );
-              },
-              child: const Text("Save"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> updateUserProfile(
-      String username, String email, File? imageFile) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      User? updatedUser =
-          await ApiService().updateUserProfile(username, email, imageFile);
-
-      if (updatedUser != null) {
-        setState(() {
-          user = updatedUser;
-          _imageFile = null;
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to update profile")),
-        );
-      }
-    } catch (e) {
-      print("Error updating profile: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("An error occurred while updating profile")),
-      );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
+  //
+  // Future<void> pickImage() async {
+  //   if (_isPickingImage) return;
+  //
+  //   setState(() {
+  //     _isPickingImage = true;
+  //   });
+  //
+  //   try {
+  //     final pickedFile =
+  //         await ImagePicker().pickImage(source: ImageSource.gallery);
+  //     if (pickedFile != null) {
+  //       setState(() {
+  //         _imageFile = File(pickedFile.path);
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print("Error picking image: $e");
+  //   } finally {
+  //     setState(() {
+  //       _isPickingImage = false;
+  //     });
+  //   }
+  // }
+  //
+  // void showEditProfileDialog() {
+  //   TextEditingController usernameController =
+  //       TextEditingController(text: user?.username);
+  //   TextEditingController emailController =
+  //       TextEditingController(text: user?.email);
+  //
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text("Edit Profile"),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             TextField(
+  //               controller: usernameController,
+  //               decoration: const InputDecoration(labelText: "Username"),
+  //             ),
+  //             TextField(
+  //               controller: emailController,
+  //               decoration: const InputDecoration(labelText: "Email"),
+  //             ),
+  //             const SizedBox(height: 10),
+  //             ElevatedButton.icon(
+  //               onPressed: _isPickingImage ? null : pickImage,
+  //               icon: const Icon(Icons.image),
+  //               label: const Text("Pick Profile Image"),
+  //             ),
+  //           ],
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.of(context).pop(),
+  //             child: const Text("Cancel"),
+  //           ),
+  //           TextButton(
+  //             onPressed: () async {
+  //               Navigator.of(context).pop();
+  //               await updateUserProfile(
+  //                 usernameController.text.trim(),
+  //                 emailController.text.trim(),
+  //                 _imageFile,
+  //               );
+  //             },
+  //             child: const Text("Save"),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+  //
+  // Future<void> updateUserProfile(
+  //     String username, String email, File? imageFile) async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //
+  //   try {
+  //     User? updatedUser =
+  //         await ApiService().updateUserProfile(username, email, imageFile);
+  //
+  //     if (updatedUser != null) {
+  //       setState(() {
+  //         user = updatedUser;
+  //         _imageFile = null;
+  //       });
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text("Failed to update profile")),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print("Error updating profile: $e");
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //           content: Text("An error occurred while updating profile")),
+  //     );
+  //   } finally {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -227,18 +211,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   CircleAvatar(
                     radius: 60,
-                    backgroundImage: _imageFile != null
-                        ? FileImage(_imageFile!) as ImageProvider
-                        : (user?.image != null && user!.image.isNotEmpty)
-                            ? NetworkImage(user!.image)
-                            : const AssetImage(AppStrings.placholderImage)
-                                as ImageProvider,
+                    backgroundColor: AppColors.primaryColor,
+                    backgroundImage: (user?.image.isNotEmpty == true)
+                        ? NetworkImage(user!.image)
+                        : null,
+                    child: (user?.image == null || user!.image.isEmpty)
+                        ? Text(
+                      user?.username.isNotEmpty == true
+                          ? user!.username[0].toUpperCase()
+                          : '?',
+                      style: GoogleFonts.poppins(
+                        fontSize: 44,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                        : null,
                   ),
+
                   Positioned(
                     bottom: 0,
                     right: 10,
                     child: GestureDetector(
-                      onTap: showEditProfileDialog,
+                      onTap: (){},//showEditProfileDialog,
                       child: const CircleAvatar(
                         radius: 18,
                         backgroundColor: Colors.white,
@@ -250,7 +245,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                user?.username ?? "Unknown",
+                user?.username.isNotEmpty == true ? user!.username : "Unknown",
                 style: GoogleFonts.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -259,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 10),
               Text(
-                user?.email ?? "Unknown",
+                user?.email.isNotEmpty == true ? user!.email : "Unknown",
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   color: Colors.black54,
@@ -428,5 +423,26 @@ class ProfileOptionCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+
+
+Future<UserModel?> getProfileData() async {
+  final response = await http.get(
+    Uri.parse('${AppStrings.baseUrl}/api/profile'),
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${AppStrings.token}',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    return UserModel.fromJson(data);
+  } else {
+    // Handle errors here (e.g. return null or throw)
+    return null;
   }
 }

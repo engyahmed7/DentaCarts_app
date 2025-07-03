@@ -1,13 +1,15 @@
 import 'dart:convert';
 
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
+import 'package:DentaCarts/main.dart';
 import 'package:DentaCarts/view/create_account_screen.dart';
-import 'package:DentaCarts/view/layout_screen.dart';
+import 'package:DentaCarts/layout/layout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:DentaCarts/services/api_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,8 +19,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController(
+    text: 'engmarwan12345@gmail.com',
+  );
+  final TextEditingController passwordController = TextEditingController(
+    text: 'marwan123',
+  );
   bool _obscureText = true;
 
   @override
@@ -307,6 +313,8 @@ class _LoginButtonState extends State<LoginButton> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${data['msg']}')),
       );
+      AppStrings.token = data['token'];
+      await saveToken(data['token']);
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const LayoutScreen()), (
           _) => false);
