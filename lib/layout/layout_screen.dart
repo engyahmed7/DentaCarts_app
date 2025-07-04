@@ -1,5 +1,5 @@
 import 'package:DentaCarts/core/app_colors.dart';
-import 'package:DentaCarts/view/cart_screen.dart';
+import 'package:DentaCarts/view/cart/cart_screen.dart';
 import 'package:DentaCarts/view/home/home_screen.dart';
 import 'package:DentaCarts/view/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ class LayoutScreen extends StatefulWidget {
 }
 
 class _LayoutScreenState extends State<LayoutScreen> {
-  int currentIndex = 0;
+  int currentIndex = 1;
 
   @override
   Widget build(BuildContext context) {
