@@ -6,6 +6,7 @@ import 'package:DentaCarts/viewmodel/cart/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../admin/services/product_api_service.dart';
+import '../model/product.dart' show Product;
 
 class InstrumentsScreen extends StatefulWidget {
   const InstrumentsScreen({super.key});
@@ -15,7 +16,6 @@ class InstrumentsScreen extends StatefulWidget {
 }
 
 class _InstrumentsScreenState extends State<InstrumentsScreen> {
-  late Future<List<Product>> futureProducts;
   List<String> categories = [];
   String selectedCategory = 'all';
   TextEditingController searchController = TextEditingController();
@@ -24,7 +24,6 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
   @override
   void initState() {
     super.initState();
-    futureProducts = Future.value([]);
     _loadInitialData();
   }
 
@@ -33,7 +32,6 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
     print("Categories: $categories");
 
     setState(() {
-      futureProducts = _fetchProducts();
     });
   }
 
@@ -86,7 +84,7 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
               onChanged: (value) {
                 setState(() {
                   searchQuery = value;
-                  futureProducts = _fetchProducts();
+                  //futureProducts = _fetchProducts();
                 });
               },
               decoration: InputDecoration(
@@ -121,7 +119,7 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
                         onSelected: (_) {
                           setState(() {
                             selectedCategory = category;
-                            futureProducts = _fetchProducts();
+                            //futureProducts = _fetchProducts();
                           });
                         },
                         selectedColor: AppColors.primaryColor,
@@ -139,7 +137,7 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
               ),
             const SizedBox(height: 20),
             FutureBuilder<List<Product>>(
-              future: futureProducts,
+              future: _fetchProducts(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -317,12 +315,12 @@ class _ProductCardState extends State<ProductCard> {
             child: Center(
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DetailsProductPage(
-                                product: widget.product,
-                              )));
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => DetailsProductPage(
+                  //               product: widget.product,
+                  //             )));
                 },
                 child: Image.network(
                   widget.product.images.isNotEmpty

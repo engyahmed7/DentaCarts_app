@@ -140,10 +140,10 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (_) => const InstrumentsScreen()),
-                        );
+                        // Navigator.of(context).push(
+                        //   MaterialPageRoute(
+                        //       builder: (_) => const InstrumentsScreen()),
+                        // );
                       },
                       child: const Text('Return to shop',
                           style: TextStyle(color: Colors.white)),

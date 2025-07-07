@@ -1,4 +1,5 @@
 import 'package:DentaCarts/admin/services/product_api_service.dart';
+import 'package:DentaCarts/admin/view/add_product_screen_admin.dart';
 import 'package:DentaCarts/admin/view/login_screen_admin.dart';
 import 'package:DentaCarts/viewmodel/cart/cart_cubit.dart';
 import 'package:DentaCarts/viewmodel/whishlist/wishlist_cubit.dart';
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: AppStrings.appName,
         home: kIsWeb
-            ? const LoginScreenAdmin()
+            ? const AddProductScreenAdmin()
             : FutureBuilder<bool>(
           future: hasToken(),
           builder: (context, snapshot) {

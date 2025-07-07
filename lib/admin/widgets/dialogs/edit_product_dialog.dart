@@ -1,3 +1,4 @@
+import 'package:DentaCarts/model/product.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';

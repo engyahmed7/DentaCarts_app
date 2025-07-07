@@ -2,6 +2,7 @@ import 'package:DentaCarts/admin/widgets/components/product_data_table.dart';
 import 'package:DentaCarts/admin/widgets/components/product_table_header.dart';
 import 'package:DentaCarts/admin/widgets/components/table_pagination.dart';
 import 'package:DentaCarts/admin/widgets/dialogs/edit_product_dialog.dart';
+import 'package:DentaCarts/model/product.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';

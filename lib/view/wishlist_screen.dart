@@ -1,4 +1,5 @@
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/model/product.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
 import 'package:DentaCarts/view/instruments_screen.dart';
