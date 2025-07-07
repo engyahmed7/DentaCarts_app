@@ -34,7 +34,7 @@ class _SaleProductsListState extends State<SaleProductsList> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Error loading banner'));
+          return const Center(child: Text('Error loading products'));
         } else if (!snapshot.hasData || snapshot.data == null) {
           return const Center(child: Text('No banner available'));
         } else {
@@ -250,7 +250,7 @@ class _SaleProductsListState extends State<SaleProductsList> {
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    return ProductModel.listFromJson(data);
+    return ProductModel.listFromJson(data['products']);
   } else {
     return [];
   }
