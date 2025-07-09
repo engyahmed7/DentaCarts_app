@@ -199,33 +199,33 @@ class _SaleProductsListState extends State<SaleProductsList> {
                         ),
                       ),
                     ),
-                    Positioned(
-                      top: 8,
-                      left: 8,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          onPressed: (){},
-                          icon: Icon(
-                            //isWishlisted ? Icons.favorite : Icons.favorite_border,
-                            //color: isWishlisted ? Colors.red : AppColors.primaryColor,
-                            Icons.favorite_border,
-                            color: AppColors.primaryColor,
-                          ),
-                          iconSize: 24,
-                        ),
-                      ),
-                    ),
+                    // Positioned(
+                    //   top: 8,
+                    //   left: 8,
+                    //   child: Container(
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.white,
+                    //       shape: BoxShape.circle,
+                    //       boxShadow: [
+                    //         BoxShadow(
+                    //           color: Colors.black.withOpacity(0.1),
+                    //           blurRadius: 4,
+                    //           offset: const Offset(0, 2),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //     child: IconButton(
+                    //       onPressed: (){},
+                    //       icon: Icon(
+                    //         //isWishlisted ? Icons.favorite : Icons.favorite_border,
+                    //         //color: isWishlisted ? Colors.red : AppColors.primaryColor,
+                    //         Icons.favorite_border,
+                    //         color: AppColors.primaryColor,
+                    //       ),
+                    //       iconSize: 24,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               );
