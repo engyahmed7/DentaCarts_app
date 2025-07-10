@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/admin/services/product_api_service.dart';
 import 'package:DentaCarts/admin/html_stub.dart'
-if (dart.library.html) 'dart:html' as html;
+    if (dart.library.html) 'dart:html' as html;
 
 class AddProductForm extends StatelessWidget {
   final String username;
@@ -95,7 +95,59 @@ class AddProductForm extends StatelessWidget {
         _buildTextField(
             "Product Description", Icons.description, descriptionController),
         _buildTextField("Price", Icons.attach_money, priceController),
-        _buildTextField("Category", Icons.category, categoryController),
+        FutureBuilder<List<Map<String, dynamic>>>(
+          future: ProductApiService().fetchAllCategoriesWithIdAndName(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Padding(
+                padding: EdgeInsets.only(bottom: 15),
+                child: LinearProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return const Padding(
+                padding: EdgeInsets.only(bottom: 15),
+                child: Text(
+                  "Failed to load categories",
+                  style: TextStyle(color: Colors.red),
+                ),
+              );
+            } else if (snapshot.hasData) {
+              final categories = snapshot.data!;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                child: DropdownButtonFormField<String>(
+                  value: categoryController.text.isNotEmpty
+                      ? categoryController.text
+                      : null,
+                  items: categories
+                      .map((cat) => DropdownMenuItem(
+                            value: cat['id'].toString(),
+                            child: Text(cat['name']),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      categoryController.text = value;
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: "Category",
+                    prefixIcon: const Icon(Icons.category,
+                        color: AppColors.primaryColor),
+                    filled: true,
+                    fillColor: AppColors.secondaryColor.withOpacity(0.8),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          },
+        ),
         _buildTextField("Stock Quantity", Icons.numbers, stockController),
       ],
     );

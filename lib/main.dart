@@ -15,7 +15,6 @@ void main() {
   runApp(const MyApp());
 }
 
-
 Future<void> saveToken(String token) async {
   if (!kIsWeb) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -37,7 +36,6 @@ Future<bool> hasToken() async {
   return token != null && token.isNotEmpty;
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -53,30 +51,23 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: AppStrings.appName,
         home: kIsWeb
-            ? const AddProductScreenAdmin()
+            ? const LoginScreenAdmin()
             : FutureBuilder<bool>(
-          future: hasToken(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
-            if (snapshot.hasData && snapshot.data == true) {
-              return const LayoutScreen();
-            } else {
-              return const LoginScreen();
-            }
-          },
-        ),
+                future: hasToken(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Scaffold(
+                      body: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  if (snapshot.hasData && snapshot.data == true) {
+                    return const LayoutScreen();
+                  } else {
+                    return const LoginScreen();
+                  }
+                },
+              ),
       ),
     );
   }
 }
-
-
-
-
-
-
-

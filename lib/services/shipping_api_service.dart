@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class ShippingApiService {
-  final String apiBaseUrl = 'http://127.0.0.1:8000/api';
+  final String apiBaseUrl = 'https://server.dentallink.co/api';
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();

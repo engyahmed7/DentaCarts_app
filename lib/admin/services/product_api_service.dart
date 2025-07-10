@@ -4,11 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 import 'package:DentaCarts/admin/html_stub.dart'
-if (dart.library.html) 'dart:html' as html;
-
+    if (dart.library.html) 'dart:html' as html;
 
 class ProductApiService {
-  final String baseUrl = "http://127.0.0.1:8000/api/";
+  final String baseUrl = "https://server.dentallink.co/api/";
 
   Future<List<dynamic>> fetchProducts() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -31,6 +30,30 @@ class ProductApiService {
       }
     } catch (e) {
       throw Exception("Error fetching products: $e");
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchAllCategoriesWithIdAndName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    try {
+      final response = await http.get(
+        Uri.parse('${baseUrl}categories'),
+        headers: {"Authorization": "Bearer $token"},
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data
+            .map<Map<String, dynamic>>((cat) => {
+                  'id': cat['id'].toString(),
+                  'name': cat['name'].toString(),
+                })
+            .toList();
+      } else {
+        throw Exception("Failed to load all categories");
+      }
+    } catch (e) {
+      throw Exception("Error fetching all categories: $e");
     }
   }
 
@@ -257,6 +280,7 @@ class ProductApiService {
   }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
+    print('Token: $token');
 
     try {
       var request = http.MultipartRequest(
@@ -267,7 +291,7 @@ class ProductApiService {
       request.fields['title'] = title;
       request.fields['description'] = description;
       request.fields['price'] = price.toString();
-      request.fields['category'] = category;
+      request.fields['category_id'] = category;
       request.fields['stock'] = stock.toString();
 
       for (var image in images) {
@@ -288,7 +312,7 @@ class ProductApiService {
         }
 
         var multipartFile = http.MultipartFile.fromBytes(
-          'image',
+          'images',
           imageBytes,
           filename: image.name,
           contentType: MediaType.parse(getContentType(image.name)),
@@ -297,6 +321,8 @@ class ProductApiService {
       }
 
       request.headers['Authorization'] = 'Bearer $token';
+      request.headers['Accept'] = 'application/json';
+
       print('Request Fields: ${request.fields}');
 
       var response = await request.send();
@@ -315,7 +341,9 @@ class ProductApiService {
           String errorMessage = errors.map((error) => error['msg']).join('\n');
           throw Exception(errorMessage);
         } else {
-          throw Exception('An unexpected error occurred');
+          String errorMessage =
+              errorData['message'] ?? 'An unexpected error occurred';
+          throw Exception(errorMessage);
         }
       }
     } catch (e) {
