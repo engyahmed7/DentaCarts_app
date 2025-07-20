@@ -14,12 +14,12 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder <List<CartModel>?>(
-      future: getProducts(),
+      future: getCarts(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Error loading products'));
+          return  Center(child: Text('Error loading Cart ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data == null) {
           return const Center(child: Text('No banner available'));
         } else {
@@ -107,14 +107,14 @@ class CartScreen extends StatelessWidget {
                                       ],
                                     ),
                                     Text(
-                                      "${cart.title}",
+                                      "${cart.name}",
                                       style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     Text(
-                                      cart.description,
+                                      cart.price,
                                       style: GoogleFonts.poppins(
                                         fontSize: 12,
                                         color: Colors.grey,
@@ -227,18 +227,19 @@ class CartScreen extends StatelessWidget {
     );
   }
 }
-Future<List<CartModel>> getProducts() async {
+Future<List<CartModel>> getCarts() async {
   final response = await http.get(
     Uri.parse('${AppStrings.baseUrl}/api/cart'),
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${AppStrings.token}',
     },
   );
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    return CartModel.listFromJson(data['products']);
+    return CartModel.listFromJson(data['items']);
   } else {
     return [];
   }

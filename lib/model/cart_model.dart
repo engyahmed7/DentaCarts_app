@@ -1,18 +1,18 @@
 class CartModel {
   final int id;
-  final String title;
-  final String description;
+  final String name;
+  final String price;
   CartModel({
     required this.id,
-    required this.title,
-    required this.description,
+    required this.name,
+    required this.price,
   });
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
     return CartModel(
       id: json['id'],
-      title: json['title'],
-      description: json['description'],
+      name: json['name'],
+      price: json['price'],
     );
   }
 
