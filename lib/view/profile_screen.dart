@@ -7,7 +7,7 @@ import 'package:DentaCarts/model/user_model.dart';
 import 'package:DentaCarts/view/login_screen.dart';
 import 'package:DentaCarts/view/order_history_screen.dart';
 import 'package:DentaCarts/view/welcome_screen.dart';
-import 'package:DentaCarts/view/wishlist_screen.dart';
+import 'package:DentaCarts/view/wishlist/wishlist_screen.dart';
 import 'package:DentaCarts/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
