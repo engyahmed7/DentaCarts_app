@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: AppStrings.appName,
         home: kIsWeb
-            ? const LoginScreenAdmin()
+            ? const AddProductScreenAdmin()
             : FutureBuilder<bool>(
                 future: hasToken(),
                 builder: (context, snapshot) {

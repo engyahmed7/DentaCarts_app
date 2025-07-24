@@ -84,6 +84,18 @@ class _LayoutScreenState extends State<LayoutScreen> {
           ),
         ],
       ),
+      //  floatingActionButton: currentIndex == 1
+      //  ? FloatingActionButton(
+      //   onPressed: () {
+      //
+      //   },
+      //   backgroundColor: AppColors.primaryColor,
+      //   child: const Icon(
+      //     Icons.add,
+      //     color: Colors.white,
+      //   ),
+      // )
+      //      : null,
     );
   }
 }
