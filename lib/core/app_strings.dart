@@ -6,4 +6,6 @@ class AppStrings {
   static const String marwanHoo = "https://avatars.githubusercontent.com/u/125823028?v=4";
   static const String baseUrl = "https://server.dentallink.co";
   static  String? token ;
+  static const String fawaterakLogo = "assets/images/fawaterak.png";
+  static const String cashLogo = "assets/images/cash.png";
 }

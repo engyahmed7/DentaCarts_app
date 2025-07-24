@@ -1,3 +1,4 @@
+import 'package:DentaCarts/core/app_strings.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -98,7 +99,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               title: "Fawaterak",
               description:
               "Fawaterak is a PCI Certified online payments \nplatform for MSMEs",
-              imageUrl: 'assets/images/fawaterak.png',
+              imageUrl: '${AppStrings.fawaterakLogo}',
               isSelected: selectedMethod == "Fawaterak",
               onTap: () {
                 setState(() {
@@ -110,7 +111,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             PaymentOptionCard(
               title: "Cash",
               description: "Pay upon receipt",
-              imageUrl: "assets/images/cash.png",
+              imageUrl: "${AppStrings.cashLogo}",
               isSelected: selectedMethod == "Cash",
               onTap: () {
                 setState(() {
@@ -194,8 +195,8 @@ class PaymentOptionCard extends StatelessWidget {
           padding: const EdgeInsets.all(12.0),
           child: Row(
             children: [
-              Image.network(
-                "https://avatars.githubusercontent.com/u/125823028?v=4",
+              Image.asset(
+                imageUrl,
                 height: 120,
                 width: 120,
               ),

@@ -284,7 +284,9 @@ class _CartScreenState extends State<CartScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: FloatingActionButton(onPressed: (){
+                child: FloatingActionButton(
+                  heroTag: "refreshCartBtn",
+                  onPressed: (){
                   setState(() {
                     getCarts();
                   });
