@@ -105,8 +105,10 @@ class _SaleProductsListState extends State<SaleProductsList> {
                                 ),
                               ),
                                         const SizedBox(width: 5),
-                                        const Text(
-                                          "{rating}+",
+                                         Text("|"),
+                                        const SizedBox(width: 5),
+                                         Text(
+                                          "${product.stock} +",
                                           style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
@@ -116,6 +118,8 @@ class _SaleProductsListState extends State<SaleProductsList> {
                                       ],
                                     ),
                                     Text(
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                       "${productModel?[index].title}",
                                       style: GoogleFonts.poppins(
                                         fontSize: 14,
@@ -128,26 +132,25 @@ class _SaleProductsListState extends State<SaleProductsList> {
                                         fontSize: 12,
                                         color: Colors.grey,
                                       ),
-                                      maxLines: 2,
+                                      maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Column(
+                                         Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
+                                            // Text(
+                                            //   // "\$${widget.product.price.toStringAsFixed(2)}",
+                                            //   "text",
+                                            //   style: TextStyle(
+                                            //     decoration: TextDecoration.lineThrough,
+                                            //     color: Colors.grey,
+                                            //   ),
+                                            // ),
                                             Text(
-                                              // "\$${widget.product.price.toStringAsFixed(2)}",
-                                              "",
-                                              style: TextStyle(
-                                                decoration: TextDecoration.lineThrough,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            Text(
-                                              //"\$${(widget.product.price * 0.8).toStringAsFixed(2)}",
-                                              "",
+                                              "${product.price}",
                                               style: TextStyle(
                                                 color: AppColors.primaryColor,
                                                 fontWeight: FontWeight.bold,
@@ -156,22 +159,22 @@ class _SaleProductsListState extends State<SaleProductsList> {
                                             ),
                                           ],
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: Colors.green,
-                                            borderRadius: BorderRadius.circular(5),
-                                          ),
-                                          child: const Text(
-                                            "30% OFF",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
+                                        // Container(
+                                        //   padding: const EdgeInsets.symmetric(
+                                        //       horizontal: 6, vertical: 2),
+                                        //   decoration: BoxDecoration(
+                                        //     color: Colors.green,
+                                        //     borderRadius: BorderRadius.circular(5),
+                                        //   ),
+                                        //   child: const Text(
+                                        //     "30% OFF",
+                                        //     style: TextStyle(
+                                        //       color: Colors.white,
+                                        //       fontSize: 12,
+                                        //       fontWeight: FontWeight.bold,
+                                        //     ),
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                   ],
