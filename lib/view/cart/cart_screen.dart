@@ -30,7 +30,7 @@ class _CartScreenState extends State<CartScreen> {
             color: Colors.black,
           ),),
           const SizedBox(height: 20,),
-          Expanded(
+          Flexible(
             child: FutureBuilder <List<CartModel>?>(
               future: getCarts(),
               builder: (context, snapshot) {
@@ -53,7 +53,7 @@ class _CartScreenState extends State<CartScreen> {
 
                   return Column(
                     children: [
-                      Expanded(
+                      Flexible(
                         child: ListView.builder(
                           //shrinkWrap: true,
                           //physics: const NeverScrollableScrollPhysics(),
@@ -239,30 +239,31 @@ class _CartScreenState extends State<CartScreen> {
                           },
                         ),
                       ),
-                      FlutterLogo(),
+                       const SizedBox(height: 10,),
+                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("Total",style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),),
+                          Text("${total?.toStringAsFixed(2)} EGP",style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),),
+
+                        ],
+                      ),
                     ],
                   );
                 }
               },
             ),
           ),
-          const SizedBox(height: 20,),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Total",style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),),
-              // Text("'${total?.toStringAsFixed(2)} EGP'",style: TextStyle(
-              //   fontSize: 18,
-              //   fontWeight: FontWeight.bold,
-              //   color: Colors.black,
-              // ),),
+          const SizedBox(height: 5,),
 
-            ],
-          ),
           Stack(
             alignment: Alignment.centerRight,
             children: [

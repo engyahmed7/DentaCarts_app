@@ -1,7 +1,7 @@
 import 'package:DentaCarts/core/app_strings.dart';
+import 'package:DentaCarts/view/payment/cash_payment_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -143,9 +143,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         MaterialPageRoute(builder: (_)=> const FawaterakScreen()),
                       );
                     } else if (selectedMethod == "Cash") {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_)=> const CashScreen()),
+
+                      showModalBottomSheet(
+                        isScrollControlled: true,
+
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CashPaymentScreen(
+
+                          );
+                        },
                       );
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(builder: (_)=> const CashPaymentScreen()),
+                      // );
                     }
                   }
                 },
@@ -231,23 +242,6 @@ class PaymentOptionCard extends StatelessWidget {
   }
 }
 
-
-
-class CashScreen extends StatelessWidget {
-  const CashScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Cash Payment"),
-      ),
-      body: const Center(
-        child: Text("Cash Payment Screen"),
-      ),
-    );
-  }
-}
 
 
 
