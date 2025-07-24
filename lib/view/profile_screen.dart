@@ -37,11 +37,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> fetchUserProfile() async {
     setState(() => isLoading = true);
     UserModel? fetchedUser = await getProfileData();
+    if (!mounted) return; // <-- Add this!
     setState(() {
       user = fetchedUser;
       isLoading = false;
     });
   }
+
 
   //
   // Future<void> pickImage() async {

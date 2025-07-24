@@ -1,5 +1,5 @@
 import 'package:DentaCarts/core/app_strings.dart';
-import 'package:DentaCarts/view/payment/cash_payment_screen.dart';
+import 'package:DentaCarts/view/payment/data_user_payment_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -138,26 +138,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       ),
                     );
                   } else {
-                    if (selectedMethod == "Fawaterak") {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_)=> const FawaterakScreen()),
-                      );
-                    } else if (selectedMethod == "Cash") {
-
-                      showModalBottomSheet(
-                        isScrollControlled: true,
-
-                        context: context,
-                        builder: (BuildContext context) {
-                          return CashPaymentScreen(
-
-                          );
-                        },
-                      );
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(builder: (_)=> const CashPaymentScreen()),
-                      // );
-                    }
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_)=>  DataUserPaymentScreen(
+                        selectedMethod: selectedMethod!,
+                      )),
+                    );
                   }
                 },
                 child: Text(
@@ -402,7 +387,7 @@ class _WebViewFawaterakState extends State<WebViewFawaterak> {
         appBar: AppBar(title: const Text('Flutter Simple Example')),
         body: isLoading
             ?WebViewWidget(controller: controller)
-            : Center(child: CircularProgressIndicator(),)
+            : const Center(child: CircularProgressIndicator(),)
       // body: Stack(
       //   children: [
       //     WebViewWidget(controller: controller),
