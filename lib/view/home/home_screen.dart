@@ -2,7 +2,7 @@
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/services/cart_api_service.dart';
-import 'package:DentaCarts/view/details_produc_screen.dart';
+import 'package:DentaCarts/view/details_product/details_produc_screen.dart';
 import 'package:DentaCarts/view/home/banner_section.dart';
 import 'package:DentaCarts/view/home/category_section.dart';
 import 'package:DentaCarts/view/home/product_list_section.dart';

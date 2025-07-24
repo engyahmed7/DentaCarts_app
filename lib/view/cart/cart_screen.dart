@@ -18,12 +18,12 @@ class CartScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Your Products",style: TextStyle(
+          const Text("Your Products",style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),),
-          SizedBox(height: 20,),
+          const SizedBox(height: 20,),
           Expanded(
             child: FutureBuilder <List<CartModel>?>(
               future: getCarts(),
@@ -95,7 +95,7 @@ class CartScreen extends StatelessWidget {
                                                 Row(
                                                   children: List.generate(
                                                     5,
-                                                        (index) => Icon(
+                                                        (index) => const Icon(
                                                       Icons.star,
                                                       // color: index < avgRating.round()
                                                       //     ? Colors.amber
