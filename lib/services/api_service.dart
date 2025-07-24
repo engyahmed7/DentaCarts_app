@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:DentaCarts/core/app_strings.dart';
+import 'package:DentaCarts/model/product_model.dart';
 import 'package:DentaCarts/model/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -138,4 +140,25 @@ class ApiService {
   //     return null;
   //   }
   // }
+
+  Future<List<ProductModel>> getProductsListInHomeScreen() async {
+    final response = await http.get(
+      Uri.parse('${AppStrings.baseUrl}/api/products'),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return ProductModel.listFromJson(data['products']);
+    } else {
+      return [];
+    }
+  }
+
+
+
+
 }

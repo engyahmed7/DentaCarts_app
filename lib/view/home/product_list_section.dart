@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/model/product_model.dart';
+import 'package:DentaCarts/services/api_service.dart';
 import 'package:DentaCarts/view/details_product/details_produc_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,20 +17,15 @@ class SaleProductsList extends StatefulWidget {
 }
 
 class _SaleProductsListState extends State<SaleProductsList> {
-
-
   @override
   void initState() {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-
-    return FutureBuilder <List<ProductModel>?>(
-      future: getProducts(),
+    return FutureBuilder<List<ProductModel>?>(
+      future: ApiService().getProductsListInHomeScreen(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -49,9 +45,7 @@ class _SaleProductsListState extends State<SaleProductsList> {
               return InkWell(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-                    return DetailsProductPage(
-
-                    );
+                    return const DetailsProductPage();
                   }));
                 },
                 child: Stack(
@@ -70,46 +64,45 @@ class _SaleProductsListState extends State<SaleProductsList> {
                                 topLeft: Radius.circular(12),
                                 bottomLeft: Radius.circular(12),
                               ),
-                              child: Image.network(
-                                "${AppStrings.marwanHoo}"
-                                // widget.product.images.isNotEmpty
-                                //     ? widget.product.images.first
-                                //     : 'https://via.placeholder.com/100',
-                                // height: double.infinity,
-                                // width: 100,
-                                // fit: BoxFit.cover,
-                              ),
+                              child: Image.network("${AppStrings.marwanHoo}"
+                                  // widget.product.images.isNotEmpty
+                                  //     ? widget.product.images.first
+                                  //     : 'https://via.placeholder.com/100',
+                                  // height: double.infinity,
+                                  // width: 100,
+                                  // fit: BoxFit.cover,
+                                  ),
                             ),
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.all(12.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       children: [
-                                Row(
-                                children: List.generate(
-                                  5,
-                                      (index) => Icon(
-                                    Icons.star,
-                                    // color: index < avgRating.round()
-                                    //     ? Colors.amber
-                                    //     : Colors.grey,
-                                        color:
-                                        Colors.amber,
+                                        Row(
+                                          children: List.generate(
+                                            5,
+                                            (index) => const Icon(
+                                              Icons.star,
+                                              // color: index < avgRating.round()
+                                              //     ? Colors.amber
+                                              //     : Colors.grey,
+                                              color: Colors.amber,
 
-                                    size: 16,
-                                  ),
-                                ),
-                              ),
+                                              size: 16,
+                                            ),
+                                          ),
+                                        ),
                                         const SizedBox(width: 5),
-                                         Text("|"),
+                                        const Text("|"),
                                         const SizedBox(width: 5),
-                                         Text(
+                                        Text(
                                           "${product.stock} +",
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.grey,
@@ -136,10 +129,12 @@ class _SaleProductsListState extends State<SaleProductsList> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                         Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             // Text(
                                             //   // "\$${widget.product.price.toStringAsFixed(2)}",
@@ -151,7 +146,7 @@ class _SaleProductsListState extends State<SaleProductsList> {
                                             // ),
                                             Text(
                                               "${product.price}",
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: AppColors.primaryColor,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16,
@@ -182,9 +177,7 @@ class _SaleProductsListState extends State<SaleProductsList> {
                               ),
                             ),
                             GestureDetector(
-                              onTap: (){
-
-                              },
+                              onTap: () {},
                               child: Container(
                                 padding: const EdgeInsets.all(12),
                                 margin: const EdgeInsets.only(right: 10),
@@ -218,8 +211,8 @@ class _SaleProductsListState extends State<SaleProductsList> {
                           ],
                         ),
                         child: IconButton(
-                          onPressed: (){},
-                          icon: Icon(
+                          onPressed: () {},
+                          icon: const Icon(
                             //isWishlisted ? Icons.favorite : Icons.favorite_border,
                             //color: isWishlisted ? Colors.red : AppColors.primaryColor,
                             Icons.favorite_border,
@@ -238,23 +231,5 @@ class _SaleProductsListState extends State<SaleProductsList> {
       },
     );
   }
-
-
 }
 
- Future<List<ProductModel>> getProducts() async {
-  final response = await http.get(
-    Uri.parse('${AppStrings.baseUrl}/api/products'),
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-  );
-
-  if (response.statusCode == 200) {
-    final data = json.decode(response.body);
-    return ProductModel.listFromJson(data['products']);
-  } else {
-    return [];
-  }
-}

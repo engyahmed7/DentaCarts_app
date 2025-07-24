@@ -31,7 +31,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
           ],
         ),
       ),
-      drawer: const Drawer(),
+      //drawer: const Drawer(),
       backgroundColor: Colors.white,
       body: IndexedStack(
         index: currentIndex,
