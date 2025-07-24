@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class DataUserPaymentScreen extends StatefulWidget {
   final String selectedMethod;
+
   const DataUserPaymentScreen({super.key, required this.selectedMethod});
 
   @override
@@ -78,6 +79,14 @@ class _DataUserPaymentScreenState extends State<DataUserPaymentScreen> {
             ),
             const SizedBox(height: 10),
             TextFormField(
+              controller: countryController,
+              decoration: const InputDecoration(
+                labelText: 'Country',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
               controller: cityController,
               decoration: const InputDecoration(
                 labelText: 'City',
@@ -94,19 +103,12 @@ class _DataUserPaymentScreenState extends State<DataUserPaymentScreen> {
             ),
             const SizedBox(height: 10),
             TextFormField(
-              controller: countryController,
-              decoration: const InputDecoration(
-                labelText: 'Country',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
               controller: postalCodeController,
               decoration: const InputDecoration(
                 labelText: 'Postal Code',
                 border: OutlineInputBorder(),
               ),
+              keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 10),
             TextFormField(
@@ -129,16 +131,21 @@ class _DataUserPaymentScreenState extends State<DataUserPaymentScreen> {
                   ),
                 ),
                 onPressed: () {
-
-                    if (widget.selectedMethod == "Fawaterak") {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => const FawaterakScreen()),
-                      );
-                    } else if (widget.selectedMethod == "Cash") {
-
-                    }
-
+                  if (widget.selectedMethod == "Fawaterak") {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (_) => const FawaterakScreen()),
+                    );
+                  } else if (widget.selectedMethod == "Cash") {
+                    print(firstNameController.text);
+                    print(lastNameController.text);
+                    print(addressController.text);
+                    print(cityController.text);
+                    print(stateController.text);
+                    print(countryController.text);
+                    print(postalCodeController.text);
+                    print(phoneController.text);
+                  }
                 },
                 child: Text(
                   "Continue",
