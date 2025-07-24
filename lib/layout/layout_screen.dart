@@ -19,7 +19,9 @@ class _LayoutScreenState extends State<LayoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         centerTitle: true,
         title: IndexedStack(
           index: currentIndex,
@@ -32,7 +34,6 @@ class _LayoutScreenState extends State<LayoutScreen> {
         ),
       ),
       //drawer: const Drawer(),
-      backgroundColor: Colors.white,
       body: IndexedStack(
         index: currentIndex,
         children: [

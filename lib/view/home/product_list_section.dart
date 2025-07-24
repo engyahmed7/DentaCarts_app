@@ -25,7 +25,7 @@ class _SaleProductsListState extends State<SaleProductsList> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<ProductModel>?>(
-      future: ApiService().getProductsListInHomeScreen(),
+      future: getProductsListInHomeScreen(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -45,7 +45,9 @@ class _SaleProductsListState extends State<SaleProductsList> {
               return InkWell(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-                    return const DetailsProductPage();
+                    return  DetailsProductPage(
+                      id: product.id,
+                    );
                   }));
                 },
                 child: Stack(
@@ -233,3 +235,19 @@ class _SaleProductsListState extends State<SaleProductsList> {
   }
 }
 
+Future<List<ProductModel>> getProductsListInHomeScreen() async {
+  final response = await http.get(
+    Uri.parse('${AppStrings.baseUrl}/api/products'),
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    return ProductModel.listFromJson(data['products']);
+  } else {
+    return [];
+  }
+}

@@ -141,22 +141,9 @@ class ApiService {
   //   }
   // }
 
-  Future<List<ProductModel>> getProductsListInHomeScreen() async {
-    final response = await http.get(
-      Uri.parse('${AppStrings.baseUrl}/api/products'),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return ProductModel.listFromJson(data['products']);
-    } else {
-      return [];
-    }
-  }
+
+
 
 
 
