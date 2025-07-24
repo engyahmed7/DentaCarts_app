@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/model/cart_model.dart';
+import 'package:DentaCarts/view/details_product/details_produc_screen.dart';
 import 'package:DentaCarts/view/payment/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -60,223 +61,230 @@ class _CartScreenState extends State<CartScreen> {
                           itemCount: cartModel?.length,
                           itemBuilder: (context, index) {
 
-                            return Stack(
-                              children: [
-                                Card(
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: SizedBox(
-                                    height: 150,
-                                    child: Row(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: const BorderRadius.only(
-                                            topLeft: Radius.circular(12),
-                                            bottomLeft: Radius.circular(12),
+                            return InkWell(
+                              onTap: (){
+                                 Navigator.of(context).push(MaterialPageRoute(builder: (_)=>  DetailsProductPage(
+                                   id: int.parse(cartModel[index].productId),
+                                 )));
+                              },
+                              child: Stack(
+                                children: [
+                                  Card(
+                                    elevation: 4,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: SizedBox(
+                                      height: 150,
+                                      child: Row(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: const BorderRadius.only(
+                                              topLeft: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12),
+                                            ),
+                                            child: Image.network("${AppStrings.marwanHoo}"
+                                              // widget.product.images.isNotEmpty
+                                              //     ? widget.product.images.first
+                                              //     : 'https://via.placeholder.com/100',
+                                              // height: double.infinity,
+                                              // width: 100,
+                                              // fit: BoxFit.cover,
+                                            ),
                                           ),
-                                          child: Image.network("${AppStrings.marwanHoo}"
-                                            // widget.product.images.isNotEmpty
-                                            //     ? widget.product.images.first
-                                            //     : 'https://via.placeholder.com/100',
-                                            // height: double.infinity,
-                                            // width: 100,
-                                            // fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Row(
-                                                      children: List.generate(
-                                                        5,
-                                                            (index) => const Icon(
-                                                          Icons.star,
-                                                          // color: index < avgRating.round()
-                                                          //     ? Colors.amber
-                                                          //     : Colors.grey,
-                                                          color: Colors.amber,
+                                          Expanded(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(12.0),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Row(
+                                                        children: List.generate(
+                                                          5,
+                                                              (index) => const Icon(
+                                                            Icons.star,
+                                                            // color: index < avgRating.round()
+                                                            //     ? Colors.amber
+                                                            //     : Colors.grey,
+                                                            color: Colors.amber,
 
-                                                          size: 16,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 5),
-                                                    const Text("|"),
-                                                    const SizedBox(width: 5),
-                                                    Text(
-                                                      "${cartModel[index].stock} +",
-                                                      style: const TextStyle(
-                                                        fontSize: 12,
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Text(
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  "${cartModel?[index].name}",
-                                                  style: GoogleFonts.poppins(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                // Text(
-                                                //   cartModel.description,
-                                                //   style: GoogleFonts.poppins(
-                                                //     fontSize: 12,
-                                                //     color: Colors.grey,
-                                                //   ),
-                                                //   maxLines: 3,
-                                                //   overflow: TextOverflow.ellipsis,
-                                                // ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                      children: [
-                                                        // Text(
-                                                        //   // "\$${widget.product.price.toStringAsFixed(2)}",
-                                                        //   "text",
-                                                        //   style: TextStyle(
-                                                        //     decoration: TextDecoration.lineThrough,
-                                                        //     color: Colors.grey,
-                                                        //   ),
-                                                        // ),
-                                                        Text(
-                                                          "${cartModel[index].price}",
-                                                          style: const TextStyle(
-                                                            color: AppColors.primaryColor,
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: 16,
+                                                            size: 16,
                                                           ),
                                                         ),
-
-                                                      ],
+                                                      ),
+                                                      const SizedBox(width: 5),
+                                                      const Text("|"),
+                                                      const SizedBox(width: 5),
+                                                      Text(
+                                                        "${cartModel[index].stock} +",
+                                                        style: const TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight: FontWeight.bold,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Text(
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    "${cartModel?[index].name}",
+                                                    style: GoogleFonts.poppins(
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.bold,
                                                     ),
+                                                  ),
+                                                  // Text(
+                                                  //   cartModel.description,
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 12,
+                                                  //     color: Colors.grey,
+                                                  //   ),
+                                                  //   maxLines: 3,
+                                                  //   overflow: TextOverflow.ellipsis,
+                                                  // ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                        children: [
+                                                          // Text(
+                                                          //   // "\$${widget.product.price.toStringAsFixed(2)}",
+                                                          //   "text",
+                                                          //   style: TextStyle(
+                                                          //     decoration: TextDecoration.lineThrough,
+                                                          //     color: Colors.grey,
+                                                          //   ),
+                                                          // ),
+                                                          Text(
+                                                            "${cartModel[index].price}",
+                                                            style: const TextStyle(
+                                                              color: AppColors.primaryColor,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 16,
+                                                            ),
+                                                          ),
 
-                                                    // Container(
-                                                    //   padding: const EdgeInsets.symmetric(
-                                                    //       horizontal: 6, vertical: 2),
-                                                    //   decoration: BoxDecoration(
-                                                    //     color: Colors.green,
-                                                    //     borderRadius: BorderRadius.circular(5),
-                                                    //   ),
-                                                    //   child: const Text(
-                                                    //     "30% OFF",
-                                                    //     style: TextStyle(
-                                                    //       color: Colors.white,
-                                                    //       fontSize: 12,
-                                                    //       fontWeight: FontWeight.bold,
-                                                    //     ),
-                                                    //   ),
-                                                    // ),
-                                                  ],
+                                                        ],
+                                                      ),
+
+                                                      // Container(
+                                                      //   padding: const EdgeInsets.symmetric(
+                                                      //       horizontal: 6, vertical: 2),
+                                                      //   decoration: BoxDecoration(
+                                                      //     color: Colors.green,
+                                                      //     borderRadius: BorderRadius.circular(5),
+                                                      //   ),
+                                                      //   child: const Text(
+                                                      //     "30% OFF",
+                                                      //     style: TextStyle(
+                                                      //       color: Colors.white,
+                                                      //       fontSize: 12,
+                                                      //       fontWeight: FontWeight.bold,
+                                                      //     ),
+                                                      //   ),
+                                                      // ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 16),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () {},
+                                                  child: Container(
+                                                    padding: const EdgeInsets.all(12),
+                                                    margin: const EdgeInsets.only(right: 10),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.pink.shade50,
+                                                      borderRadius: BorderRadius.circular(8),
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.add_shopping_cart,
+                                                      color: AppColors.primaryColor,
+                                                    ),
+                                                  ),
                                                 ),
+                                                GestureDetector(
+                                                  onTap: () async{
+                                                    bool? confirmed = await showDialog(
+                                                      context: context,
+                                                      builder: (context) => AlertDialog(
+                                                        title: const Text('Remove Item'),
+                                                        content: const Text('Are you sure you want to remove this item from your cart?'),
+                                                        actions: [
+                                                          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
+                                                          TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Delete')),
+                                                        ],
+                                                      ),
+                                                    );
+                                                    if (confirmed == true) {
+                                                      await removeCart(productId: cartModel[index].productId,context: context);
+                                                      setState(() {});
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    padding: const EdgeInsets.all(12),
+                                                    margin: const EdgeInsets.only(right: 10),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.pink.shade50,
+                                                      borderRadius: BorderRadius.circular(8),
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.delete,
+                                                      color: Colors.red,
+                                                    ),
+                                                  ),
+                                                ),
+
                                               ],
                                             ),
                                           ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 16),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {},
-                                                child: Container(
-                                                  padding: const EdgeInsets.all(12),
-                                                  margin: const EdgeInsets.only(right: 10),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.pink.shade50,
-                                                    borderRadius: BorderRadius.circular(8),
-                                                  ),
-                                                  child: const Icon(
-                                                    Icons.add_shopping_cart,
-                                                    color: AppColors.primaryColor,
-                                                  ),
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () async{
-                                                  bool? confirmed = await showDialog(
-                                                    context: context,
-                                                    builder: (context) => AlertDialog(
-                                                      title: const Text('Remove Item'),
-                                                      content: const Text('Are you sure you want to remove this item from your cart?'),
-                                                      actions: [
-                                                        TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
-                                                        TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Delete')),
-                                                      ],
-                                                    ),
-                                                  );
-                                                  if (confirmed == true) {
-                                                    await removeCart(productId: cartModel[index].productId,context: context);
-                                                    setState(() {});
-                                                  }
-                                                },
-                                                child: Container(
-                                                  padding: const EdgeInsets.all(12),
-                                                  margin: const EdgeInsets.only(right: 10),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.pink.shade50,
-                                                    borderRadius: BorderRadius.circular(8),
-                                                  ),
-                                                  child: const Icon(
-                                                    Icons.delete,
-                                                    color: Colors.red,
-                                                  ),
-                                                ),
-                                              ),
-
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 8,
-                                  left: 8,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 4,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(
-                                        //isWishlisted ? Icons.favorite : Icons.favorite_border,
-                                        //color: isWishlisted ? Colors.red : AppColors.primaryColor,
-                                        Icons.favorite_border,
-                                        color: AppColors.primaryColor,
+                                        ],
                                       ),
-                                      iconSize: 24,
                                     ),
                                   ),
-                                ),
-                              ],
+                                  Positioned(
+                                    top: 8,
+                                    left: 8,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.1),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(
+                                          //isWishlisted ? Icons.favorite : Icons.favorite_border,
+                                          //color: isWishlisted ? Colors.red : AppColors.primaryColor,
+                                          Icons.favorite_border,
+                                          color: AppColors.primaryColor,
+                                        ),
+                                        iconSize: 24,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
                           },
                         ),
