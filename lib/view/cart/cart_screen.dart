@@ -164,8 +164,10 @@ class _CartScreenState extends State<CartScreen> {
                                                             fontSize: 16,
                                                           ),
                                                         ),
+
                                                       ],
                                                     ),
+
                                                     // Container(
                                                     //   padding: const EdgeInsets.symmetric(
                                                     //       horizontal: 6, vertical: 2),
@@ -188,19 +190,59 @@ class _CartScreenState extends State<CartScreen> {
                                             ),
                                           ),
                                         ),
-                                        GestureDetector(
-                                          onTap: () {},
-                                          child: Container(
-                                            padding: const EdgeInsets.all(12),
-                                            margin: const EdgeInsets.only(right: 10),
-                                            decoration: BoxDecoration(
-                                              color: Colors.pink.shade50,
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: const Icon(
-                                              Icons.add_shopping_cart,
-                                              color: AppColors.primaryColor,
-                                            ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 16),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {},
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(12),
+                                                  margin: const EdgeInsets.only(right: 10),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.pink.shade50,
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.add_shopping_cart,
+                                                    color: AppColors.primaryColor,
+                                                  ),
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () async{
+                                                  bool? confirmed = await showDialog(
+                                                    context: context,
+                                                    builder: (context) => AlertDialog(
+                                                      title: const Text('Remove Item'),
+                                                      content: const Text('Are you sure you want to remove this item from your cart?'),
+                                                      actions: [
+                                                        TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
+                                                        TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Delete')),
+                                                      ],
+                                                    ),
+                                                  );
+                                                  if (confirmed == true) {
+                                                    await removeCart(productId: cartModel[index].productId,context: context);
+                                                    setState(() {});
+                                                  }
+                                                },
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(12),
+                                                  margin: const EdgeInsets.only(right: 10),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.pink.shade50,
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+
+                                            ],
                                           ),
                                         ),
                                       ],
@@ -325,5 +367,26 @@ Future<List<CartModel>> getCarts() async {
     return CartModel.listFromJson(data['items']);
   } else {
     return [];
+  }
+}
+
+
+Future<void> removeCart({required String productId, required BuildContext context}) async {
+  final response = await http.delete(
+    Uri.parse('${AppStrings.baseUrl}/api/cart/${productId}'),
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${AppStrings.token}',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data['message'])));
+  } else {
+    final data = json.decode(response.body);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data['error'])));
+
   }
 }
