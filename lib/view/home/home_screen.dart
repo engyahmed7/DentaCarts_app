@@ -6,6 +6,7 @@ import 'package:DentaCarts/view/details_product/details_produc_screen.dart';
 import 'package:DentaCarts/view/home/banner_section.dart';
 import 'package:DentaCarts/view/home/category_section.dart';
 import 'package:DentaCarts/view/home/product_list_section.dart';
+import 'package:DentaCarts/view/home/view_all_product_list.dart';
 import 'package:DentaCarts/view/instruments_screen.dart';
 import 'package:DentaCarts/viewmodel/cart/cart_cubit.dart';
 import 'package:flutter/material.dart';
@@ -56,9 +57,9 @@ class HomeScreen extends StatelessWidget {
                         fontSize: 18, fontWeight: FontWeight.bold)),
                 GestureDetector(
                   onTap: () {
-                    // Navigator.of(context).push(
-                    //   MaterialPageRoute(builder: (_) => const InstrumentsScreen()),
-                    // );
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ViewAllProductList()),
+                    );
                   },
                   child: const Text(
                     "View All",

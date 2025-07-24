@@ -33,7 +33,6 @@ Future<String?> getSavedToken() async {
 
 Future<bool> hasToken() async {
   String? token = await getSavedToken();
-  print("Token marwanhoo: ${token}");
   return token != null && token.isNotEmpty;
 }
 

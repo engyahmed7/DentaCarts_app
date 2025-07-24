@@ -37,7 +37,7 @@ class _SaleProductsListState extends State<SaleProductsList> {
           return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: productModel?.length,
+            itemCount: 3,
             itemBuilder: (context, index) {
               ProductModel product = productModel![index];
 
