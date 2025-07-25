@@ -212,7 +212,10 @@ class _SaleProductsListState extends State<SaleProductsList> {
                           ],
                         ),
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () async{
+                            await toggleWishlist(productId:  product.id, context: context);
+
+                          },
                           icon: const Icon(
                             //isWishlisted ? Icons.favorite : Icons.favorite_border,
                             //color: isWishlisted ? Colors.red : AppColors.primaryColor,
@@ -248,5 +251,23 @@ Future<List<ProductModel>> getProductsListInHomeScreen() async {
     return ProductModel.listFromJson(data['products']);
   } else {
     return [];
+  }
+}
+
+Future<void> toggleWishlist({required int productId,required BuildContext context}) async {
+  final response = await http.post(
+    Uri.parse('${AppStrings.baseUrl}/api/wishlist/toggle'),
+    body: {"productId": "$productId"},
+    headers: {
+      'Accept': 'application/json',
+      //'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${AppStrings.token}',
+    },
+  );
+  final data = json.decode(response.body);
+  if (response.statusCode == 200) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${data['message']}")));
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${data['message']}")));
   }
 }

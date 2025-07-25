@@ -2,11 +2,8 @@ import 'dart:convert';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/layout/layout_screen.dart';
-import 'package:DentaCarts/model/cart_model.dart';
-import 'package:DentaCarts/model/product.dart';
 import 'package:DentaCarts/model/wishlist_model.dart';
-import 'package:DentaCarts/services/cart_api_service.dart';
-import 'package:DentaCarts/viewmodel/cart/cart_cubit.dart';
+import 'package:DentaCarts/view/details_product/details_produc_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -34,7 +31,7 @@ class WishlistScreen extends StatelessWidget {
           } else {
             List<WishlistModel>? wishListModel = snapshot.data;
             if (wishListModel!.isEmpty) {
-              return EmptyWishlist();
+              return const EmptyWishlist();
             }
 
             return Padding(
@@ -51,124 +48,205 @@ class WishlistScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Expanded(
                     child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: wishListModel?.length,
                       itemBuilder: (context, index) {
-                        WishlistModel wishList = wishListModel![index];
+                        return InkWell(
+                          onTap: () {
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (_) {
+                              return DetailsProductPage(
+                                id: wishListModel[index].id,
+                              );
+                            }));
+                          },
+                          child: Stack(
+                            children: [
+                              Card(
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: SizedBox(
+                                  height: 150,
+                                  child: Row(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(12),
+                                          bottomLeft: Radius.circular(12),
+                                        ),
+                                        child: Image.network(
+                                            "${AppStrings.marwanHoo}"
+                                            // widget.product.images.isNotEmpty
+                                            //     ? widget.product.images.first
+                                            //     : 'https://via.placeholder.com/100',
+                                            // height: double.infinity,
+                                            // width: 100,
+                                            // fit: BoxFit.cover,
+                                            ),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Row(
+                                                    children: List.generate(
+                                                      5,
+                                                      (index) => const Icon(
+                                                        Icons.star,
+                                                        // color: index < avgRating.round()
+                                                        //     ? Colors.amber
+                                                        //     : Colors.grey,
+                                                        color: Colors.amber,
 
-                        return Stack(
-                          children: [
-                            Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              child: SizedBox(
-                                height: 150,
-                                child: Row(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(12),
-                                        bottomLeft: Radius.circular(12),
-                                      ),
-                                      child: Image.network(
-                                        '${AppStrings.marwanHoo}',
-                                        height: double.infinity,
-                                        width: 100,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              wishList.name,
-                                              style: GoogleFonts.poppins(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            Text(
-                                              "Stock: ",
-                                              style: GoogleFonts.poppins(
-                                                fontSize: 12,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  "${wishList.price}",
-                                                  style: const TextStyle(
-                                                    color:
-                                                        AppColors.primaryColor,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16,
+                                                        size: 16,
+                                                      ),
+                                                    ),
                                                   ),
+                                                  const SizedBox(width: 5),
+                                                  const Text("|"),
+                                                  const SizedBox(width: 5),
+                                                  Text(
+                                                    "${wishListModel[index].stock} +",
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Text(
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                "${wishListModel[index].name}",
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
-                                              ],
-                                            ),
-                                          ],
+                                              ),
+                                              // Text(
+                                              //   wishListModel[index].description,
+                                              //   style: GoogleFonts.poppins(
+                                              //     fontSize: 12,
+                                              //     color: Colors.grey,
+                                              //   ),
+                                              //   maxLines: 3,
+                                              //   overflow: TextOverflow.ellipsis,
+                                              // ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      // Text(
+                                                      //   // "\$${widget.product.price.toStringAsFixed(2)}",
+                                                      //   "text",
+                                                      //   style: TextStyle(
+                                                      //     decoration: TextDecoration.lineThrough,
+                                                      //     color: Colors.grey,
+                                                      //   ),
+                                                      // ),
+                                                      Text(
+                                                        "${wishListModel[index].price}",
+                                                        style: const TextStyle(
+                                                          color: AppColors
+                                                              .primaryColor,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 16,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  // Container(
+                                                  //   padding: const EdgeInsets.symmetric(
+                                                  //       horizontal: 6, vertical: 2),
+                                                  //   decoration: BoxDecoration(
+                                                  //     color: Colors.green,
+                                                  //     borderRadius: BorderRadius.circular(5),
+                                                  //   ),
+                                                  //   child: const Text(
+                                                  //     "30% OFF",
+                                                  //     style: TextStyle(
+                                                  //       color: Colors.white,
+                                                  //       fontSize: 12,
+                                                  //       fontWeight: FontWeight.bold,
+                                                  //     ),
+                                                  //   ),
+                                                  // ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.pink.shade50,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                      GestureDetector(
+                                        onTap: () {},
+                                        child: Container(
+                                          padding: const EdgeInsets.all(12),
+                                          margin:
+                                              const EdgeInsets.only(right: 10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.pink.shade50,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: const Icon(
+                                            Icons.add_shopping_cart,
+                                            color: AppColors.primaryColor,
+                                          ),
                                         ),
-                                        padding: const EdgeInsets.all(12),
                                       ),
-                                      onPressed: () {},
-                                      child: const Icon(
-                                        Icons.shopping_cart_outlined,
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 8,
-                              left: 8,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(
-                                    Icons.favorite_border,
-                                    color: AppColors.primaryColor,
+                                    ],
                                   ),
-                                  iconSize: 24,
                                 ),
                               ),
-                            ),
-                          ],
+                              Positioned(
+                                top: 8,
+                                left: 8,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: IconButton(
+                                    onPressed: () async{
+                                    },
+                                    icon:  const Icon(
+                                      //isWishlisted ? Icons.favorite : Icons.favorite_border,
+                                      //color: isWishlisted ? Colors.red : AppColors.primaryColor,
+                                      Icons.favorite_border,
+                                      color: AppColors.primaryColor,
+                                    ),
+                                    iconSize: 24,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         );
                       },
+                      itemCount: wishListModel!.length,
                     ),
                   ),
                 ],
@@ -198,6 +276,7 @@ Future<List<WishlistModel>> getWishList() async {
     return [];
   }
 }
+
 
 class FilterButton extends StatelessWidget {
   final String label;

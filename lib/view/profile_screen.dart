@@ -1,17 +1,13 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/icons/my_flutter_app_icons.dart';
 import 'package:DentaCarts/model/user_model.dart';
 import 'package:DentaCarts/view/login_screen.dart';
 import 'package:DentaCarts/view/order_history_screen.dart';
-import 'package:DentaCarts/view/welcome_screen.dart';
 import 'package:DentaCarts/view/wishlist/wishlist_screen.dart';
-import 'package:DentaCarts/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
@@ -25,8 +21,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   UserModel? user;
   bool isLoading = true;
-  // File? _imageFile;
-  // bool _isPickingImage = false;
 
   @override
   void initState() {
@@ -37,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> fetchUserProfile() async {
     setState(() => isLoading = true);
     UserModel? fetchedUser = await getProfileData();
-    if (!mounted) return; // <-- Add this!
+    if (!mounted) return;
     setState(() {
       user = fetchedUser;
       isLoading = false;
@@ -45,115 +39,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
 
-  //
-  // Future<void> pickImage() async {
-  //   if (_isPickingImage) return;
-  //
-  //   setState(() {
-  //     _isPickingImage = true;
-  //   });
-  //
-  //   try {
-  //     final pickedFile =
-  //         await ImagePicker().pickImage(source: ImageSource.gallery);
-  //     if (pickedFile != null) {
-  //       setState(() {
-  //         _imageFile = File(pickedFile.path);
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print("Error picking image: $e");
-  //   } finally {
-  //     setState(() {
-  //       _isPickingImage = false;
-  //     });
-  //   }
-  // }
-  //
-  // void showEditProfileDialog() {
-  //   TextEditingController usernameController =
-  //       TextEditingController(text: user?.username);
-  //   TextEditingController emailController =
-  //       TextEditingController(text: user?.email);
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text("Edit Profile"),
-  //         content: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             TextField(
-  //               controller: usernameController,
-  //               decoration: const InputDecoration(labelText: "Username"),
-  //             ),
-  //             TextField(
-  //               controller: emailController,
-  //               decoration: const InputDecoration(labelText: "Email"),
-  //             ),
-  //             const SizedBox(height: 10),
-  //             ElevatedButton.icon(
-  //               onPressed: _isPickingImage ? null : pickImage,
-  //               icon: const Icon(Icons.image),
-  //               label: const Text("Pick Profile Image"),
-  //             ),
-  //           ],
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.of(context).pop(),
-  //             child: const Text("Cancel"),
-  //           ),
-  //           TextButton(
-  //             onPressed: () async {
-  //               Navigator.of(context).pop();
-  //               await updateUserProfile(
-  //                 usernameController.text.trim(),
-  //                 emailController.text.trim(),
-  //                 _imageFile,
-  //               );
-  //             },
-  //             child: const Text("Save"),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-  //
-  // Future<void> updateUserProfile(
-  //     String username, String email, File? imageFile) async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //
-  //   try {
-  //     User? updatedUser =
-  //         await ApiService().updateUserProfile(username, email, imageFile);
-  //
-  //     if (updatedUser != null) {
-  //       setState(() {
-  //         user = updatedUser;
-  //         _imageFile = null;
-  //       });
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text("Failed to update profile")),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     print("Error updating profile: $e");
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //           content: Text("An error occurred while updating profile")),
-  //     );
-  //   } finally {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -280,9 +165,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 title: "Wishlist",
                 subtitle: "View your favourite products",
                 onTap: () {
-                  Navigator.of(context).pushAndRemoveUntil(
+                  Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const WishlistScreen()),
-                    (route) => false,
                   );
                 },
               ),

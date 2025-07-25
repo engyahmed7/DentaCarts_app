@@ -14,7 +14,7 @@ class LayoutScreen extends StatefulWidget {
 }
 
 class _LayoutScreenState extends State<LayoutScreen> {
-  int currentIndex = 1;
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
