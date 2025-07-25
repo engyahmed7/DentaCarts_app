@@ -4,13 +4,19 @@ import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/layout/layout_screen.dart';
 import 'package:DentaCarts/model/wishlist_model.dart';
 import 'package:DentaCarts/view/details_product/details_produc_screen.dart';
+import 'package:DentaCarts/view/home/product_list_section.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
-class WishlistScreen extends StatelessWidget {
+class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
 
+  @override
+  State<WishlistScreen> createState() => _WishlistScreenState();
+}
+
+class _WishlistScreenState extends State<WishlistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,55 +199,59 @@ class WishlistScreen extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      GestureDetector(
-                                        onTap: () {},
-                                        child: Container(
-                                          padding: const EdgeInsets.all(12),
-                                          margin:
-                                              const EdgeInsets.only(right: 10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.pink.shade50,
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: const Icon(
-                                            Icons.add_shopping_cart,
-                                            color: AppColors.primaryColor,
-                                          ),
-                                        ),
-                                      ),
+                                      // GestureDetector(
+                                      //   onTap: () {},
+                                      //   child: Container(
+                                      //     padding: const EdgeInsets.all(12),
+                                      //     margin:
+                                      //         const EdgeInsets.only(right: 10),
+                                      //     decoration: BoxDecoration(
+                                      //       color: Colors.pink.shade50,
+                                      //       borderRadius:
+                                      //           BorderRadius.circular(8),
+                                      //     ),
+                                      //     child: const Icon(
+                                      //       Icons.add_shopping_cart,
+                                      //       color: AppColors.primaryColor,
+                                      //     ),
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),
                               ),
-                              Positioned(
-                                top: 8,
-                                left: 8,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 4,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: IconButton(
-                                    onPressed: () async{
-                                    },
-                                    icon:  const Icon(
-                                      //isWishlisted ? Icons.favorite : Icons.favorite_border,
-                                      //color: isWishlisted ? Colors.red : AppColors.primaryColor,
-                                      Icons.favorite_border,
-                                      color: AppColors.primaryColor,
-                                    ),
-                                    iconSize: 24,
-                                  ),
-                                ),
-                              ),
+                              // Positioned(
+                              //   top: 8,
+                              //   left: 8,
+                              //   child: Container(
+                              //     decoration: BoxDecoration(
+                              //       color: Colors.white,
+                              //       shape: BoxShape.circle,
+                              //       boxShadow: [
+                              //         BoxShadow(
+                              //           color: Colors.black.withOpacity(0.1),
+                              //           blurRadius: 4,
+                              //           offset: const Offset(0, 2),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //     child: IconButton(
+                              //       onPressed: () async{
+                              //         // await toggleWishlist(productId:  wishListModel[index].id, context: context);
+                              //         // setState(() {
+                              //         //
+                              //         // });
+                              //       },
+                              //       icon:  const Icon(
+                              //         //isWishlisted ? Icons.favorite : Icons.favorite_border,
+                              //         //color: isWishlisted ? Colors.red : AppColors.primaryColor,
+                              //         Icons.favorite_border,
+                              //         color: AppColors.primaryColor,
+                              //       ),
+                              //       iconSize: 24,
+                              //     ),
+                              //   ),
+                              // ),
                             ],
                           ),
                         );

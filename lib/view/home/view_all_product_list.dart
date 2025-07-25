@@ -209,7 +209,9 @@ class _ViewAllProductListState extends State<ViewAllProductList> {
                             ],
                           ),
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () async{
+                              await toggleWishlist(productId:  product.id, context: context);
+                            },
                             icon: const Icon(
                               //isWishlisted ? Icons.favorite : Icons.favorite_border,
                               //color: isWishlisted ? Colors.red : AppColors.primaryColor,

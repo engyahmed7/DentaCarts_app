@@ -51,9 +51,6 @@ class _LayoutScreenState extends State<LayoutScreen> {
         },
         currentIndex: currentIndex,
         selectedItemColor: AppColors.primaryColor,
-        unselectedItemColor: Colors.grey,
-        iconSize: 35,
-        elevation: 50,
         items: const [
           BottomNavigationBarItem(
             icon: Padding(

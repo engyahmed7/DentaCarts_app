@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/model/category_model.dart';
 import 'package:flutter/material.dart';
