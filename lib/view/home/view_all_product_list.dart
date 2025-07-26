@@ -175,7 +175,10 @@ class _ViewAllProductListState extends State<ViewAllProductList> {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () {},
+                                onTap: () async{
+                                  await addToCart(productId:  product.id, context: context);
+
+                                },
                                 child: Container(
                                   padding: const EdgeInsets.all(12),
                                   margin: const EdgeInsets.only(right: 10),
