@@ -178,7 +178,9 @@ class _SaleProductsListState extends State<SaleProductsList> {
                               ),
                             ),
                             GestureDetector(
-                              onTap: () {},
+                              onTap: () async{
+                                await addToCart(productId:  product.id, context: context);
+                              },
                               child: Container(
                                 padding: const EdgeInsets.all(12),
                                 margin: const EdgeInsets.only(right: 10),
@@ -267,6 +269,28 @@ Future<void> toggleWishlist({required int productId,required BuildContext contex
   final data = json.decode(response.body);
   if (response.statusCode == 200) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${data['message']}")));
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${data['message']}")));
+  }
+}
+
+
+Future<void> addToCart({required int productId,required BuildContext context}) async {
+  final response = await http.post(
+    Uri.parse('${AppStrings.baseUrl}/api/cart'),
+    body: jsonEncode({
+      "productId": productId,
+      "qty": 1
+    }),
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${AppStrings.token}',
+    },
+  );
+  final data = json.decode(response.body);
+  if (response.statusCode == 200) {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Add To Cart Successfully")));
   } else {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${data['message']}")));
   }
