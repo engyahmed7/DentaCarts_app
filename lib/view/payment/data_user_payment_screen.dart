@@ -1,4 +1,5 @@
 import 'package:DentaCarts/core/app_colors.dart';
+import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/view/login_screen.dart';
 import 'package:DentaCarts/view/payment/payment_screen.dart';
 import 'package:flutter/material.dart';
@@ -40,12 +41,13 @@ class _DataUserPaymentScreenState extends State<DataUserPaymentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Data User Payment'),
+        title: Text('Data User Payment ${widget.selectedMethod}'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            if (widget.selectedMethod == AppStrings.fawaterk)
             Row(
               children: [
                 Expanded(
@@ -131,22 +133,42 @@ class _DataUserPaymentScreenState extends State<DataUserPaymentScreen> {
                   ),
                 ),
                 onPressed: () {
-                  if (widget.selectedMethod == "Fawaterak") {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (_) => const FawaterakScreen()),
+                if (widget.selectedMethod == AppStrings.fawaterk) {
+                  if (firstNameController.text.isEmpty ||
+                      lastNameController.text.isEmpty ||
+                      addressController.text.isEmpty ||
+                      cityController.text.isEmpty ||
+                      stateController.text.isEmpty ||
+                      countryController.text.isEmpty ||
+                      postalCodeController.text.isEmpty ||
+                      phoneController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Please fill all fields"),
+                      ),
                     );
-                  } else if (widget.selectedMethod == "Cash") {
-                    print(firstNameController.text);
-                    print(lastNameController.text);
-                    print(addressController.text);
-                    print(cityController.text);
-                    print(stateController.text);
-                    print(countryController.text);
-                    print(postalCodeController.text);
-                    print(phoneController.text);
+                    return;
                   }
-                },
+
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const FawaterakScreen()),
+                  );
+                } else if (widget.selectedMethod == "${AppStrings.cash}") {
+                  if (addressController.text.isEmpty ||
+                      cityController.text.isEmpty ||
+                      stateController.text.isEmpty ||
+                      countryController.text.isEmpty ||
+                      postalCodeController.text.isEmpty ||
+                      phoneController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Please fill all required fields"),
+                      ),
+                    );
+                    return;
+                  }
+                }
+              },
                 child: Text(
                   "Continue",
                   style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),

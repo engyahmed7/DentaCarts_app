@@ -96,26 +96,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
             const SizedBox(height: 20),
             PaymentOptionCard(
-              title: "Fawaterak",
+              title: "${AppStrings.fawaterk}",
               description:
               "Fawaterak is a PCI Certified online payments \nplatform for MSMEs",
               imageUrl: '${AppStrings.fawaterakLogo}',
-              isSelected: selectedMethod == "Fawaterak",
+              isSelected: selectedMethod == "${AppStrings.fawaterk}",
               onTap: () {
                 setState(() {
-                  selectedMethod = "Fawaterak";
+                  selectedMethod = "${AppStrings.fawaterk}";
                 });
               },
             ),
             const SizedBox(height: 10),
             PaymentOptionCard(
-              title: "Cash",
+              title: "${AppStrings.cash}",
               description: "Pay upon receipt",
               imageUrl: "${AppStrings.cashLogo}",
-              isSelected: selectedMethod == "Cash",
+              isSelected: selectedMethod == "${AppStrings.cash}",
               onTap: () {
                 setState(() {
-                  selectedMethod = "Cash";
+                  selectedMethod = "${AppStrings.cash}";
                 });
               },
             ),
@@ -138,11 +138,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       ),
                     );
                   } else {
+
                     Navigator.of(context).push(
                       MaterialPageRoute(builder: (_)=>  DataUserPaymentScreen(
                         selectedMethod: selectedMethod!,
                       )),
                     );
+
+
+
                   }
                 },
                 child: Text(

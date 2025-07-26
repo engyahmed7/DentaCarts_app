@@ -8,4 +8,8 @@ class AppStrings {
   static  String? token ;
   static const String fawaterakLogo = "assets/images/fawaterak.png";
   static const String cashLogo = "assets/images/cash.png";
+
+
+  static const String fawaterk = "Fawaterk";
+  static const String cash = "Cash";
 }
