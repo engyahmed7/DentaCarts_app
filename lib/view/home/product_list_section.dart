@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/model/product_model.dart';
+import 'package:DentaCarts/view/cart/cart_screen.dart';
 import 'package:DentaCarts/view/details_product/details_produc_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

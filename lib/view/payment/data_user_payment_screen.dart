@@ -1,6 +1,8 @@
 import 'package:DentaCarts/core/app_colors.dart';
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/view/login_screen.dart';
+import 'package:DentaCarts/view/payment/cash_screen.dart';
+import 'package:DentaCarts/view/payment/fawaterak_screen.dart';
 import 'package:DentaCarts/view/payment/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -151,9 +153,22 @@ class _DataUserPaymentScreenState extends State<DataUserPaymentScreen> {
                   }
 
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const FawaterakScreen()),
+                    MaterialPageRoute(builder: (_) =>  FawaterakScreen(
+                      dataUser: {
+                        "first_name": firstNameController.text.toString(),
+                        "last_name": lastNameController.text.toString(),
+                        "address_line": addressController.text.toString(),
+                        "country": countryController.text.toString(),
+                        "city": cityController.text.toString(),
+                        "state": stateController.text.toString(),
+                        "postal_code": postalCodeController.text.toString(),
+                        "phone": phoneController.text.toString(),
+                      },
+                    )),
                   );
-                } else if (widget.selectedMethod == "${AppStrings.cash}") {
+                }
+
+                else if (widget.selectedMethod == AppStrings.cash) {
                   if (addressController.text.isEmpty ||
                       cityController.text.isEmpty ||
                       stateController.text.isEmpty ||
@@ -167,6 +182,18 @@ class _DataUserPaymentScreenState extends State<DataUserPaymentScreen> {
                     );
                     return;
                   }
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) =>  CashScreen(
+                      dataUser: {
+                        "address_line": addressController.text.toString(),
+                        "city": cityController.text.toString(),
+                        "state": stateController.text.toString(),
+                        "postal_code": postalCodeController.text.toString(),
+                        "country": countryController.text.toString(),
+                        "phone": phoneController.text.toString(),
+                      }
+                    )),
+                  );
                 }
               },
                 child: Text(

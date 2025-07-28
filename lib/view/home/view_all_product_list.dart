@@ -178,6 +178,7 @@ class _ViewAllProductListState extends State<ViewAllProductList> {
                                 onTap: () async{
                                   await addToCart(productId:  product.id, context: context);
 
+
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(12),
