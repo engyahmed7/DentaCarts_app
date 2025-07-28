@@ -16,6 +16,12 @@ class LayoutScreen extends StatefulWidget {
 class _LayoutScreenState extends State<LayoutScreen> {
   int currentIndex = 0;
 
+  List<Widget> screen =  [
+    HomeScreen(),
+    const CartScreen(),
+    const ProfileScreen(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,19 +40,13 @@ class _LayoutScreenState extends State<LayoutScreen> {
         ),
       ),
       //drawer: const Drawer(),
-      body: IndexedStack(
-        index: currentIndex,
-        children: [
-          HomeScreen(),
-          const CartScreen(),
-          const ProfileScreen(),
-        ],
-      ),
+      body: screen[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         onTap: (int index) {
           setState(() {
             currentIndex = index;
+            if(index == 1) getCarts();
           });
         },
         currentIndex: currentIndex,
