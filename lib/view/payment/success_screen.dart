@@ -1,3 +1,4 @@
+import 'package:DentaCarts/layout/layout_screen.dart';
 import 'package:flutter/material.dart';
 
 class SuccessScreen extends StatefulWidget {
@@ -36,9 +37,9 @@ class _SuccessScreenState extends State<SuccessScreen> {
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                //Navigator.of(context).pop();
+                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_)=> LayoutScreen()), (route)=> false);
               },
-              child: const Text("Go Back"),
+              child:  Text("Done"),
             ),
           ],
         ),

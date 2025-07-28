@@ -1,6 +1,5 @@
 import 'package:DentaCarts/core/app_strings.dart';
 import 'package:DentaCarts/view/payment/data_user_payment_screen.dart';
-import 'package:DentaCarts/view/payment/web_view_fawaterak.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
